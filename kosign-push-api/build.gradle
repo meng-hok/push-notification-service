@@ -1,0 +1,44 @@
+plugins {
+	id 'java'
+	id "org.springframework.boot" version "${springBootVersion}"
+}
+
+group = 'com.kosign.push.api'
+version = "${projectVersion}"
+
+bootJar {
+	mainClassName = 'com.kosign.push.webservice.Application'
+}
+
+dependencies {
+	compile project(":kosign-push-commons")
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-gradle-plugin
+	compile group: 'org.springframework.boot', name: 'spring-boot-gradle-plugin', version: "${springBootVersion}"
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-data-jpa
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-data-jpa', version: "${springBootVersion}"
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-web
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-web', version: "${springBootVersion}"
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-actuator
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-actuator', version: "${springBootVersion}"
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-tomcat
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-tomcat', version: "${springBootVersion}"
+
+	// https://mvnrepository.com/artifact/org.springframework.boot/spring-boot-starter-validation
+	compile group: 'org.springframework.boot', name: 'spring-boot-starter-validation', version: "${springBootVersion}"
+
+
+	// https://mvnrepository.com/artifact/org.postgresql/postgresql
+	compile group: 'org.postgresql', name: 'postgresql', version: '42.2.13'
+
+	//runtime('com.h2database:h2')
+
+	// for jetty
+//	compile "org.eclipse.jetty:jetty-servlets:${jettyVersion}"
+//	compile "org.eclipse.jetty:jetty-util:${jettyVersion}"
+
+}

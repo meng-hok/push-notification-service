@@ -1,0 +1,41 @@
+plugins {
+    id 'java'
+    id 'project-report'
+}
+
+group 'com.kosign.push'
+version "${projectVersion}"
+
+subprojects {
+    sourceCompatibility = 1.8
+    targetCompatibility = 1.8
+
+    /**
+     * 1st approach: Setting encoding during compilation in Java and Test classes
+     */
+    compileJava.options.encoding = "UTF-8"
+    compileTestJava.options.encoding = "UTF-8"
+
+    /**
+     * 2nd approach: Setting encoding during compilation in Java and Test classes
+     */
+    tasks.withType(JavaCompile) {
+        options.encoding = "UTF-8"
+    }
+    tasks.withType(Test) {
+        systemProperty "file.encoding", "UTF-8"
+    }
+
+    repositories {
+        mavenCentral()
+        mavenLocal()
+    }
+
+    afterEvaluate {
+        dependencies {
+            // lombok
+            compileOnly group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"
+            annotationProcessor group: 'org.projectlombok', name: 'lombok', version: "${lombokVersion}"
+        }
+    }
+}

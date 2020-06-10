@@ -1,0 +1,104 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.bmuschko:gradle-tomcat-plugin:2.5'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'project-report'
+    id 'war'
+}
+
+apply plugin: 'com.bmuschko.tomcat'
+
+group 'com.bnkcmfi'
+version "${coreApiVersion}"
+
+dependencies {
+    def tomcatVersion = '9.0.1'
+    tomcat "org.apache.tomcat.embed:tomcat-embed-core:${tomcatVersion}",
+            "org.apache.tomcat.embed:tomcat-embed-logging-juli:9.0.0.M6",
+            "org.apache.tomcat.embed:tomcat-embed-jasper:${tomcatVersion}"
+
+    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '3.0.1'
+
+    /*modules {
+		module("javax.servlet:servlet-api") {
+			replacedBy("javax.servlet:javax.servlet-api")
+		}
+	}*/
+
+    compile "org.glassfish.jersey:jersey-bom:${jerseyVersion}"
+    compile "org.glassfish.jersey.containers:jersey-container-servlet:${jerseyVersion}"
+    compile "org.glassfish.jersey.core:jersey-client:${jerseyVersion}"
+    compile "org.glassfish.jersey.media:jersey-media-jaxb:${jerseyVersion}"
+    compile "com.fasterxml.jackson.core:jackson-annotations:${jacksonVersion}"
+    compile "org.springframework.boot:spring-boot-starter-web:${springBootVersion}"
+    compile "org.springframework.boot:spring-boot-starter-data-jpa:${springBootVersion}"
+    compile "org.postgresql:postgresql:42.2.13"
+    /*
+    compile "org.ini4j:ini4j:0.5.4"
+    compile "org.apache.commons:commons-lang3:3.4"
+    compile "log4j:log4j:1.2.17"
+    compile "commons-dbcp:commons-dbcp:1.4"
+    compile "commons-dbutils:commons-dbutils:1.6"
+    compile "commons-io:commons-io:2.5"
+    compile "commons-validator:commons-validator:1.5.1"
+    compile "org.apache.commons:commons-collections4:4.3"
+    compile "com.fasterxml.jackson.core:jackson-databind:${jacksonVersion}"
+    compile "org.glassfish.jersey.media:jersey-media-json-jackson:${jerseyVersion}"
+    compile "biz.minaret.log4j:datedFileAppender:1.0.2"
+    compile "postgresql:postgresql:9.1-901-1.jdbc4"
+    compile "javax.servlet:servlet-api:2.5"
+    compile "org.hibersap:hibersap-core:1.3.1-SNAPSHOT"
+    compile "org.hibersap:hibersap-jco:1.3.1-SNAPSHOT"
+    compile "org.hibersap:hibersap-jca:1.3.0"
+    compile "com.sap.conn.jco:sapjco3:3.0.13"
+    compile "com.google.code.gson:gson:2.8.2"
+    compile "com.github.fge:json-schema-validator:2.2.6"
+    compile "org.quartz-scheduler:quartz:2.3.0"
+    compile "org.slf4j:slf4j-log4j12:1.7.25"
+    compile "org.apache.commons:commons-vfs2:2.0"
+    compile "com.jcraft:jsch:0.1.54"
+    compile "org.hibernate:hibernate-core:5.3.7.Final"
+    compile "org.hibernate:hibernate-validator-annotation-processor:6.0.13.Final"
+    compile "org.apache.axis2:axis2:1.6.2"
+    compile "org.apache.axis2:axis2-adb:1.6.2"
+    compile "org.apache.axis2:axis2-transport-http:1.6.2"
+    compile "org.apache.axis2:axis2-transport-local:1.6.2"
+    compile "com.microsoft.sqlserver:sqljdbc4:4.0"
+    compile "oracle:ojdbc8:18.3.0.0.0"
+    compile "org.freemarker:freemarker:2.3.28"
+    compile "org.apache.commons:commons-exec:1.3"
+    testCompile 'org.testng:testng:6.14.3'
+//    compile "ch.qos.logback:logback-core:${logbackVersion}"
+//    compile "ch.qos.logback:logback-classic:${logbackVersion}"
+     
+}
+
+tomcat {
+    httpProtocol = 'org.apache.coyote.http11.Http11Nio2Protocol'
+    ajpProtocol  = 'org.apache.coyote.ajp.AjpNio2Protocol'
+	httpPort = 80
+//	httpsPort = 443
+//	enableSSL = true
+	contextPath = '/'
+//	inplaceMode = "hard"
+//	fastReload = true
+
+//	jvmArgs = [
+//			'-DJEX_CONNAME=WABOOKS',
+//			'-DlogConfigPath=C:/workspace/wabooks/conf/log.config',
+//			'-DapiConfigPath=C:/workspace/wabooks/conf/api.config',
+//			'-DbizplayConfigPath=C:/workspace/wabooks/conf/bizplay.config'
+//	]
+
+	/*afterEvaluate {
+		prepareInplaceWebAppFolder.dependsOn copyStaticFiles
+	}*/
+}

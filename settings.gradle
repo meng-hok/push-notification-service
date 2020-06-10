@@ -1,0 +1,4 @@
+rootProject.name = 'kosign-push'
+include "kosign-push-commons"
+include "kosign-push-api"
+include "kosign-push-web"
