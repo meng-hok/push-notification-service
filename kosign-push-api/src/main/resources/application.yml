@@ -1,8 +1,20 @@
 spring:
-  profiles:
-    active: local # 기본 환경 선택
-  main:
-    web-application-type: servlet
+  # profiles:
+  #   active: local # 기본 환경 선택
+  # main:
+  #   web-application-type: servlet
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/pusher
+    username: postgres
+    password: postgres
+  jpa:
+    show-sql: true  
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest  
 #  jpa:
 #    properties:
 #      hibernate:
@@ -10,33 +22,52 @@ spring:
 
 # local 환경
 ---
-spring:
-  profiles: local
-  datasource:
-#    data: classpath:data-h2.sql # 시작할때 실행시킬 script
-    url: jdbc:postgresql://103.101.82.133:54311/bnkdevdb
-    username: bnkdev
-    password: bnkdev123
-  jpa:
-    show-sql: true
+
+  
 #    hibernate:
 #      ddl-auto: create-drop
 #  h2:
 #    console:
 #      enabled: true
 
+  
+pusher:
+  rabbitmq:
+      queue: 
+        fcm: pusher.queue.fcm
+        apns: pusher.queue.apns
+        topic: pusher.queue.topic
+        history: pusher.queue.history
+
+# pusher:
+#   rabbitmq:
+      routingKey: 
+        fcm: pusher.queue.fcm
+        apns: pusher.queue.apns
+        topic: pusher.queue.topic
+        history: pusher.queue.history
+
+# pusher:
+#   rabbitmq:
+      exchange: pusher.direct.exchange
+
+admin:
+  name: admin
+  password: adminhtl123!@#
+
+
 # 운영 환경
 ---
-spring.profiles: set1
-spring.profiles.include: real-db
+# spring.profiles: set1
+# spring.profiles.include: real-db
 
-server:
-  port: 8081
+# server:
+#   port: 8081
 
 ---
-spring.profiles: set2
-spring.profiles.include: real-db
+# spring.profiles: set2
+# spring.profiles.include: real-db
 
-server:
-  port: 8082
+# server:
+#   port: 8082
 

@@ -1,4 +1,4 @@
-package com.kosign.push.webservice;
+package com.kosign.push;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
