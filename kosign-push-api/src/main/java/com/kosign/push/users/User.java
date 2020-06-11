@@ -2,6 +2,7 @@ package com.kosign.push.users;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -9,6 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Data;
 
@@ -16,16 +18,24 @@ import lombok.Data;
 @Table(name ="ps_user")
 @Entity
 public class User {
-    @GeneratedValue(strategy = GenerationType.AUTO )
     @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
+   
+    @Column(unique = true)
+    private String username;
+
+    private String password;
+
+    private String role;
 
     @CreationTimestamp
     private Timestamp createdAt;
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    private Character status ='1';
+    private Character status = '0';
 
     public User(String id) {
         this.id = id;

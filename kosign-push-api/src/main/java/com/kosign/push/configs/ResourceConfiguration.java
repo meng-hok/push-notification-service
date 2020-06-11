@@ -23,6 +23,10 @@ public class ResourceConfiguration extends ResourceServerConfigurerAdapter {
             .authorizeRequests()
             .anyRequest()
             .permitAll()
+            // .and()
+            // .authorizeRequests()
+            // .antMatchers("/swagger-ui.html")
+            // .authenticated()
             .and().csrf().disable(); 
           
     }

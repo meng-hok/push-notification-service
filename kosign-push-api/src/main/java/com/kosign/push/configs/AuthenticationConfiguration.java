@@ -1,5 +1,7 @@
 package com.kosign.push.configs;
 
+import com.kosign.push.users.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,9 +30,10 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter{
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.inMemoryAuthentication()
-            .withUser("user").password("user").roles("USER")
+            .withUser("user").password(encoder().encode("user")).roles("USER")
             .and()
-            .withUser("admin").password(encoder().encode("admin")).roles("ADMIN");
+            .withUser("admin").password(encoder().encode("admin")).roles("ADMIN","OPERATOR");
+        auth.userDetailsService(userDetailsService() ).passwordEncoder( encoder());
     }
     
     // @Override
@@ -43,4 +46,11 @@ public class AuthenticationConfiguration extends WebSecurityConfigurerAdapter{
     //         .csrf()
     //         .disable();
     // }
+
+    @Bean
+    public UserService userDetailsService() {
+      return new UserService();
+    };
+
+    
 }
