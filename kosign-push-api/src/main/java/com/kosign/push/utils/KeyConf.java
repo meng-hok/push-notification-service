@@ -2,14 +2,19 @@ package com.kosign.push.utils;
 
 public interface KeyConf {
     
+    class Message {
+        public static String SUCCESS = "Successful";
+        public static String FAIL = "Fail";
+    }
     class Notification{
        public static String TITILE = "Push Server";
-       public static String MESSAGE = "Hello Menghok";
+       public static String MESSAGE = "Hello";
     }
 
     class Status {
         public static Character ACTIVE = '1';
         public static Character DISABLED = '9';
+        public static Character REQUESTING = '0';
     }
 
     class PlatForm {

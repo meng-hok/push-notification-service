@@ -10,6 +10,9 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+
+import com.kosign.push.users.User;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -27,7 +30,8 @@ public class Application {
 
     private String name;
 
-
+    @ManyToOne
+    private User user;
     
     @CreationTimestamp
     private Timestamp createdAt;
