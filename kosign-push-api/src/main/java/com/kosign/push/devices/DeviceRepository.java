@@ -1,6 +1,9 @@
 package com.kosign.push.devices;
 
 import java.util.List;
+import java.util.Map;
+
+import com.kosign.push.messages.Agent;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -26,5 +29,11 @@ public interface DeviceRepository extends JpaRepository<Device,String> {
     // */
     // @Query(nativeQuery = true, value = "SELECT * FROM device WHERE user_id = :userId AND appId = :appId AND status = :active" )
 	// public List<Device> findByUserIdAndAppIdAndStatus(String userId, String appId, Character active);
+   
+    @Query(nativeQuery = true, value = "SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n"+
+                                        "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n"+
+                                        "ON d.platform_id = p_s.id \n"+
+                                        "WHERE d.device_id = :deviceId AND app_id = :appId AND d.status = '1' LIMIT 1")
+	List<Map<String,String>> findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId,@Param("appId") String appId);
 
 }
