@@ -75,4 +75,11 @@ public class Device {
         this.app = app;
         this.platform = platform;
     }
+
+	public Device(String token, Application application, Platform platform, String userId) {
+        this.userId = userId;
+        this.token = token;
+        this.app = application;
+        this.platform = platform;
+	}
 }

@@ -25,4 +25,11 @@ public class AppService {
     public List<Application> getActiveAppsByUserId(String userId){
         return appRepo.findByUserIdAndStatus(userId,KeyConf.Status.ACTIVE);
     }
+
+    public String getOwnerIdByAppId(String appId){
+        
+        String ownerId = appRepo.findUserIdByAppId(appId); 
+        System.out.println(ownerId);
+        return ownerId;
+    }
 }

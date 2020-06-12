@@ -54,7 +54,7 @@ public class NotificationRestController {
             String teamId = deviceSetting.getTeamId();
             String fileKey = deviceSetting.getKeyId();
             String groupId = deviceSetting.getBundleId();
-            response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+p8file, teamId, fileKey, groupId, device.getToken(), title, message);
+            response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+p8file, teamId, fileKey, groupId, device.getToken(), title, message);
         }else if(KeyConf.PlatForm.ANDROID.equals(deviceSetting.getPlatform().getId()) ){
             response= notificationService.sendNotificationToFCM(deviceSetting.getAuthorizedKey(), device.getToken(),title,message);
         }
@@ -104,7 +104,7 @@ public class NotificationRestController {
                     logger.info(device.toString());
                     try {
                         //  notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+p8file, teamId, fileKey, groupId, device.getToken(), title, message);
-                        rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.P8FILEPATH+p8file,teamId,fileKey,groupId,device.getToken(),title,message));
+                        rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+p8file,teamId,fileKey,groupId,device.getToken(),title,message));
                     } catch (Exception e) {
                        logger.info("ERROR OCUR DURING REQUEST ");
                        System.out.println(e.getMessage());

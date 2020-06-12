@@ -67,6 +67,20 @@ public class DeviceService {
         return null;
     }
 
+
+
+    public Agent  getActiveDeviceByUserIdAndAppIdRaw(String userId,String appId){
+
+        List<Map<String,String>> maps = deviceRepo.findByUserIdAndAppIdRaw(userId, appId);
+        if(maps.size() > 0 ){
+             // Agent  agent =  gson.from (jsonElement, MyPojo.class);
+            ObjectMapper mapper = new ObjectMapper();
+            Agent agent = mapper.convertValue(maps.get(0), Agent.class);
+            return agent;
+        }
+        return null;
+    }
+
     public List<Map<String,String>>  getActiveDeviceByAppIdRaw(String appId){
 
         List<Map<String,String>> maps = deviceRepo.findByAppIdRaw(appId);

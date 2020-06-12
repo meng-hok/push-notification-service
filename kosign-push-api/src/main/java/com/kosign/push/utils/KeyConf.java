@@ -21,7 +21,8 @@ public interface KeyConf {
         public static String IOS = "1";
         public static String ANDROID = "2";
         public static String WEB= "3";
-        public static String P8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
+        public static String PUTP8FILEPATH = "kosign-push-api/src/main/resources/static/files";
+        public static String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
     }
 
     class RabbitMQ {

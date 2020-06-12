@@ -10,7 +10,7 @@ public class FileStorage {
 
     private static String serverPath = "/home/";
     private static String imagePath = "src/main/resources/static/images"; 
-    private static String filePath = KeyConf.PlatForm.P8FILEPATH; 
+    private static String filePath = KeyConf.PlatForm.PUTP8FILEPATH; 
     
     public static String uploadImage(MultipartFile files) throws Exception {
         String fileName = UUID.randomUUID() + "." + files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf(".") +  1);

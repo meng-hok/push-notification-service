@@ -44,45 +44,56 @@ public class PublicPushController {
     Logger logger = LoggerFactory.getLogger(PublicPushController.class);
     
     
-    // @PostMapping("/send/single")
-    // public Object send(String app_id, String receiver_id, String title,String message) {
-    //     try {
-    //           System.out.println(app_id + receiver_id);
-    //         Device device = deviceService.getActiveDeviceByDeviceIdAndAppId(receiver_id,app_id);
-    //         PlatformSetting deviceSetting = settingService.getActivePlatformConfiguredByAppIdAndPlatFormId(app_id, device.getPlatform().getId());
-    //         String response = null;
-    //         if(device.getPlatform().getId().equals(KeyConf.PlatForm.IOS)){
-    //             String p8file = deviceSetting.getPushUrl();
-    //             String teamId = deviceSetting.getTeamId();
-    //             String fileKey = deviceSetting.getKeyId();
-    //             String groupId = deviceSetting.getBundleId();
-    //             response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+p8file, teamId, fileKey, groupId, device.getToken(), title, message);
-    //         }else if(KeyConf.PlatForm.ANDROID.equals(deviceSetting.getPlatform().getId()) ){
-    //             response= notificationService.sendNotificationToFCM(deviceSetting.getAuthorizedKey(), device.getToken(),title,message);
-    //         }
-        
-    //         logger.info("[Device Response]");
-    //          // logger.info(device.toString());
+    
 
-    //         return Response.getResponseBody(KeyConf.Message.SUCCESS,new JSONObject(response).toMap() , true);
-    //     } catch (Exception e) {
-    //         return Response.getResponseBody(KeyConf.Message.FAIL,"Push notification fail" , false);
-    //     }
-      
-    // }
-
-    @PostMapping("/send/single")
-    public Object send(String app_id, String receiver_id, String title,String message) {
+    @PostMapping("/send/single/user")
+    public Object sendByUser(String app_id, String receiver_id, String title,String message) {
         try {
               System.out.println(app_id + receiver_id);
            
-              Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(receiver_id,app_id);
+              Agent agent = deviceService.getActiveDeviceByUserIdAndAppIdRaw(receiver_id, app_id);
            
             String response = null;
             
             if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
                
-                response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+                response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+               
+                logger.info("[ Response Sucess : APNS ]");
+                // logger.info(device.toString());
+   
+               return Response.getResponseBody(KeyConf.Message.SUCCESS,response , true);
+          
+            }else if(KeyConf.PlatForm.ANDROID.equals(agent.platform_id) ){
+
+                response= notificationService.sendNotificationToFCM(agent.authorized_key, agent.token,title,message);
+                logger.info("[ Response Sucess : FCM ]");
+                // logger.info(device.toString());
+   
+               return Response.getResponseBody(KeyConf.Message.SUCCESS,new JSONObject(response).toMap() , true);
+            }
+            
+            throw new Exception("Device Id not found");
+         
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
+        }
+      
+    }
+
+    @PostMapping("/send/single/device")
+    public Object sendByDevice(String app_id, String deviceId, String title,String message) {
+        try {
+            //   System.out.println(app_id + deviceId);
+           
+              Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(deviceId,app_id);
+           
+            String response = null;
+            
+            if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
+               
+                response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
                
                 logger.info("[ Response Sucess : APNS ]");
                 // logger.info(device.toString());
@@ -116,7 +127,7 @@ public class PublicPushController {
         for (Map<String,String> device : devices) {
             try{
                 if(KeyConf.PlatForm.IOS.equals(device.get("platform_id"))){
-                    notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+device.get("pfilename"),device.get("team_id"),device.get("file_key"), device.get("bundle_id"), device.get("token"), title, message);
+                    notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+device.get("pfilename"),device.get("team_id"),device.get("file_key"), device.get("bundle_id"), device.get("token"), title, message);
                 }else{
                     notificationService.sendNotificationToFCM(device.get("authorized_key"), device.get("token"),title,message);
                 }

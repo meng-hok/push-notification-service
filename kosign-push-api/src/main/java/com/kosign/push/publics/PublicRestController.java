@@ -80,6 +80,8 @@ public class PublicRestController {
                 return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
             }
     }
+
+    // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/create/fcm")
     public Object saveFcm(String appId,String authKey){
@@ -96,11 +98,21 @@ public class PublicRestController {
    
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("/devices/create")
-    public Object save(String deviceId,String platformId,String appId,String token){
+    public Object save(String appId,String deviceId,String userId,String platformId,String token){
         try {
-            Device device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
+            Device device;
+            if(deviceId != null ){
+                device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
+            }else if(userId != null ){
+                device = new Device(token,new Application(appId),new Platform(platformId),userId);
+            }else{
+                throw new Exception("Created Fail");
+            }
+           
             return Response.getResponseBody(KeyConf.Message.SUCCESS,  deviceService.saveDevice(device), true);
         } catch (Exception e) {
+            
+            System.out.println(e.getMessage());
             return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
         }
 
