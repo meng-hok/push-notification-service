@@ -78,4 +78,9 @@ public class HomeController {
         
       
     }
+    @ResponseBody
+    @GetMapping("/index/test")
+    public Object test(String deviceId,String appId){
+        return deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(deviceId, appId); 
+    }
 }

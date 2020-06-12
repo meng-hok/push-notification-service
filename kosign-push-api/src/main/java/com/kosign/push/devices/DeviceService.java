@@ -1,7 +1,14 @@
 package com.kosign.push.devices;
 
 import java.util.List;
+import java.util.Map;
 
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.kosign.push.messages.Agent;
 import com.kosign.push.utils.KeyConf;
 
 import org.slf4j.Logger;
@@ -46,5 +53,17 @@ public class DeviceService {
         Device _device = deviceRepo.save(device);
 
         return _device;
+    }
+
+    public Agent  getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId){
+
+        List<Map<String,String>> maps = deviceRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
+        if(maps.size() > 0 ){
+             // Agent  agent =  gson.from (jsonElement, MyPojo.class);
+            ObjectMapper mapper = new ObjectMapper();
+            Agent agent = mapper.convertValue(maps.get(0), Agent.class);
+            return agent;
+        }
+        return null;
     }
 }
