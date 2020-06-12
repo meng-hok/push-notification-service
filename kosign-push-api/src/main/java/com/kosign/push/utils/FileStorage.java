@@ -10,7 +10,7 @@ public class FileStorage {
 
     private static String serverPath = "/home/";
     private static String imagePath = "src/main/resources/static/images"; 
-    private static String filePath = "src/main/resources/static/files"; 
+    private static String filePath = KeyConf.PlatForm.P8FILEPATH; 
     
     public static String uploadImage(MultipartFile files) throws Exception {
         String fileName = UUID.randomUUID() + "." + files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf(".") +  1);
@@ -19,7 +19,14 @@ public class FileStorage {
         return fileName;
     }
     public static String uploadFile(MultipartFile files) throws Exception {
-        String fileName = UUID.randomUUID() + "." + files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf(".") +  1);
+        String extension = files.getOriginalFilename().substring(files.getOriginalFilename().lastIndexOf(".") +  1);
+        String fileName = "";
+        if (extension.equals("p8")) {
+            fileName=  UUID.randomUUID() + "." + extension;
+        }else{
+            throw new Exception("Invalid File Extension");
+        }
+       
         Files.copy(files.getInputStream(), Paths.get(filePath,fileName));
         return fileName;
     }

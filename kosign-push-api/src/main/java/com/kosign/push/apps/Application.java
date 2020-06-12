@@ -3,6 +3,7 @@ package com.kosign.push.apps;
 import java.sql.Date;
 import java.sql.Timestamp;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -11,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kosign.push.users.User;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -30,7 +32,8 @@ public class Application {
 
     private String name;
 
-    @ManyToOne
+    @JsonIgnore
+    @ManyToOne(optional = true)
     private User user;
     
     @CreationTimestamp

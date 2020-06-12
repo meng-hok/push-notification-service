@@ -1,5 +1,6 @@
 package com.kosign.push.apps;
 
+import java.security.Key;
 import java.util.List;
 
 import com.kosign.push.utils.KeyConf;
@@ -21,8 +22,7 @@ public class AppService {
         return appRepo.findByStatus(KeyConf.Status.ACTIVE);
     }
     
-    public List<Application> getAllAppsByProjectId(Integer id){
-        // return appRepo.findByProjectIdAndStatus(id,KeyConf.Status.ACTIVE);
-        return null;
+    public List<Application> getActiveAppsByUserId(String userId){
+        return appRepo.findByUserIdAndStatus(userId,KeyConf.Status.ACTIVE);
     }
 }

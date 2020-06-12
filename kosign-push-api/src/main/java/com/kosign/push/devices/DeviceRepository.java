@@ -35,5 +35,11 @@ public interface DeviceRepository extends JpaRepository<Device,String> {
                                         "ON d.platform_id = p_s.id \n"+
                                         "WHERE d.device_id = :deviceId AND app_id = :appId AND d.status = '1' LIMIT 1")
 	List<Map<String,String>> findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId,@Param("appId") String appId);
+    
+    @Query(nativeQuery = true, value = "SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n"+
+                                        "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n"+
+                                        "ON d.platform_id = p_s.id \n"+
+                                        "WHERE  app_id = :appId AND d.status = '1'")
+	List<Map<String, String>> findByAppIdRaw(@Param("appId")String appId);
 
 }

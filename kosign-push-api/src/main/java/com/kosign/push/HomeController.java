@@ -38,13 +38,6 @@ public class HomeController {
     //     return "components/home";
     // }
   
-    @GetMapping("/projects/{projectId}")
-    public String project(@PathVariable("projectId")Integer projectId ,Model model){
-        List<Application> apps = appService.getAllAppsByProjectId(projectId);
-        model.addAttribute("APPLICATIONS", apps);
-        logger.info("[ResponseApp Amount : "+apps.size() + " ]"  );
-        return "components/app";
-    }
 
     @GetMapping("/form/projects")
     public String project(){

@@ -1,4 +1,8 @@
 package com.kosign.push.publics;
+import java.util.List;
+import java.util.Map;
+
+import com.google.gson.Gson;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.messages.APNS;
@@ -101,5 +105,34 @@ public class PublicPushController {
             return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
         }
       
+    }
+
+    @PostMapping("/send/all")
+    public Object send(String app_id, String title,String message) {
+        Integer success=0;
+        Integer fail=0;
+        List<Map<String,String>> devices = deviceService.getActiveDeviceByAppIdRaw(app_id);
+        
+        for (Map<String,String> device : devices) {
+            try{
+                if(KeyConf.PlatForm.IOS.equals(device.get("platform_id"))){
+                    notificationService.sendNotificationToIOS(KeyConf.PlatForm.P8FILEPATH+device.get("pfilename"),device.get("team_id"),device.get("file_key"), device.get("bundle_id"), device.get("token"), title, message);
+                }else{
+                    notificationService.sendNotificationToFCM(device.get("authorized_key"), device.get("token"),title,message);
+                }
+                ++success;
+            }catch(Exception e){
+                logger.info("Error Message");
+                System.out.println(e.getMessage());
+                ++fail;
+            }
+        }
+
+        // devices.forEach(device -> {
+           
+           
+        // });
+        
+        return Response.getResponseBody(success.toString(),fail.toString(), true);
     }
 }

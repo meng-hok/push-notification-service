@@ -1,17 +1,32 @@
 package com.kosign.push.utils;
 
 import com.kosign.push.platforms.Platform;
+import com.kosign.push.users.UserDetail;
+
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 public class GlobalMethod {
     
    public static Platform getAndroid () {
       return new Platform(KeyConf.PlatForm.ANDROID);
    }
-   public static Platform getIos () {
-    return new Platform(KeyConf.PlatForm.IOS);
- }
-  
- public static Platform getBrowser() {
-    return new Platform(KeyConf.PlatForm.WEB);
- }
+      public static Platform getIos () {
+      return new Platform(KeyConf.PlatForm.IOS);
+   }
+   
+   public static Platform getBrowser() {
+      return new Platform(KeyConf.PlatForm.WEB);
+   }
+
+   public static UserDetail getUserCredential(){
+      try {
+         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+         UserDetail userDetail = (UserDetail)authentication.getPrincipal();
+         return userDetail;
+      } catch (Exception e) {
+         return null;
+      }
+   }
 }

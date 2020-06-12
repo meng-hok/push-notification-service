@@ -49,7 +49,7 @@ public class UserService implements UserDetailsService {
             */
             // String []roles = user.getRole().split(",");            
             // SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_USER")
-            return new UserDetail(user.getUsername(),user.getPassword(), Arrays.asList(new SimpleGrantedAuthority("ROLE_USER")));
+            return new UserDetail(user);
         }
         
     }

@@ -3,12 +3,15 @@ package com.kosign.push.apps;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
 public interface AppRepository extends JpaRepository<Application,String>{
 
 	public List<Application> findByStatus(Character status);
+
+	public List<Application> findByUserIdAndStatus(@Param("userId")String userId,@Param("active")Character active);
 
 	// public List<Application> findByProjectIdAndStatus(String id, Character aCTIVE);
     

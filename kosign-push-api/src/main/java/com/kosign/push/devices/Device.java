@@ -31,7 +31,8 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.AUTO )
     @Id
     private Integer id;
-
+   
+    private String userId;
     private String deviceId;
     private String token;
     

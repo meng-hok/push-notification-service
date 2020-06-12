@@ -66,4 +66,10 @@ public class DeviceService {
         }
         return null;
     }
+
+    public List<Map<String,String>>  getActiveDeviceByAppIdRaw(String appId){
+
+        List<Map<String,String>> maps = deviceRepo.findByAppIdRaw(appId);
+        return maps;
+    }
 }

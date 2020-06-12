@@ -44,9 +44,17 @@ public class AuthorizationConfiguration extends AuthorizationServerConfigurerAda
         clients.inMemory()
                 .withClient(authName)
                 .secret(password.encode(authPassword))
-                .scopes("read")
+                .scopes("READ")
                 .authorizedGrantTypes("password","refresh_token")
                 .authorities("USER")
+                .accessTokenValiditySeconds(1000)
+                .refreshTokenValiditySeconds(1200)
+                .and()
+                .withClient("test")
+                .secret(password.encode("test"))
+                .scopes("TEST")
+                .authorizedGrantTypes("password","refresh_token")
+                .authorities("ADMIN")
                 .accessTokenValiditySeconds(1000)
                 .refreshTokenValiditySeconds(1200);
     }
