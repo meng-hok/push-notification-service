@@ -1,3 +1,6 @@
+# Ignore yml applicaiton
+**/*.yml
+
 *.class
 
 # Mobile Tools for Java (J2ME)
