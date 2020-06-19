@@ -34,11 +34,6 @@ public class NotificationController {
     @Autowired
     private DeviceService deviceService;
 
-    @GetMapping("/home")
-    public String home(){
-        notificationService.sendNotification();
-        return "welcome";
-    }
 
     @GetMapping("/send/{userId}")
     public String send(@PathVariable("userId")Integer userId){

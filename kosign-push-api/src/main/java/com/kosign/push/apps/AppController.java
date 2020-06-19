@@ -1,7 +1,9 @@
 package com.kosign.push.apps;
 
+import com.kosign.push.users.User;
 import com.kosign.push.utils.FileStorage;
 
+import com.kosign.push.utils.GlobalMethod;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
@@ -11,8 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-@Controller
-@RequestMapping("/apps")
+//@Controller
+//@RequestMapping("/apps")
 public class AppController {
     
     @Autowired
@@ -23,6 +25,7 @@ public class AppController {
     public Object create(String name){
         Application app = new Application();
         app.setName(name);
+        app.setUser(new User(GlobalMethod.getUserCredential().getId()));
         return appService.save(app);
         //  "redirect:/form/users";
     }

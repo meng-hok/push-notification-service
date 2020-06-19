@@ -3,16 +3,20 @@ package com.kosign.push.apps;
 import java.security.Key;
 import java.util.List;
 
+import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.KeyConf;
 
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
+@AllArgsConstructor
 @Service
 public class AppService {
     
-    @Autowired
+
     private AppRepository appRepo;
+
+    private PlatformSettingService platformSettingService;
 
     public Application save(Application app){
         return appRepo.save(app);
@@ -31,5 +35,11 @@ public class AppService {
         String ownerId = appRepo.findUserIdByAppId(appId); 
         System.out.println(ownerId);
         return ownerId;
+    }
+
+    public String getAuthorizedKeyByAppId(String appId){
+
+        String authorizedKey = platformSettingService.getFcmAuthorizedKeyByAppId(appId);
+        return authorizedKey;
     }
 }

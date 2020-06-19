@@ -4,10 +4,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+
 @AllArgsConstructor
 @Data
 @ToString
+//@Entity
 public class Agent {
+    @Id
+    public String id;
     public String app_id;
     public String platform_id;
     public String device_id;

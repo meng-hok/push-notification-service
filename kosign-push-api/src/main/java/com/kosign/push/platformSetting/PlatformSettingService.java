@@ -32,6 +32,10 @@ public class PlatformSettingService {
         return platform;
     }
 
+    public String getFcmAuthorizedKeyByAppId(String appId){
+        return settingRepo.findAuthorizedKeyByAppIdAndPlatFormRaw(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
+    }
+
     public PlatformSetting saveApns(String appId, String file, String fileKey, String teamId, String bundleId){
         PlatformSetting _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new Application(appId),fileKey,teamId,bundleId,file);
         return settingRepo.save(_platformSetting);

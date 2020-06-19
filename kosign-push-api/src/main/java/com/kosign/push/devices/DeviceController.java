@@ -24,5 +24,12 @@ public class DeviceController {
        return deviceService.saveDevice(device);
     }
 
+    @PostMapping("/test")
+    public Object display(String deviceId,String appId){
+
+
+        return  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(deviceId,appId);
+    }
+
 
 }

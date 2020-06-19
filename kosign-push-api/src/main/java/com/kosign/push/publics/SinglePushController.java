@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/public/notifications")
-public class PublicPushController {
+public class SinglePushController {
    
     @Autowired
     private NotificationService notificationService;
@@ -41,7 +41,7 @@ public class PublicPushController {
     @Autowired 
     private RabbitSender rabbitSender;
 
-    Logger logger = LoggerFactory.getLogger(PublicPushController.class);
+    Logger logger = LoggerFactory.getLogger(SinglePushController.class);
     
     
     
@@ -146,4 +146,5 @@ public class PublicPushController {
         
         return Response.getResponseBody(success.toString(),fail.toString(), true);
     }
+
 }

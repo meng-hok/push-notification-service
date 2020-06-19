@@ -7,6 +7,7 @@ import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.aspectj.lang.annotation.Pointcut;
@@ -30,7 +31,7 @@ public class SpelAddition  {
     // @Pointcut("@args(* com.kosign.push.publics.PublicRestController.*(..)) && !execution(* com.kosign.push.publics.PublicRestController.create(..))  and args(appId,..) ")
     // private void selectAll(){}
     
-    @Before("execution(* com.kosign.push.publics.PublicRestController.*(..)) && !execution(* com.kosign.push.publics.PublicRestController.create(..))  and args(appId,..) ")
+    @Before("execution(* com.kosign.push.publics.PublicController.*(..)) && !execution(* com.kosign.push.publics.PublicController.create(..))  and args(appId,..) ")
     public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
         
         logger.info("AOP Before method:" + joinPoint.getSignature());
@@ -50,16 +51,12 @@ public class SpelAddition  {
             throw e;
         }
 	}
-   
 
-    // public boolean isOwner(String userId,String appId){
-         
-    //     if(userId.equals(appService.getOwnerIdByAppId(appId))){
-    //         return true;
-    //      }else{
-    //         return false;
-    //      }
-            
-            
-    // }
+    @Before("execution(* com.kosign.push.*.*.*(..)) ")
+    public void beforeAllMethod (JoinPoint joinPoint){
+        final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
+        logger.info("[ "+joinPoint.getSignature().getName()+" starts ]");
+
+    }
+
 }

@@ -25,6 +25,11 @@ public interface KeyConf {
         public static String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
     }
 
+    class Agent {
+
+        public static Character APNS = '1';
+        public static Character FCM = '2';
+    }
     class RabbitMQ {
         
 

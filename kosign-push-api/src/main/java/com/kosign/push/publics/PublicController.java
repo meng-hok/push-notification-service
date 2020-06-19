@@ -11,6 +11,7 @@ import com.kosign.push.devices.DeviceService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
+import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
@@ -26,11 +27,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
-
+/**
+ *  All Methods within this class is secured by Aspect class
+ *  1. appId ownership
+ * */
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/public")
-public class PublicRestController {
+public class PublicController {
    
     @Autowired
     private AppService appService;
@@ -58,6 +62,7 @@ public class PublicRestController {
         try {
             Application app = new Application();
             app.setName(name);
+            app.setUser(new User(GlobalMethod.getUserCredential().getId()));
             return Response.getResponseBody(KeyConf.Message.SUCCESS, appService.save(app), true);
         } catch (Exception e) {
             return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);

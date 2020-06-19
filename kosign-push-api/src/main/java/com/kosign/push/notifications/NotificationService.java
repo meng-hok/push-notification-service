@@ -49,25 +49,37 @@ public class NotificationService {
     private DeviceService deviceService;
     @Autowired
     RabbitSender rabbitSender;
-    
-    
 
-    public static String myKey = "c7lEKFLhByY:APA91bEl6tzsfSkBxEsrXH8LaCT3MtdRii5zgEPisJ0isAUBnE9x5RoN3k4yAuWi-eRo_-isMdoebmqiWMDpn-S9wwROVAIMFxbwsYOO53hDXRGab86xwqIWBtI-D6CVbWqOFWDXv_kp";
+    @RabbitListener(queues = "pusher.queue.fcm")
+    public void sendNotificationByFCM(FCM fcm){
+        System.out.println("Response Message from " + fcm);
+        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+    }
 
-    public void sendNotification() {
-        HttpClient httpClient = FirebaseUtil.getHttpClientWithFirebaseHeader();
-        JSONObject json = new JSONObject();
-        json.put("body", "Body of Your Notification");
-        json.put("title", "Good morning Menghok");
+    @RabbitListener(queues = "pusher.queue.fcm")
+    public void sendNotificationByFCMSupport(FCM fcm){
+        System.out.println("Response Message from " + fcm);
+        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+    }
 
+    @RabbitListener(queues = "pusher.queue.apns")
+    public void sendNotificationByAPNS(APNS apns) {
+        System.out.println("Response Message from  " + apns);
         try {
-            JSONObject notificatedService = FirebaseUtil.getNotificationBody(myKey, json);
-            httpClient.post(FirebaseUtil.FIREBASE_API_URL, notificatedService.toString());
+            this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
         } catch (Exception e) {
-            logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
         }
-
+    }
+    @RabbitListener(queues = "pusher.queue.apns")
+    public void sendNotificationByAPNSSupport(APNS apns)  {
+        System.out.println("Response Message from " + apns);
+        // System.out.println("Message read from myQueue APNS: " + apns);
+        try {
+            this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+        }
     }
 
 
@@ -90,6 +102,7 @@ public class NotificationService {
             logger.info(jsonResult.toString());
             
             Integer result = (Integer)jsonResult.get("success");
+
             org.json.JSONArray strResult = (org.json.JSONArray)jsonResult.get("results");
             historyService.saveHistory(new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString()));
             return jsonResult.toString();
@@ -148,39 +161,7 @@ public class NotificationService {
         });
 
     }
-    @RabbitListener(queues = "pusher.queue.fcm")
-    public void sendNotificationByFCM(FCM fcm){
-        System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
-    }
 
-    @RabbitListener(queues = "pusher.queue.fcm")
-    public void sendNotificationByFCMSupport(FCM fcm){
-        System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
-    }
 
-    @RabbitListener(queues = "pusher.queue.apns")
-    public void sendNotificationByAPNS(APNS apns) {
-        System.out.println("Response Message from  " + apns);
-        try {
-             this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-        }
-    }     
-    @RabbitListener(queues = "pusher.queue.apns")
-    public void sendNotificationByAPNSSupport(APNS apns)  {
-        System.out.println("Response Message from " + apns);
-        // System.out.println("Message read from myQueue APNS: " + apns);
-        try {
-             this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-        }
-    }
-    // @RabbitListener(queues = "pusher.queue.apns")
-    // public void sendNotificatisdaonByAPNS(String token){
-    //     System.out.println("Message read from myQueuasdasdasdasdsade APNS: " + token);
-    // }
+
 }

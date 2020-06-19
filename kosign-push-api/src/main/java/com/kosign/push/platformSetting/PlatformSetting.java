@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import com.kosign.push.apps.Application;
 import com.kosign.push.platforms.Platform;
 
+import com.kosign.push.utils.KeyConf;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -38,7 +39,7 @@ public class PlatformSetting {
     private String teamId;
     private String bundleId;
     private String pushUrl;
-    private Character status='1';
+    private Character status= KeyConf.Status.ACTIVE;
     @CreationTimestamp
     private Timestamp registeredAt;
     @UpdateTimestamp
