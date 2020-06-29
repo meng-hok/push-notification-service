@@ -11,5 +11,8 @@ public interface TopicRepository extends JpaRepository<Topic,String> {
 
     List<Topic>  findByNameAndApplicationId(String topicName, String appId);
 
-    List<Topic> findAllByApplicationIdAndNameAndStatus(String appId, String topicName, Character active);
+    /* unique constraint*/
+    Topic findAllByApplicationIdAndNameAndStatus(String appId, String topicName, Character active);
+
+    Topic findByNameAndApplicationIdAndAgentAndStatus(String topicName, String appId, Character apns, Character status);
 }

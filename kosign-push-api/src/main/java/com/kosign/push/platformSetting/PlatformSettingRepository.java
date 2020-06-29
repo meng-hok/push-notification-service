@@ -12,7 +12,7 @@ public interface PlatformSettingRepository extends JpaRepository<PlatformSetting
 
 	public List<PlatformSetting> findByApplicationIdAndStatus(String appId, Character status);
 
-	public PlatformSetting findByApplicationIdAndPlatformId(String appId, String platformId);
+	public PlatformSetting findByApplicationIdAndPlatformIdAndStatus(String appId, String platformId, Character status);
 
 	@Query(nativeQuery=true,value = "SELECT authorized_key FROM ps_platform_setting WHERE application_id = :appId AND platform_id = :platformId AND status = :status LIMIT 1 ")
 	public String findAuthorizedKeyByAppIdAndPlatFormRaw(@Param("appId") String appId,@Param("platformId") String platformId,@Param("status") Character status);

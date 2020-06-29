@@ -1,14 +1,13 @@
 package com.kosign.push.devices;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import com.kosign.push.mybatis.MyBatisRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.kosign.push.messages.Agent;
+import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.KeyConf;
 
 import org.slf4j.Logger;
@@ -22,6 +21,8 @@ public class DeviceService {
     private Logger logger = LoggerFactory.getLogger(DeviceService.class);
     @Autowired
     private DeviceRepository deviceRepo;
+    @Autowired
+    private MyBatisRepository myBatisRepository;
     
     public List<Device> getDevicesByUserId(Integer userId){
     //    return deviceRepo.findByUserIdAndStatus(userId, KeyConf.Status.ACTIVE);
@@ -79,6 +80,12 @@ public class DeviceService {
             return agent;
         }
         return null;
+    }
+
+    public List<Agent> getActiveDevicesByDeviceIdListAndAppId(ArrayList<String> deviceUniqueIdList , String appId ) {
+
+        return  myBatisRepository.findByDeviceIdListAndAppIdRaw(deviceUniqueIdList,appId);
+
     }
 
     public List<Map<String,String>>  getActiveDeviceByAppIdRaw(String appId){

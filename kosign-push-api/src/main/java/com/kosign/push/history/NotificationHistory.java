@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import com.kosign.push.apps.Application;
 import com.kosign.push.users.User;
 
+import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -26,7 +27,7 @@ import lombok.Data;
 @Table(name ="ps_history")
 @Entity
 public class NotificationHistory {
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private Integer id;
     private String appId;
@@ -38,6 +39,7 @@ public class NotificationHistory {
     @Column(length = 8)
     private String status;
     private String responseMsg;
+    @ColumnDefault(value = "now()")
     @CreationTimestamp
     private Timestamp createdAt;
 

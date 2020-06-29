@@ -32,7 +32,7 @@ public class AppService {
 
     public String getOwnerIdByAppId(String appId){
         
-        String ownerId = appRepo.findUserIdByAppId(appId); 
+        String ownerId = appRepo.findUserIdByAppId(appId,KeyConf.Status.ACTIVE);
         System.out.println(ownerId);
         return ownerId;
     }
@@ -41,5 +41,31 @@ public class AppService {
 
         String authorizedKey = platformSettingService.getFcmAuthorizedKeyByAppId(appId);
         return authorizedKey;
+    }
+
+    public Application getActiveAppDetail(String appId) {
+
+       return appRepo.findByIdAndStatus(appId,KeyConf.Status.ACTIVE);
+
+    }
+
+    public Boolean disableApplication(String appId ) {
+        Application application = getActiveAppDetail(appId);
+        if(application == null ){
+            return false;
+        }
+        application.setStatus(KeyConf.Status.DISABLED);
+        appRepo.save(application);
+        return true;
+    }
+
+    public Boolean updateApplication(String appId, String name) throws Exception {
+        Application application = getActiveAppDetail(appId);
+        if(application == null ){
+            return false;
+        }
+        application.setName(name);
+        appRepo.save(application);
+        return true;
     }
 }

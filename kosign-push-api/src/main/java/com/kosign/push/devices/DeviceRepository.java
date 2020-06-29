@@ -3,16 +3,10 @@ package com.kosign.push.devices;
 import java.util.List;
 import java.util.Map;
 
-import com.kosign.push.messages.Agent;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import javax.persistence.ColumnResult;
-import javax.persistence.ConstructorResult;
-import javax.persistence.SqlResultSetMapping;
 
 @Repository
 public interface DeviceRepository extends JpaRepository<Device,String> {

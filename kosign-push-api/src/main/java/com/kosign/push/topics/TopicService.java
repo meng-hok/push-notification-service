@@ -1,34 +1,31 @@
 package com.kosign.push.topics;
 
-import com.google.firebase.FirebaseApp;
-import com.google.firebase.cloud.FirestoreClient;
-import com.google.firebase.messaging.FirebaseMessaging;
 import com.kosign.push.apps.AppService;
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
+import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.notifications.utils.TopicUtil;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
-import com.kosign.push.topics.abstracts.TopicMethod;
-import com.kosign.push.users.User;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.HttpClient;
 import com.kosign.push.utils.KeyConf;
-import lombok.AllArgsConstructor;
+import com.kosign.push.utils.RabbitSender;
 import org.json.JSONObject;
+import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.jar.JarEntry;
 
 //@AllArgsConstructor
 @Service
-public class TopicService implements TopicMethod {
+public class TopicService {
 
     private TopicRepository topicRepository;
 
@@ -37,6 +34,9 @@ public class TopicService implements TopicMethod {
     private AppService appService;
 
     private PlatformSettingService platformSettingService;
+
+    @Autowired
+    private RabbitSender rabbitSender;
 
     public TopicService(TopicRepository topicRepository, DeviceService deviceService, AppService appService,PlatformSettingService platformSettingService) {
         this.topicRepository = topicRepository;
@@ -47,8 +47,13 @@ public class TopicService implements TopicMethod {
 
     Logger logger = LoggerFactory.getLogger(TopicService.class);
 
+//    public Logger myLogger() {
+//
+//        return LoggerFactory.getLogger(TopicService.class);
+//    }
+//
 
-    public List<Topic>  getTopicDetailByAppIdAndTopicName(String appId, String topicName) {
+    public Topic  getTopicDetailByAppIdAndTopicName(String appId, String topicName) {
         return topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
     }
     public List<Topic> getActiveTopicsByAppId(String AppId){
@@ -56,28 +61,41 @@ public class TopicService implements TopicMethod {
     }
 
 
-
-    public JSONObject sendTo(String appId, String topicName, String title, String message) throws Exception {
-
-        String authKey = platformSettingService.getFcmAuthorizedKeyByAppId(appId);
-//        String authKey = FirebaseUtil.FIREBASE_SERVER_KEY;
-        HttpClient httpClient =  TopicUtil.getGroupTopicHeader(authKey);
-        JSONObject jBody = new JSONObject();
-//        jBody.put("to","/topics/"+topicName);
-        jBody.put("body", message);
-        jBody.put("title", title);
-
-        JSONObject notificatedService = TopicUtil.getNotificationBody(topicName, jBody);
-        logger.info("[ Request to FCM with body ]");
-        System.out.println(notificatedService);
-        return httpClient.post(FirebaseUtil.FIREBASE_API_URL,notificatedService.toString());
-
+    public Object registerTopic(String appId,String topicName) throws PSQLException {
+        Topic topic =new Topic();
+        topic.setApplication(new Application(appId));
+        topic.setName(topicName);
+        return topicRepository.save(topic);
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    public Topic subscribeUserToTopic(String appId,String topicName,List<Device> devices){
+        Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+        if(topic == null ){
+            return null;
+        }
+        topic.setDevice(devices);
+        topicRepository.save(topic);
+
+        return topic;
+    }
+
+
+    @Transactional(rollbackOn = Exception.class)
+    public Object unsubscribeUserFromTopic(String appId, String topicName, ArrayList<Device> devices) {
+        Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+//        List<TopicDevice> topicDevices = getTopicDetailByAppIdAndTopicName();
+        return null;
+    }
+
+
+    /*
+     * Statuc work
+     * */
     public Object unsubscribed(String authKey, String token, String topicName) throws  Exception{
         authKey = FirebaseUtil.FIREBASE_SERVER_KEY;
         List<String> users = new ArrayList<>();
-        users.add("c7lEKFLhByY:APA91bEl6tzsfSkBxEsrXH8LaCT3MtdRii5zgEPisJ0isAUBnE9x5RoN3k4yAuWi-eRo_-isMdoebmqiWMDpn-S9wwROVAIMFxbwsYOO53hDXRGab86xwqIWBtI-D6CVbWqOFWDXv_kp");
+//        users.add("c7lEKFLhByY:APA91bEl6tzsfSkBxEsrXH8LaCT3MtdRii5zgEPisJ0isAUBnE9x5RoN3k4yAuWi-eRo_-isMdoebmqiWMDpn-S9wwROVAIMFxbwsYOO53hDXRGab86xwqIWBtI-D6CVbWqOFWDXv_kp");
         HttpClient httpClient =  TopicUtil.getGroupTopicHeader(authKey);
         JSONObject jBody = new JSONObject();
         jBody.put("to","/topics/"+topicName);
@@ -85,7 +103,9 @@ public class TopicService implements TopicMethod {
         return httpClient.post(TopicUtil.TOPIC_MULTI_UNSUBSCRIBE_URL,jBody.toString());
 
     }
-
+    /*
+     * Dynasmic work
+     * */
     @Transactional(rollbackOn = Exception.class)
     public List<Topic> createByTopicNameAndAppId(String topicName , String appId) throws Exception{
         try{
@@ -108,7 +128,7 @@ public class TopicService implements TopicMethod {
                 String authKey = appService.getAuthorizedKeyByAppId(appId);
 
                 logger.info("[ Request for FCM Subscribe... ]");
-                Object obj = this.subscribeManyUsers(authKey,topicName,token);
+                Object obj = TopicUtil.subscribeManyUsers(authKey,topicName,token);
 
                 logger.info("[ Response for FCM Subscribe... ]");
                 System.out.println(obj);
@@ -154,40 +174,45 @@ public class TopicService implements TopicMethod {
         }
     }
 
+    /*
+    * MAIN method
+    *  1. call sendToFCM
+    *  2. call sentToApns
+    * */
+    public JSONObject sendTo(String appId, String topicName, String title, String message) throws Exception {
+        sendToFCM(appId, topicName, title, message);
+        sentToApns(appId, topicName, title, message);
+        return null;
+    }
 
-    public Object subscribeManyUsers(String authKey, String topicName , List<String> token) throws Exception {
-        /*
-            Subscribe to topic
-        *
-        **/
-//        authKey = FirebaseUtil.FIREBASE_SERVER_KEY;
-//        users = new ArrayList<String>();
-//        users.add("c7lEKFLhByY:APA91bEl6tzsfSkBxEsrXH8LaCT3MtdRii5zgEPisJ0isAUBnE9x5RoN3k4yAuWi-eRo_-isMdoebmqiWMDpn-S9wwROVAIMFxbwsYOO53hDXRGab86xwqIWBtI-D6CVbWqOFWDXv_kp");
+    public Object sentToApns(String appId, String topicName, String title, String message){
+        PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
+        /* Android including **/
+       Topic topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
+       List<Device> devices =  topic.getDevice();
+
+       devices.forEach(device -> {
+           //otificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+            //(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
+           rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
+       });
+
+       return topic;
+    }
+
+    public Object sendToFCM(String appId, String topicName, String title, String message)throws Exception {
+        String authKey = platformSettingService.getFcmAuthorizedKeyByAppId(appId);
+
         HttpClient httpClient =  TopicUtil.getGroupTopicHeader(authKey);
         JSONObject jBody = new JSONObject();
-        jBody.put("to","/topics/"+topicName);
-        jBody.put("registration_tokens",token);
-        httpClient.post(TopicUtil.TOPIC_MULTI_SUBSCRIBE_URL,jBody.toString());
-        return httpClient;
-    }
 
-    @Override
-    public Topic subscribe(String authKey, String token, String topicName) {
-        return null;
-    }
+        jBody.put("body", message);
+        jBody.put("title", title);
 
-    @Override
-    public Topic unsubscribe(String authKey, String token, String topicName) {
-        return null;
-    }
-    @Override
-    public Topic getAllTopics() {
-        return null;
-    }
-
-    @Override
-    public Topic findTopicByName(String topic) {
-        return null;
+        JSONObject notificatedService = TopicUtil.getNotificationBody(topicName, jBody);
+        logger.info("[ Request to FCM with body ]");
+        System.out.println(notificatedService);
+        return httpClient.post(FirebaseUtil.FIREBASE_API_URL,notificatedService.toString());
     }
 
 

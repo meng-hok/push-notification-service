@@ -1,0 +1,17 @@
+ CREATE EXTENSION tablefunc;
+
+CREATE OR REPLACE VIEW vw_read_application_detail_by_app_id as
+	SELECT * FROM crosstab(
+		$$
+					SELECT app_id as application ,CASE
+					WHEN platform_id = '1' THEN  'ios'
+					WHEN platform_id = '2' THEN  'android'
+					WHEN platform_id = '3' THEN  'web' end as platform
+					, count(*) as counter FROM ps_device_client group by app_id , platform_id ORDER BY 1,2
+
+		$$,$$
+		     VALUES ('ios'::text),('android'), ('web')
+
+		$$
+
+	)AS application_detail(application varchar, "ios" int, "android" int , "web" int);

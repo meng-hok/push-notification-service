@@ -15,6 +15,7 @@ public class NotificationHistoryService {
     private Logger logger = LoggerFactory.getLogger(NotificationHistoryService.class);
 
     public void saveHistory (NotificationHistory history){
+
         historyRepo.save(history);
     }
 

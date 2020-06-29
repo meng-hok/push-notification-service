@@ -3,6 +3,8 @@ package com.kosign.push.notifications.utils;
 import com.kosign.push.utils.HttpClient;
 import org.json.JSONObject;
 
+import java.util.List;
+
 public class TopicUtil {
 
 //    public static final String FIREBASE_TOPIC_API_URL = "https://iid.googleapis.com/iid/v1/%3CREGISTRATION_TOKEN%3E/rel/topics/%3CTOPIC_NAME%3E";
@@ -43,4 +45,18 @@ public class TopicUtil {
         // body.put("data", getNotificationJsonForm(requestBody));
         return body;
     }
+    public static JSONObject subscribeManyUsers(String authKey, String topicName , List<String> token) throws Exception {
+        /*
+            Subscribe to topic
+        *
+        **/
+
+        HttpClient httpClient =  TopicUtil.getGroupTopicHeader(authKey);
+        JSONObject jBody = new JSONObject();
+        jBody.put("to","/topics/"+topicName);
+        jBody.put("registration_tokens",token);
+        return httpClient.post(TopicUtil.TOPIC_MULTI_SUBSCRIBE_URL,jBody.toString());
+
+    }
+
 }

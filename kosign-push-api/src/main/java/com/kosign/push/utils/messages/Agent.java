@@ -1,10 +1,8 @@
-package com.kosign.push.messages;
+package com.kosign.push.utils.messages;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import javax.persistence.Entity;
 import javax.persistence.Id;
 
 @AllArgsConstructor

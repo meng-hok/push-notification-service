@@ -13,15 +13,14 @@ import com.eatthepath.pushy.apns.util.ApnsPayloadBuilder;
 import com.eatthepath.pushy.apns.util.SimpleApnsPayloadBuilder;
 import com.eatthepath.pushy.apns.util.SimpleApnsPushNotification;
 import com.eatthepath.pushy.apns.util.concurrent.PushNotificationFuture;
-import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.history.NotificationHistoryService;
-import com.kosign.push.messages.APNS;
-import com.kosign.push.messages.FCM;
+import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.utils.messages.FCM;
+import com.kosign.push.mybatis.MyBatisRepository;
 import com.kosign.push.notifications.utils.APNsUtil;
 import com.kosign.push.notifications.utils.FirebaseUtil;
-import com.kosign.push.users.User;
 import com.kosign.push.utils.HttpClient;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.RabbitSender;
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -49,11 +47,13 @@ public class NotificationService {
     private DeviceService deviceService;
     @Autowired
     RabbitSender rabbitSender;
-
+    @Autowired
+    MyBatisRepository myBatisRepository;
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCM(FCM fcm){
         System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+         this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+//        return  historyService.saveHistory(new NotificationHistory());
     }
 
     @RabbitListener(queues = "pusher.queue.fcm")
@@ -82,8 +82,11 @@ public class NotificationService {
         }
     }
 
-
-    public String sendNotificationToFCM(String appAuthorizedKey, String userToken,String title ,String message) {
+    /*
+    * return object will be saved by Aspect
+    *
+    * */
+    public NotificationHistory sendNotificationToFCM(String appAuthorizedKey, String userToken,String title ,String message) {
         HttpClient httpClient = FirebaseUtil.getHttpClientWithFirebaseHeader(appAuthorizedKey);
 
         JSONObject json = new JSONObject();
@@ -102,56 +105,81 @@ public class NotificationService {
             logger.info(jsonResult.toString());
             
             Integer result = (Integer)jsonResult.get("success");
-
             org.json.JSONArray strResult = (org.json.JSONArray)jsonResult.get("results");
-            historyService.saveHistory(new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString()));
-            return jsonResult.toString();
+
+            logger.info(strResult.toString());
+
+            NotificationHistory history = new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
+
+
+            myBatisRepository.insertHistory(history);
+            return history;
+
         } catch (Exception e) {
-            // TODO: handle exception
+
             logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
-            historyService.saveHistory(new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage()));
-            return e.getMessage();
+             NotificationHistory historyException = new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage());
+            myBatisRepository.insertHistory(historyException);
+
+
+            return historyException;
         }
 
     }
 
- 
+
+
+    /*
+     * return object will be saved by Aspect
+     *
+     * */
     public String sendNotificationToIOS(String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody) throws InterruptedException, ExecutionException, InvalidKeyException,
             SSLException, NoSuchAlgorithmException, IOException {
-        final ApnsClient apnsClient = APNsUtil.getApnsCredentials(p8file,teamId,fileKey);
-        
-        ApnsPayloadBuilder payloadBuilder = new SimpleApnsPayloadBuilder();
-        payloadBuilder.setAlertBody(msgBody);
-        payloadBuilder.setAlertTitle(msgTitle);
-        final String payload = payloadBuilder.build();
-        
-        logger.info("[ Request Payload From APNs]");
-        logger.info(payload);
-        
-        SimpleApnsPushNotification pushNotification =  APNsUtil.getSimpleApnsWithPayAsString(token,bundleId, payload);
-       
-        PushNotificationFuture<SimpleApnsPushNotification, PushNotificationResponse<SimpleApnsPushNotification>>
-         sendNotificationFuture = apnsClient.sendNotification(pushNotification);
-        
-        logger.info("[ Response Data From APNs]");
-       
-        String responseStatus = "";
-        String responseMsg = "";
-        if(sendNotificationFuture.get().isAccepted()){
-            logger.info("[Sucessfully Response]");
-            System.out.println(sendNotificationFuture.get().toString());
-            responseStatus = "true";
-            responseMsg  = sendNotificationFuture.get().getApnsId().toString();
-        }else{
-            logger.info("[Error Response]");
-            System.out.println(sendNotificationFuture.get().getRejectionReason());
-            responseStatus = "false";
-            responseMsg = sendNotificationFuture.get().getRejectionReason();
+        try{
+            final ApnsClient apnsClient = APNsUtil.getApnsCredentials(p8file,teamId,fileKey);
+
+            ApnsPayloadBuilder payloadBuilder = new SimpleApnsPayloadBuilder();
+            payloadBuilder.setAlertBody(msgBody);
+            payloadBuilder.setAlertTitle(msgTitle);
+            final String payload = payloadBuilder.build();
+
+            logger.info("[ Request Payload From APNs]");
+            logger.info(payload);
+
+            SimpleApnsPushNotification pushNotification =  APNsUtil.getSimpleApnsWithPayAsString(token,bundleId, payload);
+
+
+            logger.info("[ Request Payload To APNs]");
+            PushNotificationFuture<SimpleApnsPushNotification, PushNotificationResponse<SimpleApnsPushNotification>>
+                    sendNotificationFuture = apnsClient.sendNotification(pushNotification);
+
+            logger.info("[ Response Data From APNs]");
+
+            String responseStatus = "";
+            String responseMsg = "";
+            if(sendNotificationFuture.get().isAccepted()){
+                logger.info("[Sucessfully Response]");
+                System.out.println(sendNotificationFuture.get().toString());
+                responseStatus = "true";
+                responseMsg  = sendNotificationFuture.get().getApnsId().toString();
+            }else{
+                logger.info("[Error Response]");
+                System.out.println(sendNotificationFuture.get().getRejectionReason());
+                responseStatus = "false";
+                responseMsg = sendNotificationFuture.get().getRejectionReason();
+            }
+
+            NotificationHistory history =  new NotificationHistory(token, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
+            myBatisRepository.insertHistory(history);
+            return history.toString();
+
+        }catch (Exception e ) {
+            NotificationHistory history =  new NotificationHistory(token, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
+            myBatisRepository.insertHistory(history);
+            return history.toString();
         }
-        historyService.saveHistory(new NotificationHistory(token, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg));
-        
-         return sendNotificationFuture.get().toString();
+
     }
     public void sendNotificationByUserId(Integer userId){
         deviceService.getDevicesByUserId(userId).forEach(device -> {

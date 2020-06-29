@@ -1,4 +1,4 @@
-package com.kosign.push.messages;
+package com.kosign.push.utils.messages;
 
 import lombok.Data;
 import lombok.ToString;

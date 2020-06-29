@@ -38,7 +38,7 @@ public class PlatformSetting {
     private String keyId;
     private String teamId;
     private String bundleId;
-    private String pushUrl;
+    private String pushUrl;//p8file file path directory
     private Character status= KeyConf.Status.ACTIVE;
     @CreationTimestamp
     private Timestamp registeredAt;
@@ -62,4 +62,11 @@ public class PlatformSetting {
     }
    
     public PlatformSetting(){}
+
+    public void setApnsConfiguration(String keyId, String teamId, String bundleId, String pushUrl) {
+        this.keyId = keyId;
+        this.teamId = teamId;
+        this.bundleId = bundleId;
+        this.pushUrl = pushUrl;
+    }
 }

@@ -1,10 +1,8 @@
 package com.kosign.push.utils;
 
-import com.kosign.push.devices.Device;
 import com.kosign.push.history.NotificationHistory;
-import com.kosign.push.messages.APNS;
-import com.kosign.push.messages.FCM;
-import com.rabbitmq.client.AMQP.Queue;
+import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.utils.messages.FCM;
 
 import org.slf4j.Logger;
 import org.springframework.amqp.core.AmqpTemplate;

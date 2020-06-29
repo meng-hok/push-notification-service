@@ -1,5 +1,6 @@
 package com.kosign.push.publics;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -11,6 +12,7 @@ import com.kosign.push.devices.DeviceService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
+import com.kosign.push.topics.TopicService;
 import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.FileStorage;
@@ -18,14 +20,15 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
+import com.kosign.push.utils.messages.APNS;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.trace.http.HttpTrace;
+import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 /**
  *  All Methods within this class is secured by Aspect class
@@ -42,7 +45,9 @@ public class PublicController {
     private PlatformSettingService platformSettingService;
     @Autowired
     private DeviceService deviceService;
-    
+    @Autowired
+    private TopicService topicService;
+
     @GetMapping("/applications")
     public Object getYourApplication() {
         UserDetail userDetail = GlobalMethod.getUserCredential();
@@ -56,7 +61,7 @@ public class PublicController {
         
     }
     
-    @ResponseBody
+
     @PostMapping("/applications/create")
     public Object create(String name){
         try {
@@ -70,8 +75,72 @@ public class PublicController {
       
     }
 
+
+    @PutMapping("/applications/update")
+    public Object updateName(@RequestBody Application application) throws Exception{
+
+
+        Boolean update = appService.updateApplication(application.getId(),application.getName());
+
+
+        return update ?
+
+                Response.getResponseBody(KeyConf.Message.SUCCESS," {} ",true) :
+
+                Response.getResponseBody(KeyConf.Message.FAIL, " {} ", false);
+
+
+    }
+
+    @PutMapping("/applications/delete")
+    public Object disabled(@RequestBody Application application){
+
+
+            Boolean update = appService.disableApplication(application.getId());
+
+
+        return update ?
+
+                Response.getResponseBody(KeyConf.Message.SUCCESS," {} ",true) :
+
+                Response.getResponseBody(KeyConf.Message.FAIL, " {} ", false);
+
+
+    }
+
+    @GetMapping("/platforms")
+    public Object getAllPlatformSetting(String appId) throws Exception{
+
+        try {
+
+            List<PlatformSetting> platformSettings = platformSettingService.getActivePlatformsConfiguredByAppId(appId);
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSettings, true));
+
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+        }
+    }
+/**
+ *
+ * FCM
+ * */
+    @GetMapping("/platforms/apns")
+    public Object getApns(String appId) throws Exception{
+
+        try {
+
+            PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true));
+
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+        }
+    }
+
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/create/apns")
+    @PostMapping("platforms/apns/create")
     public Object saveApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception{
             
             try {
@@ -86,9 +155,45 @@ public class PublicController {
             }
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    @PutMapping("/platforms/apns/update")
+    public Object updateApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception {
+
+            String file = FileStorage.uploadFile(p8file);
+            Boolean updateStatus = platformSettingService.updateApns(appId, new APNS(file,teamId,fileKey,bundleId));
+            return updateStatus ?
+                  ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, "{}", true)) :
+                  Response.getResponseBody(KeyConf.Message.FAIL,  "{}", false);
+
+    }
+
+    @Transactional(rollbackOn = Exception.class)
+    @PutMapping("/platforms/apns/delete")
+    public Object deleteApnsConfiguration (String appId) {
+        return null;
+    }
+/**
+ *
+ * FCM
+ * */
+
+    @GetMapping("/platforms/fcm")
+    public Object getFcm(String appId) throws Exception{
+
+        try {
+
+            PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.ANDROID);
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true));
+
+
+        } catch (Exception e) {
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+        }
+    }
+
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/create/fcm")
+    @PostMapping("platforms/fcm/create")
     public Object saveFcm(String appId,String authKey){
         try {
             PlatformSetting platformSetting= platformSettingService.saveFcm(appId, authKey);
@@ -100,7 +205,32 @@ public class PublicController {
         
     }
 
-   
+//    @PostMapping("platforms/fcm/create")
+    public Object saveFcmTest(String appId,String authKey){
+        return null;
+
+    }
+    @Transactional(rollbackOn = Exception.class)
+    @PutMapping("platforms/fcm/update")
+    public Object updateFcm(String appId,String authKey){
+        try {
+            Boolean updateStatus = platformSettingService.updateFcm(appId, authKey);
+            return Response.getResponseBody(KeyConf.Message.SUCCESS, "{}", true);
+        } catch (Exception e) {
+
+            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+        }
+
+    }
+
+
+    @Transactional(rollbackOn = Exception.class)
+    @GetMapping("/devices")
+    public Object getDevice(String appId){
+            List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
+            return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
+    }
+
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("/devices/create")
     public Object save(String appId,String deviceId,String userId,String platformId,String token){
@@ -122,6 +252,5 @@ public class PublicController {
         }
 
     }
-    
 
 }

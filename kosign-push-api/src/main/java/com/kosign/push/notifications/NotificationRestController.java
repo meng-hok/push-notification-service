@@ -4,8 +4,8 @@ import java.util.List;
 
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.messages.APNS;
-import com.kosign.push.messages.FCM;
+import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.utils.messages.FCM;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.KeyConf;
@@ -14,14 +14,10 @@ import com.kosign.push.utils.RabbitSender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/notifications")
+//@RestController
+//@RequestMapping("/notifications")
 public class NotificationRestController {
    
     @Autowired
@@ -56,7 +52,7 @@ public class NotificationRestController {
             String groupId = deviceSetting.getBundleId();
             response=   notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+p8file, teamId, fileKey, groupId, device.getToken(), title, message);
         }else if(KeyConf.PlatForm.ANDROID.equals(deviceSetting.getPlatform().getId()) ){
-            response= notificationService.sendNotificationToFCM(deviceSetting.getAuthorizedKey(), device.getToken(),title,message);
+//            response= notificationService.sendNotificationToFCM(deviceSetting.getAuthorizedKey(), device.getToken(),title,message);
         }
        
         logger.info("[Device Response]");
@@ -76,7 +72,7 @@ public class NotificationRestController {
     @PostMapping("/send/all")
     public Object sendToAll (String app_id, String title,String message){ 
     
-        List<PlatformSetting> platformSettings = settingService.getActivePlatformConfiguredByAppId(app_id);
+        List<PlatformSetting> platformSettings = settingService.getActivePlatformsConfiguredByAppId(app_id);
         List<Device> androids = deviceService.getActiveDeviceByAppIdAndPlatformId(app_id,KeyConf.PlatForm.ANDROID);
         List<Device> ios = deviceService.getActiveDeviceByAppIdAndPlatformId(app_id,KeyConf.PlatForm.IOS);
         List<Device> browsers = deviceService.getActiveDeviceByAppIdAndPlatformId(app_id, KeyConf.PlatForm.WEB);

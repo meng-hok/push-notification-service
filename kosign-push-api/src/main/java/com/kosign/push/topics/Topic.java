@@ -15,7 +15,9 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-@Table(name ="ps_topic")
+@Table(name ="ps_topic",uniqueConstraints={@UniqueConstraint(columnNames = {"name", "application_id","agent"})} )
+//uniqueConstraints={
+//@UniqueConstraint(columnNames = {"productId", "serial"}
 @Entity
 public class Topic {
 
