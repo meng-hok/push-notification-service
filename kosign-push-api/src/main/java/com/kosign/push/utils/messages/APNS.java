@@ -13,7 +13,7 @@ public class APNS {
     public String token;
     public String title;
     public String message;
-
+    public String appId;
     public APNS(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
         this.p8file = p8file;
         this.teamId = teamId;

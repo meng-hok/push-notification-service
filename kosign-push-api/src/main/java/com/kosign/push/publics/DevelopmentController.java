@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@AllArgsConstructor
-@RestController
-@RequestMapping("/api/public")
+//@AllArgsConstructor
+//@RestController
+//@RequestMapping("/api/public")
 public class DevelopmentController {
 
     private AppService appService;

@@ -9,6 +9,7 @@ import com.kosign.push.apps.AppService;
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
+import com.kosign.push.mybatis.MybatisService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
@@ -21,6 +22,7 @@ import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
 import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.utils.messages.ApplicationResponse;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +49,9 @@ public class PublicController {
     private DeviceService deviceService;
     @Autowired
     private TopicService topicService;
+    @Autowired
+    private MybatisService mybatisService;
+
 
     @GetMapping("/applications")
     public Object getYourApplication() {
@@ -55,7 +60,7 @@ public class PublicController {
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<Application> applications = appService.getActiveAppsByUserId(userDetail.getId());
+            List<ApplicationResponse> applications = mybatisService.getActiveAppsByUserId(userDetail.getId());
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         

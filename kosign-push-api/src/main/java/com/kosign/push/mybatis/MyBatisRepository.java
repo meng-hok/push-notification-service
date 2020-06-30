@@ -1,8 +1,10 @@
 package com.kosign.push.mybatis;
 
+import com.kosign.push.apps.Application;
 import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.users.User;
+import com.kosign.push.utils.messages.ApplicationResponse;
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -37,5 +39,11 @@ public interface MyBatisRepository {
             "(#{history.message},#{history.recieverId},#{history.title},#{history.appId},#{history.status},#{history.toPlatform},#{history.responseMsg})")
     Integer insertHistory(@org.apache.ibatis.annotations.Param("history")  NotificationHistory history);
 
-
+    @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId}")
+    @Results({
+            @Result(property = "id", column = "application"),
+            @Result(property = "totalPush", column = "count"),
+            @Result(property = "createdAt", column = "created_at")
+    })
+    List<ApplicationResponse> findActiveByUserId(@org.apache.ibatis.annotations.Param("userId")String userId);
 }

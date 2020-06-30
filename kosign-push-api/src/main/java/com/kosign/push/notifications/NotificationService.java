@@ -52,21 +52,21 @@ public class NotificationService {
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCM(FCM fcm){
         System.out.println("Response Message from " + fcm);
-         this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+         this.sendNotificationToFCM(fcm.getAppId(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
 //        return  historyService.saveHistory(new NotificationHistory());
     }
 
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCMSupport(FCM fcm){
         System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+        this.sendNotificationToFCM(fcm.getAppId(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
     }
 
     @RabbitListener(queues = "pusher.queue.apns")
     public void sendNotificationByAPNS(APNS apns) {
         System.out.println("Response Message from  " + apns);
         try {
-            this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getAppId(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
@@ -76,7 +76,7 @@ public class NotificationService {
         System.out.println("Response Message from " + apns);
         // System.out.println("Message read from myQueue APNS: " + apns);
         try {
-            this.sendNotificationToIOS(apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getAppId(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
@@ -86,7 +86,7 @@ public class NotificationService {
     * return object will be saved by Aspect
     *
     * */
-    public NotificationHistory sendNotificationToFCM(String appAuthorizedKey, String userToken,String title ,String message) {
+    public NotificationHistory sendNotificationToFCM(String appId,String appAuthorizedKey, String userToken,String title ,String message) {
         HttpClient httpClient = FirebaseUtil.getHttpClientWithFirebaseHeader(appAuthorizedKey);
 
         JSONObject json = new JSONObject();
@@ -109,7 +109,7 @@ public class NotificationService {
 
             logger.info(strResult.toString());
 
-            NotificationHistory history = new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
+            NotificationHistory history = new NotificationHistory(appId, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
 
 
             myBatisRepository.insertHistory(history);
@@ -129,12 +129,11 @@ public class NotificationService {
     }
 
 
-
     /*
      * return object will be saved by Aspect
      *
      * */
-    public String sendNotificationToIOS(String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody) throws InterruptedException, ExecutionException, InvalidKeyException,
+    public String sendNotificationToIOS(String appId,String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody) throws InterruptedException, ExecutionException, InvalidKeyException,
             SSLException, NoSuchAlgorithmException, IOException {
         try{
             final ApnsClient apnsClient = APNsUtil.getApnsCredentials(p8file,teamId,fileKey);
@@ -170,12 +169,12 @@ public class NotificationService {
                 responseMsg = sendNotificationFuture.get().getRejectionReason();
             }
 
-            NotificationHistory history =  new NotificationHistory(token, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
+            NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
             myBatisRepository.insertHistory(history);
             return history.toString();
 
         }catch (Exception e ) {
-            NotificationHistory history =  new NotificationHistory(token, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
+            NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
             myBatisRepository.insertHistory(history);
             return history.toString();
         }

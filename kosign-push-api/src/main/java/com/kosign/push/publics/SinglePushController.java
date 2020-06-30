@@ -89,7 +89,9 @@ public class SinglePushController {
             if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
                
 //               notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
-                rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message));
+                APNS apns = new APNS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+                apns.setAppId(app_id);
+                rabbitSender.sendToApns(apns);
                 logger.info("[ Response Sucess : APNS ]");
 
                 response = agent.toString();
@@ -98,7 +100,9 @@ public class SinglePushController {
           
             }else if(KeyConf.PlatForm.ANDROID.equals(agent.platform_id) ){
 //                notificationService.sendNotificationToFCM(agent.authorized_key,agent.token,title,message);
-               rabbitSender.sendToFcm(new FCM( agent.authorized_key, agent.token,title,message));
+                FCM fcm = new FCM( agent.authorized_key, agent.token,title,message);
+                fcm.setAppId(app_id);
+               rabbitSender.sendToFcm(fcm);
                 logger.info("[ Response Sucess : FCM ]");
 
                 response=agent.toString();
@@ -123,9 +127,13 @@ public class SinglePushController {
         for (Agent device : devices) {
             try{
                 if(KeyConf.PlatForm.IOS.equals(device.getPlatform_id())){
-                     rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message));
+                    APNS apns = new APNS(KeyConf.PlatForm.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message);
+                    apns.setAppId(app_id);
+                    rabbitSender.sendToApns(apns);
                 }else{
-                     rabbitSender.sendToFcm(new FCM(device.getAuthorized_key(), device.getToken(),title,message));
+                    FCM fcm = new FCM(device.getAuthorized_key(), device.getToken(),title,message);
+                    fcm.setAppId(app_id);
+                    rabbitSender.sendToFcm(fcm);
                 }
                 ++success;
             }catch(Exception e){

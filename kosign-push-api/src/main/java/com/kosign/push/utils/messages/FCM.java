@@ -9,7 +9,7 @@ public class FCM {
    public String token;
    public String title;
    public String message;
-
+   public String appId;
    public FCM(String authorizedKey, String token, String title, String message) {
        this.authorizedKey = authorizedKey;
        this.token = token;
