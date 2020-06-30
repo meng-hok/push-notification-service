@@ -41,11 +41,11 @@ public class DevelopmentController {
 
 
 
-    @GetMapping("/test/mybatis")
-    public Object mybatis(String appId,String topicName) throws  Exception{
-
-        return myBatisRepository.findAll();
-    }
+//    @GetMapping("/test/mybatis")
+//    public Object mybatis(String appId,String topicName) throws  Exception{
+//
+//        return myBatisRepository.findAll();
+//    }
 
 
     @GetMapping("/topic/unsubscribe")
