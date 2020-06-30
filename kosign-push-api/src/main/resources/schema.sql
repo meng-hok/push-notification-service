@@ -21,3 +21,8 @@ CREATE OR REPLACE VIEW vw_read_application_detail_by_app_id as
 CREATE OR REPLACE VIEW vw_count_sender_history AS
     SELECT v.*, p.name, p.created_at,p.updated_at ,p.user_id  from vw_read_application_detail_by_app_id v INNER JOIN ps_application p ON
     v.application = p.id;
+
+-- static data
+INSERT INTO public.ps_platform (id, code, icon, name, registered_at, status, updated_at) VALUES ('1', '', NULL, 'Apple IOS', NULL, '1', NULL);
+INSERT INTO public.ps_platform (id, code, icon, name, registered_at, status, updated_at) VALUES ('2', 'FCM', NULL, 'Android', NULL, '1', NULL);
+INSERT INTO public.ps_platform (id, code, icon, name, registered_at, status, updated_at) VALUES ('3', 'Web FCM', NULL, 'Web', NULL, '1', NULL);
