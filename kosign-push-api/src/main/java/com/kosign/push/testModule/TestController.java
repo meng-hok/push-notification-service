@@ -1,0 +1,23 @@
+package com.kosign.push.testModule;
+
+import com.kosign.push.testModule.requests.DTEST_R01In;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/public")
+public class TestController 
+{
+    @Autowired
+    private TestService testService;
+
+    @PostMapping("/test")
+    public Object getTest(@RequestBody DTEST_R01In input)  
+    {
+        return testService.getAllTest(input);
+    }
+}

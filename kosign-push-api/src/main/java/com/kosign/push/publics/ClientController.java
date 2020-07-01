@@ -177,7 +177,7 @@ public class ClientController{
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}" true);
+        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}", true);
     }
    
    
