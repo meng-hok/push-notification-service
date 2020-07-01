@@ -13,6 +13,7 @@ import com.kosign.push.mybatis.MybatisService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
+import com.kosign.push.platforms.PlatformService;
 import com.kosign.push.topics.TopicService;
 import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
@@ -23,6 +24,8 @@ import com.kosign.push.utils.Response;
 
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.ApplicationResponse;
+
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +39,7 @@ import org.springframework.web.multipart.MultipartFile;
  *  All Methods within this class is secured by Aspect class
  *  1. appId ownership
  * */
+@Api(tags = "KOSIGN Push Backend API")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/public")
@@ -51,7 +55,8 @@ public class PublicController {
     private TopicService topicService;
     @Autowired
     private MybatisService mybatisService;
-
+    @Autowired
+    private PlatformService platformService;
 
     @GetMapping("/applications")
     public Object getYourApplication() {
@@ -130,7 +135,7 @@ public class PublicController {
  *
  * FCM
  * */
-    @GetMapping("/platforms/apns")
+    @GetMapping("/platforms/setting/apns")
     public Object getApns(String appId) throws Exception{
 
         try {
@@ -145,7 +150,7 @@ public class PublicController {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/apns/create")
+    @PostMapping("platforms/setting/apns/create")
     public Object saveApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception{
             
             try {
@@ -161,7 +166,7 @@ public class PublicController {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/apns/update")
+    @PutMapping("/platforms/setting/apns/update")
     public Object updateApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception {
 
             String file = FileStorage.uploadFile(p8file);
@@ -173,7 +178,7 @@ public class PublicController {
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/apns/delete")
+    @PutMapping("/platforms/setting/apns/delete")
     public Object deleteApnsConfiguration (String appId) {
         return null;
     }
@@ -182,7 +187,7 @@ public class PublicController {
  * FCM
  * */
 
-    @GetMapping("/platforms/fcm")
+    @GetMapping("/platforms/setting/fcm")
     public Object getFcm(String appId) throws Exception{
 
         try {
@@ -198,7 +203,7 @@ public class PublicController {
 
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/fcm/create")
+    @PostMapping("platforms/setting/fcm/create")
     public Object saveFcm(String appId,String authKey){
         try {
             PlatformSetting platformSetting= platformSettingService.saveFcm(appId, authKey);
@@ -216,7 +221,7 @@ public class PublicController {
 
     }
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("platforms/fcm/update")
+    @PutMapping("platforms/setting/fcm/update")
     public Object updateFcm(String appId,String authKey){
         try {
             Boolean updateStatus = platformSettingService.updateFcm(appId, authKey);
@@ -236,26 +241,28 @@ public class PublicController {
             return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
     }
 
-    @Transactional(rollbackOn = Exception.class)
-    @PostMapping("/devices/create")
-    public Object save(String appId,String deviceId,String userId,String platformId,String token){
-        try {
-            Device device;
-            if(deviceId != null ){
-                device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
-            }else if(userId != null ){
-                device = new Device(token,new Application(appId),new Platform(platformId),userId);
-            }else{
-                throw new Exception("Created Fail");
-            }
-           
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,  deviceService.saveDevice(device), true);
-        } catch (Exception e) {
-            
-            System.out.println(e.getMessage());
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
-        }
+    
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PostMapping("/platforms")
+    public Object get(){
+        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
+    }
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PostMapping("/platforms/save")
+    public Object save (@RequestBody Platform platform) { 
+        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.insert(platform), true))  ;
+    }
 
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PutMapping("/platforms/update")
+    public Object update (@RequestBody Platform platform) { 
+        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.update(platform),true))  ;
+    }
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PutMapping("/platforms/remove")
+    public Object remove (@RequestBody Platform platform) { 
+       
+        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     }
 
 }
