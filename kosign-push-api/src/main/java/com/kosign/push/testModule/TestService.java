@@ -1,6 +1,6 @@
 package com.kosign.push.testModule;
 
-import com.kosign.push.testModule.requests.DTEST_R01In;
+import com.kosign.push.testModule.dto.DTEST_R01In;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

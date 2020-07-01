@@ -1,6 +1,6 @@
 package com.kosign.push.testModule;
 
-import com.kosign.push.testModule.requests.DTEST_R01In;
+import com.kosign.push.testModule.dto.DTEST_R01In;
 
 import org.apache.commons.lang3.StringUtils;
 
