@@ -65,6 +65,18 @@ public class PublicController {
         }
         
     }
+    @GetMapping("/applications/{id}")
+    public Object getYourApplicationByID(@PathVariable("id") String id ) {
+        UserDetail userDetail = GlobalMethod.getUserCredential();
+       
+        if(userDetail == null ){
+            return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
+        }else{ 
+            List<ApplicationResponse> applications = mybatisService.getActiveAppsByAppId(userDetail.getId(),id);
+            return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
+        }
+        
+    }
     
 
     @PostMapping("/applications/create")

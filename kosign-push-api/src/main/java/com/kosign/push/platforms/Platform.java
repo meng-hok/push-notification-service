@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.kosign.push.utils.KeyConf;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -21,13 +23,13 @@ import lombok.Data;
 @Table(name ="ps_platform")
 @Entity
 public class Platform {
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    // @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private String id;
     private String name;
     private String icon;
     private String code;
-    private Character status;
+    private Character status=KeyConf.Status.ACTIVE;
     @CreationTimestamp
     private Timestamp registeredAt;
     @UpdateTimestamp
