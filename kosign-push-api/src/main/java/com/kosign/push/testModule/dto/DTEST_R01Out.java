@@ -1,4 +1,4 @@
-package com.kosign.push.testModule.responses;
+package com.kosign.push.testModule.dto;
 
 
 public class DTEST_R01Out 
