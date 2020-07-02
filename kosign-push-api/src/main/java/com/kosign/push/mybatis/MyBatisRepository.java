@@ -25,7 +25,7 @@ public interface MyBatisRepository {
 
     @Select({"<script>","SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
             "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
-            "ON d.platform_id = p_s.id \n" +
+            "ON d.platform_id = p_s.platform_id \n" +
             "WHERE d.device_id IN \n"+
             " <foreach item='item' index='index' collection='deviceIdList' open='(' separator=',' close=')'>#{item}</foreach> \n"+
             "AND app_id = #{appId} AND d.status = '1'","</script>"})

@@ -44,8 +44,22 @@ public class PlatformSettingService {
         return settingRepo.save(_platformSetting);
     }
 
-    public PlatformSetting saveFcm(String appId,  String authKey){
-        PlatformSetting _platformSetting = new PlatformSetting(GlobalMethod.getAndroid(),new Application(appId),authKey);
+    public PlatformSetting saveFcm(String appId, String platform , String authKey) throws Exception{
+
+        PlatformSetting _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,platform) ;
+
+        if(_platformSetting != null ){ 
+            throw new Exception ("Application Platform Setting already saved");
+        }
+
+        if ( KeyConf.PlatForm.ANDROID.equals(platform)  ) { 
+            _platformSetting  = new PlatformSetting(GlobalMethod.getAndroid(),new Application(appId),authKey);
+        }else if(KeyConf.PlatForm.WEB.equals(platform)) { 
+            _platformSetting  = new PlatformSetting(GlobalMethod.getBrowser(),new Application(appId),authKey);
+        }else{
+            return null;
+        }
+       
         return settingRepo.save(_platformSetting);
     }
 
