@@ -28,7 +28,7 @@ import lombok.Data;
 @Table(name ="ps_device_client")
 @Entity
 public class Device {
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private Integer id;
    

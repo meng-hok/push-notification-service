@@ -9,7 +9,7 @@ import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import javax.sql.DataSource;
 
-@MapperScan(value = {"com.kosign.push.mybatis", "com.kosign.push.testModule"})
+@MapperScan("com.kosign.push")
 @PropertySource("classpath:application.yml")
 @Configuration
 public class MyBatisConfigure {

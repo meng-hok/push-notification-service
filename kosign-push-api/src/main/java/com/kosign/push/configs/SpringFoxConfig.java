@@ -76,7 +76,7 @@ public class SpringFoxConfig {
   }
 
   private List<SecurityReference> defaultAuth() {
-    final AuthorizationScope authorizationScope = new AuthorizationScope("openid   ", "允许测试阶段访问的所有接口");
+    final AuthorizationScope authorizationScope = new AuthorizationScope("openid   ", "");
     final AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
     authorizationScopes[0] = authorizationScope;
     return Arrays.asList(new SecurityReference(securitySchemaOAuth2, authorizationScopes));
