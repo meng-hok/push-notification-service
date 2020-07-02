@@ -1,6 +1,8 @@
 package com.kosign.push.publics;
 
+import com.kosign.push.testModule.TestEntity;
 import com.kosign.push.testModule.TestService;
+import com.kosign.push.testModule.dto.DTEST_C01In;
 import com.kosign.push.testModule.dto.DTEST_R01In;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,5 +25,17 @@ public class TestController
     public Object getTest(@RequestBody DTEST_R01In input)  
     {
         return testService.getAllTest(input);
+    }
+
+    @PostMapping("/test/create")
+    public void createTest(@RequestBody DTEST_C01In input)
+    {
+        TestEntity test = new TestEntity();
+        test.setName  ( input.getName()  );
+        test.setIcon  ( input.getIcon()  );
+        test.setCode  ( input.getCode()  );
+        test.setStatus( input.getStatus());
+
+        testService.createTest(test);
     }
 }

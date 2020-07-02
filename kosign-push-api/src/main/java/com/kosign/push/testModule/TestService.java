@@ -10,10 +10,18 @@ import org.springframework.stereotype.Service;
 public class TestService 
 {
     @Autowired
-    private TestBatisRepository testRepository;
+    private TestBatisRepository testBatisRepository;
+
+    @Autowired
+    private TestRepository testRepository;
 
     public Object getAllTest(DTEST_R01In params) 
     {
-        return testRepository.findAllTest(params);
+        return testBatisRepository.findAllTest(params);
+    }
+
+    public void createTest(TestEntity test)
+    {
+        testRepository.save(test);
     }
 }
