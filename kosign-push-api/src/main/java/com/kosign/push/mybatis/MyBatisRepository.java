@@ -59,18 +59,5 @@ public interface MyBatisRepository {
     List<ApplicationResponseById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
-    @Results({
-        @Result(property = "platID", column = "plat_id"),
-        @Result(property = "platName", column = "plat_nm"),
-        @Result(property = "icon", column = "plat_icon"),
-        @Result(property = "platCode", column = "plat_code"),
-        @Result(property = "bundleId", column = "bundle_id"),
-        @Result(property = "keyId", column = "key_id"),
-        @Result(property = "teamId", column = "team_id"),
-        @Result(property = "certFile", column = "cert_file"),
-        @Result(property = "authKey", column = "auth_key"),
-        @Result(property = "status", column = "sts")
-})
     List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);
-
 }
