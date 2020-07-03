@@ -26,8 +26,8 @@ public class TestService
         return testBatisRepository.findAllHistory(params);
     }
 
-    public void createTest(TestEntity test)
+    public TestEntity createTest(TestEntity test)
     {
-        testRepository.save(test);
+        return testRepository.save(test);
     }
 }
