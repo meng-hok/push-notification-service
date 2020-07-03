@@ -5,6 +5,8 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.kosign.push.apps.AppService;
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
@@ -44,20 +46,9 @@ import org.springframework.web.multipart.MultipartFile;
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/public")
-public class PublicController {
+public class PublicController extends SuperController{
    
-    @Autowired
-    private AppService appService;
-    @Autowired
-    private PlatformSettingService platformSettingService;
-    @Autowired
-    private DeviceService deviceService;
-    @Autowired
-    private TopicService topicService;
-    @Autowired
-    private MybatisService mybatisService;
-    @Autowired
-    private PlatformService platformService;
+   
 
     @GetMapping("/applications")
     public Object getYourApplication() {
@@ -131,7 +122,7 @@ public class PublicController {
 
     }
 
-    @GetMapping("/platforms")
+    @GetMapping("/platforms/setting")
     public Object getAllPlatformSetting(String appId) throws Exception{
 
         try {
@@ -206,7 +197,12 @@ public class PublicController {
         try {
 
             PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.ANDROID);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true));
+            PlatformSetting platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.WEB);
+            
+            List<PlatformSetting> platformList = new ArrayList<>();
+            platformList.add(platformSetting);
+            platformList.add(platformSettingWeb);
+            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformList, true));
 
 
         } catch (Exception e) {
@@ -217,9 +213,9 @@ public class PublicController {
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/setting/fcm/create")
-    public Object saveFcm(String appId,String authKey){
+    public Object saveFcm(String appId,String platformId,String authKey){
         try {
-            PlatformSetting platformSetting= platformSettingService.saveFcm(appId, authKey);
+            PlatformSetting platformSetting= platformSettingService.saveFcm(appId,platformId, authKey);
             return Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true);
         } catch (Exception e) {
           

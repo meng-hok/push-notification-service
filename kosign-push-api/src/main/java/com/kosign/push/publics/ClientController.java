@@ -28,19 +28,19 @@ import io.swagger.annotations.ApiOperation;
 @Api(tags = "KOSIGN Push Client API")
 @RestController
 @RequestMapping("/api/public")
-public class ClientController{
+public class ClientController extends SuperController{
    
-    @Autowired
-    private NotificationService notificationService;
+    // @Autowired
+    // private NotificationService notificationService;
 
-    @Autowired
-    private DeviceService deviceService;
+    // @Autowired
+    // private DeviceService deviceService;
    
-    @Autowired
-    private PlatformSettingService settingService;
+    // @Autowired
+    // private PlatformSettingService settingService;
 
-    @Autowired 
-    private RabbitSender rabbitSender;
+    // @Autowired 
+    // private RabbitSender rabbitSender;
 
     Logger logger = LoggerFactory.getLogger(ClientController.class);
     
@@ -86,18 +86,19 @@ public class ClientController{
     */
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required ")
     @PostMapping("/devices/create")
-    private Object save(String appId,String deviceId,String platformId,String token){
+    public Object save(String appId,String deviceId,String platformId,String token){
+      
         try {
-            Device device;
            
-            device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
-           
+            Device device = deviceService.saveDevice(new Device(deviceId,token,new Application(appId),new Platform(platformId)));
             System.out.println(device);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,  deviceService.saveDevice(device), true);
+           
+            return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);
         } catch (Exception e) {
             
-            System.out.println(e.getMessage());
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+//            System.out.println(e.getLocalizedMessage());
+            e.printStackTrace();
+            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getLocalizedMessage(), false);
         }
 
     }
