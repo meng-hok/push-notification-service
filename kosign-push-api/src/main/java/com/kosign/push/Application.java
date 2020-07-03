@@ -2,18 +2,14 @@ package com.kosign.push;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.util.ResourceUtils;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
-import java.util.ArrayList;
 
 //import org.springframework.boot.WebApplicationType;
 
@@ -22,10 +18,12 @@ import java.util.ArrayList;
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-	@Autowired
 	private DataSource dataSource;
 
-	
+	@Autowired
+	public Application(DataSource dataSource){
+		this.dataSource = dataSource;
+	}
 
 	public static final String APPLICATION_LOCATIONS = "spring.config.location="
 			+ "classpath:application.yml,"
@@ -39,29 +37,13 @@ public class Application implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		// String script = "kosign-push-api/build/resources/main/";
-		// String script = "kosign-push-api/src/main/resources/";
-		// String script = "classpath:";
-		
-		// String schema = "schema.sql";
-		
-		String[] pathList = {"schema.sql","data.sql"};
-
-		
-		
-		// System.out.println( ResourceUtils.getFile( ResourceUtils.CLASSPATH_URL_PREFIX+"schema.sql").exists());
+		String script = "kosign-push-api/src/main/resources/";
+		String schema = script+"schema.sql";
+		// Approch 1: using native way to creat e instance of Connection
 		ScriptRunner scriptRunner =  new ScriptRunner(dataSource.getConnection());
-		//  pathList = file.list();
-	
-		for (String filename : pathList) {
-			File file = ResourceUtils.getFile( ResourceUtils.CLASSPATH_URL_PREFIX+filename);
-			scriptRunner.runScript(new BufferedReader(new FileReader(file)));
-		}
-		
 
-		
-		
-		
-	
+		// Approch 2: using spring boot injected DataSource to get the connection
+		//ScriptRunner scriptRunner = new ScriptRunner(datasource.getConnection());
+		//scriptRunner.runScript(new BufferedReader(new FileReader(schema)));
 	}
 }

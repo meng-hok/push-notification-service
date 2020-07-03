@@ -39,7 +39,6 @@ public class NotificationHistory {
     @Column(length = 8)
     private String status;
     private String responseMsg;
-    private Integer count=1;
     @ColumnDefault(value = "now()")
     @CreationTimestamp
     private Timestamp createdAt;

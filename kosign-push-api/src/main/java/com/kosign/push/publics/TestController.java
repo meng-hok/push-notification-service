@@ -2,6 +2,7 @@ package com.kosign.push.publics;
 
 import com.kosign.push.testModule.TestEntity;
 import com.kosign.push.testModule.TestService;
+import com.kosign.push.testModule.dto.DHIST_R01In;
 import com.kosign.push.testModule.dto.DTEST_C01In;
 import com.kosign.push.testModule.dto.DTEST_R01In;
 
@@ -38,4 +39,11 @@ public class TestController
 
         testService.createTest(test);
     }
+
+    @PostMapping("/test/history")
+    public Object getHistory(@RequestBody DHIST_R01In input) 
+    {
+        return testService.getAllHistory(input);
+    }
+    
 }
