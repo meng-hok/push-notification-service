@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
@@ -13,7 +14,7 @@ import java.io.FileReader;
 //import org.springframework.boot.WebApplicationType;
 
 //@EnableJpaAuditing // JPA Auditing 활성화
-
+@CrossOrigin
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 

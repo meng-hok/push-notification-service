@@ -24,6 +24,7 @@ import com.kosign.push.utils.Response;
 
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.ApplicationResponse;
+import com.kosign.push.utils.messages.ApplicationResponseById;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -77,7 +78,7 @@ public class PublicController {
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponse> applications = mybatisService.getActiveAppsByAppId(userDetail.getId(),id);
+            List<ApplicationResponseById> applications = mybatisService.getActiveAppsByAppId(userDetail.getId(),id);
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         

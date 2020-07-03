@@ -5,6 +5,9 @@ import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.users.User;
 import com.kosign.push.utils.messages.ApplicationResponse;
+import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.utils.messages.PlatformSettingRespone;
+
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -46,4 +49,28 @@ public interface MyBatisRepository {
             @Result(property = "createdAt", column = "created_at")
     })
     List<ApplicationResponse> findActiveByUserId(@org.apache.ibatis.annotations.Param("userId")String userId);
+
+    @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId} and application = #{appId}")
+    @Results({
+            @Result(property = "id", column = "application"),
+            @Result(property = "totalPush", column = "count"),
+            @Result(property = "createdAt", column = "created_at")
+    })
+    List<ApplicationResponseById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
+
+    @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
+    @Results({
+        @Result(property = "platID", column = "plat_id"),
+        @Result(property = "platName", column = "plat_nm"),
+        @Result(property = "icon", column = "plat_icon"),
+        @Result(property = "platCode", column = "plat_code"),
+        @Result(property = "bundleId", column = "bundle_id"),
+        @Result(property = "keyId", column = "key_id"),
+        @Result(property = "teamId", column = "team_id"),
+        @Result(property = "certFile", column = "cert_file"),
+        @Result(property = "authKey", column = "auth_key"),
+        @Result(property = "status", column = "sts")
+})
+    List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);
+
 }

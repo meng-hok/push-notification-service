@@ -85,17 +85,14 @@ public class ClientController{
     }
     */
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required ")
-    @javax.transaction.Transactional(rollbackOn = Exception.class)
     @PostMapping("/devices/create")
     private Object save(String appId,String deviceId,String platformId,String token){
         try {
             Device device;
-            if(deviceId != null ){
-                device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
-             }else{
-                throw new Exception("Created Fail");
-            }
            
+            device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
+           
+            System.out.println(device);
             return Response.getResponseBody(KeyConf.Message.SUCCESS,  deviceService.saveDevice(device), true);
         } catch (Exception e) {
             
@@ -177,7 +174,7 @@ public class ClientController{
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}" true);
+        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}", true);
     }
    
    
