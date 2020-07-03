@@ -37,3 +37,31 @@ CREATE VIEW vw_application_detail AS
 		LEFT JOIN vw_history_count his ON v.application::text = his.app_id::text
 	WHERE p.status = '1'::bpchar; 
 
+----------------------------------------------------
+-- create view to read flatform by application id --
+----------------------------------------------------
+CREATE OR REPLACE VIEW public.vw_platform_detail AS
+ SELECT ( SELECT pf.id
+           FROM ps_platform pf
+          WHERE pf.id::text = pt.platform_id::text) AS plat_id,
+    ( SELECT pf.name
+           FROM ps_platform pf
+          WHERE pf.id::text = pt.platform_id::text) AS plat_nm,
+    ( SELECT pf.icon
+           FROM ps_platform pf
+          WHERE pf.id::text = pt.platform_id::text) AS icon,
+    ( SELECT pf.code
+           FROM ps_platform pf
+          WHERE pf.id::text = pt.platform_id::text) AS plat_code,
+    pt.bundle_id,
+    pt.key_id,
+    pt.team_id,
+    pt.push_url AS cert_file,
+    pt.authorized_key,
+    pt.status AS sts,
+    pt.application_id
+   FROM ps_platform_setting pt
+  WHERE pt.status = '1'::bpchar
+  ORDER BY (( SELECT pf.id
+           FROM ps_platform pf
+          WHERE pf.id::text = pt.platform_id::text));
