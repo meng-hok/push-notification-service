@@ -23,7 +23,7 @@ import lombok.Data;
 @Table(name ="ps_platform")
 @Entity
 public class Platform {
-    // @GeneratedValue(strategy = GenerationType.IDENTITY )
+ 
     @Id
     private String id;
     private String name;
@@ -40,4 +40,15 @@ public class Platform {
     public Platform(String id) {
         this.id = id;
     }
+
+    public void setToNewPlatform(Platform platform) {
+        this.id = platform.id;
+        this.name = platform.name == null ?  this.name : platform.name;
+        this.icon = platform.icon == null ?  this.icon : platform.icon;
+        this.code = platform.code == null ?  this.code : platform.code;
+    }
+
+ 
+
+    
 }

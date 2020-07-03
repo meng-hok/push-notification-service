@@ -1,6 +1,8 @@
 package com.kosign.push.publics;
 import java.util.List;
 
+import com.kosign.push.apps.Application;
+import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.RequestDevice;
 import com.kosign.push.utils.messages.APNS;
@@ -8,6 +10,7 @@ import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.FCM;
 import com.kosign.push.notifications.NotificationService;
 import com.kosign.push.platformSetting.PlatformSettingService;
+import com.kosign.push.platforms.Platform;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.Response;
@@ -18,9 +21,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiOperation;
+
+@Api(tags = "KOSIGN Push Client API")
 @RestController
-@RequestMapping("/api/public/notifications")
-public class SinglePushController {
+@RequestMapping("/api/public")
+public class ClientController{
    
     @Autowired
     private NotificationService notificationService;
@@ -34,7 +42,7 @@ public class SinglePushController {
     @Autowired 
     private RabbitSender rabbitSender;
 
-    Logger logger = LoggerFactory.getLogger(SinglePushController.class);
+    Logger logger = LoggerFactory.getLogger(ClientController.class);
     
     
     
@@ -76,8 +84,29 @@ public class SinglePushController {
       
     }
     */
+    @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required ")
+    @javax.transaction.Transactional(rollbackOn = Exception.class)
+    @PostMapping("/devices/create")
+    private Object save(String appId,String deviceId,String platformId,String token){
+        try {
+            Device device;
+            if(deviceId != null ){
+                device = new Device(deviceId,token,new Application(appId),new Platform(platformId));
+             }else{
+                throw new Exception("Created Fail");
+            }
+           
+            return Response.getResponseBody(KeyConf.Message.SUCCESS,  deviceService.saveDevice(device), true);
+        } catch (Exception e) {
+            
+            System.out.println(e.getMessage());
+            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+        }
 
-    @PostMapping("/send/single/device")
+    }
+
+    @ApiOperation( value = "Send Notification to Single Device")
+    @PostMapping("/notifications/send/single/device")
     public Object sendByDevice(String app_id, String deviceId, String title,String message) {
         try {
             //   System.out.println(app_id + deviceId);
@@ -88,7 +117,7 @@ public class SinglePushController {
             
             if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
                
-//               notificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+
                 APNS apns = new APNS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
                 apns.setAppId(app_id);
                 rabbitSender.sendToApns(apns);
@@ -99,7 +128,7 @@ public class SinglePushController {
                 return Response.getResponseBody(KeyConf.Message.SUCCESS,response , true);
           
             }else if(KeyConf.PlatForm.ANDROID.equals(agent.platform_id) ){
-//                notificationService.sendNotificationToFCM(agent.authorized_key,agent.token,title,message);
+
                 FCM fcm = new FCM( agent.authorized_key, agent.token,title,message);
                 fcm.setAppId(app_id);
                rabbitSender.sendToFcm(fcm);
@@ -118,7 +147,8 @@ public class SinglePushController {
       
     }
 
-    @PostMapping("/devices/send")
+    @ApiOperation( value = "Send Notification to Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
+    @PostMapping("/notifications/devices/send")
     public Object send(String app_id, String title, String message , @RequestBody RequestDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
@@ -147,7 +177,8 @@ public class SinglePushController {
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,jsonObject.toMap() , true);
+        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}" true);
     }
-
+   
+   
 }
