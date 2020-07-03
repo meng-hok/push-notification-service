@@ -43,6 +43,6 @@ public class Application implements CommandLineRunner {
 
 		// Approch 2: using spring boot injected DataSource to get the connection
 		//ScriptRunner scriptRunner = new ScriptRunner(datasource.getConnection());
-		scriptRunner.runScript(new BufferedReader(new FileReader(schema)));
+		//scriptRunner.runScript(new BufferedReader(new FileReader(schema)));
 	}
 }
