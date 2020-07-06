@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 
 //import org.springframework.boot.WebApplicationType;
@@ -46,7 +47,7 @@ public class Application implements CommandLineRunner {
 		
 		String[] pathList = {"schema.sql","data.sql"};
 
-		
+		System.out.println(ResourceUtils.getURL(ResourceUtils.CLASSPATH_URL_PREFIX));
 		
 		// System.out.println( ResourceUtils.getFile( ResourceUtils.CLASSPATH_URL_PREFIX+"schema.sql").exists());
 		ScriptRunner scriptRunner =  new ScriptRunner(dataSource.getConnection());
