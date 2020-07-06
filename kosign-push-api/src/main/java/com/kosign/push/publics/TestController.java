@@ -31,13 +31,10 @@ public class TestController
     @PostMapping("/test/create")
     public void createTest(@RequestBody DTEST_C01In input)
     {
-        TestEntity test = new TestEntity();
-        test.setName  ( input.getName()  );
-        test.setIcon  ( input.getIcon()  );
-        test.setCode  ( input.getCode()  );
-        test.setStatus( input.getStatus());
-
-        testService.createTest(test);
+        TestEntity t = testService.createTest(new TestEntity(input));
+        System.out.println("#############");
+        System.out.println(t.getCode());
+        System.out.println("#############");
     }
 
     @PostMapping("/test/history")

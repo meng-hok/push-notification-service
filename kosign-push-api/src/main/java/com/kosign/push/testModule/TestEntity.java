@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.kosign.push.testModule.dto.DTEST_C01In;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -18,9 +20,9 @@ import lombok.Data;
 @Entity
 public class TestEntity 
 {
-    @GeneratedValue(strategy = GenerationType.AUTO )
+    @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
-    private String id;
+    private int id;
     private String name;
     private String icon;
     private String code;
@@ -30,8 +32,15 @@ public class TestEntity
     @UpdateTimestamp
     private Timestamp updatedAt;
     public TestEntity(){}
-    public TestEntity(String id) 
+    public TestEntity(int id) 
     {
         this.id = id;
     }
+    public TestEntity(DTEST_C01In input){
+        this.name  = input.getName();
+        this.code  = input.getCode();
+        this.icon  = input.getIcon();
+    }
+
+    
 }
