@@ -5,6 +5,7 @@ import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.RequestDevice;
+import com.kosign.push.history.dto.ResponseHistoryDto;
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.FCM;
@@ -178,6 +179,8 @@ public class ClientController extends SuperController{
 
         return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}", true);
     }
+
    
-   
+
+    
 }
