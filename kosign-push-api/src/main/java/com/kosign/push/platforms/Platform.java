@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.kosign.push.utils.KeyConf;
+
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -27,7 +29,7 @@ public class Platform {
     private String name;
     private String icon;
     private String code;
-    private Character status;
+    private Character status=KeyConf.Status.ACTIVE;
     @CreationTimestamp
     private Timestamp registeredAt;
     @UpdateTimestamp
