@@ -11,19 +11,19 @@ import java.sql.Timestamp;
 @Data
 public class ApplicationResponse {
 
-    private String id;
+    protected String id;
 
-    private String name;
+    protected String name;
 
-    private Integer totalPush=0;
+    protected Integer totalPush=0;
 
-    private Integer platform=0;
+    protected Integer platform=0;
 
-    private Integer ios=0;
+    protected Integer ios=0;
 
-    private Integer android=0;
+    protected Integer android=0;
 
-    private Integer fcm=0;
+    protected Integer fcm=0;
 
-    private Timestamp createdAt;
+    protected Timestamp createdAt;
 }
