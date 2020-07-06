@@ -1,5 +1,6 @@
 package com.kosign.push.testModule;
 
+import com.kosign.push.testModule.dto.DHIST_R01In;
 import com.kosign.push.testModule.dto.DTEST_R01In;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +19,11 @@ public class TestService
     public Object getAllTest(DTEST_R01In params) 
     {
         return testBatisRepository.findAllTest(params);
+    }
+
+    public Object getAllHistory(DHIST_R01In params) 
+    {
+        return testBatisRepository.findAllHistory(params);
     }
 
     public void createTest(TestEntity test)

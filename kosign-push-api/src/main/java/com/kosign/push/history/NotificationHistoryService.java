@@ -1,5 +1,9 @@
 package com.kosign.push.history;
 
+import java.util.List;
+
+import com.kosign.push.history.dto.ResponseHistoryDto;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
@@ -11,6 +15,8 @@ public class NotificationHistoryService {
     
     @Autowired
     NotificationHistoryRepository historyRepo; 
+    @Autowired
+    HistoryBatisRepository historyBatisRepo; 
 
     private Logger logger = LoggerFactory.getLogger(NotificationHistoryService.class);
 
@@ -23,5 +29,14 @@ public class NotificationHistoryService {
     public void saveHistoryWithRabbit(NotificationHistory history){
         logger.info("{ Response from History Queue  }");
         historyRepo.save(history);
+    }
+
+    public ResponseHistoryDto  getPushNotificationHistoryById(Integer id){
+        return historyBatisRepo.findAllHistoryById(id);
+    }
+
+    public List<ResponseHistoryDto> getAllHistory(String startDate,String endDate,String msgTitle)
+    {
+        return historyBatisRepo.findAllHistory(startDate, endDate, msgTitle);
     }
 }

@@ -7,6 +7,8 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kosign.push.users.User;
+import com.kosign.push.utils.GlobalMethod;
+import com.kosign.push.utils.KeyConf;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -35,13 +37,21 @@ public class Application {
     private Timestamp createdAt;
     @UpdateTimestamp
     private Timestamp updatedAt;
-    private Character status = '1';
+    private Character status = KeyConf.Status.ACTIVE;
+
+    private String updatedBy;
 
     public Application(){}
 
 	public Application(String  id ) {
 		this.id = id;
 	
-	}
+    }
+    
+    @PreUpdate
+    public void onPreUpdate() {
+        this.updatedBy = GlobalMethod.getUserCredential().getId();
+    }
+      
     
 }

@@ -2,15 +2,14 @@ package com.kosign.push;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.util.ResourceUtils;
+import org.springframework.web.bind.annotation.CrossOrigin;
 
 import javax.sql.DataSource;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileReader;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -18,14 +17,16 @@ import java.util.ArrayList;
 //import org.springframework.boot.WebApplicationType;
 
 //@EnableJpaAuditing // JPA Auditing 활성화
-
+@CrossOrigin
 @SpringBootApplication
 public class Application implements CommandLineRunner {
 
-	@Autowired
 	private DataSource dataSource;
 
-	
+	@Autowired
+	public Application(DataSource dataSource){
+		this.dataSource = dataSource;
+	}
 
 	public static final String APPLICATION_LOCATIONS = "spring.config.location="
 			+ "classpath:application.yml,"
@@ -51,17 +52,9 @@ public class Application implements CommandLineRunner {
 		
 		// System.out.println( ResourceUtils.getFile( ResourceUtils.CLASSPATH_URL_PREFIX+"schema.sql").exists());
 		ScriptRunner scriptRunner =  new ScriptRunner(dataSource.getConnection());
-		//  pathList = file.list();
-	
-		for (String filename : pathList) {
-			File file = ResourceUtils.getFile( ResourceUtils.CLASSPATH_URL_PREFIX+filename);
-			scriptRunner.runScript(new BufferedReader(new FileReader(file)));
-		}
-		
 
-		
-		
-		
-	
+		// Approch 2: using spring boot injected DataSource to get the connection
+		//ScriptRunner scriptRunner = new ScriptRunner(datasource.getConnection());
+		//scriptRunner.runScript(new BufferedReader(new FileReader(schema)));
 	}
 }

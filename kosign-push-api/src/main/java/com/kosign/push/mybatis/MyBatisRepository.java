@@ -5,6 +5,9 @@ import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.users.User;
 import com.kosign.push.utils.messages.ApplicationResponse;
+import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.utils.messages.PlatformSettingRespone;
+
 import org.apache.ibatis.annotations.*;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -42,8 +45,22 @@ public interface MyBatisRepository {
     @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId}")
     @Results({
             @Result(property = "id", column = "application"),
+            @Result(property = "ios", column = "to_ios"),
+            @Result(property = "android", column = "to_android"),
+            @Result(property = "web", column = "to_web"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "createdBy", column = "user_id")
+    })
+    List<ApplicationResponse> findActiveByUserId(@org.apache.ibatis.annotations.Param("userId")String userId);
+
+    @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId} and application = #{appId}")
+    @Results({
+            @Result(property = "id", column = "application"),
             @Result(property = "totalPush", column = "count"),
             @Result(property = "createdAt", column = "created_at")
     })
-    List<ApplicationResponse> findActiveByUserId(@org.apache.ibatis.annotations.Param("userId")String userId);
+    List<ApplicationResponseById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
+
+    @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
+    List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);
 }
