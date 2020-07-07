@@ -20,6 +20,7 @@ import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
 import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.utils.messages.ApplicationIdentifier;
 import com.kosign.push.utils.messages.ApplicationResponse;
 import com.kosign.push.utils.messages.ApplicationResponseById;
 import com.kosign.push.utils.messages.DeviceClientRespose;
@@ -85,7 +86,7 @@ public class BackendController extends SuperController{
 
 
     @PutMapping("/applications/update")
-    public Object updateName(@RequestBody Application application) throws Exception{
+    public Object updateName(@RequestBody ApplicationIdentifier application) throws Exception{
 
 
         Boolean update = appService.updateApplication(application.getId(),application.getName());
@@ -101,7 +102,7 @@ public class BackendController extends SuperController{
     }
 
     @PutMapping("/applications/delete")
-    public Object disabled(@RequestBody Application application){
+    public Object disabled(@RequestBody ApplicationIdentifier application){
 
 
             Boolean update = appService.disableApplication(application.getId());
