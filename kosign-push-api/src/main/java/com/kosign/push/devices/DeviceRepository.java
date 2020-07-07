@@ -3,6 +3,7 @@ package com.kosign.push.devices;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -44,8 +45,6 @@ public interface DeviceRepository extends JpaRepository<Device,String> {
                                         "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n"+
                                         "ON d.platform_id = p_s.id \n"+
                                         "WHERE  app_id = :appId AND d.status = '1'")
-	List<Map<String, String>> findByAppIdRaw(@Param("appId")String appId);
-
-	
-
+    List<Map<String, String>> findByAppIdRaw(@Param("appId")String appId);
+    
 }

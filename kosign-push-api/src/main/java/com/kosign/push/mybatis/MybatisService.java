@@ -2,6 +2,7 @@ package com.kosign.push.mybatis;
 
 import com.kosign.push.utils.messages.ApplicationResponse;
 import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.utils.messages.DeviceClientRespose;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 
 import org.springframework.beans.factory.annotation.Autowired;
