@@ -283,7 +283,7 @@ public class BackendController extends SuperController{
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     } 
     
-    @PostMapping("push/history")
+    @PostMapping("/push/history")
     public Object getHistory(String startDate,String endDate,String msgTitle) {
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
