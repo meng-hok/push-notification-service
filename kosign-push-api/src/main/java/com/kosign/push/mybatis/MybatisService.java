@@ -20,8 +20,9 @@ public class MybatisService {
         List<ApplicationResponse> applicationResponses =  myBatisRepository.findActiveByUserId(userId);
 
         applicationResponses = applicationResponses.stream().map(application -> {
-            application.setPlatform(application.getAndroid() + application.getIos() + application.getFcm());
-
+            application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
+            application.setApns( application.getIos() ); 
+            application.setFcm(application.getAndroid()  + application.getFcm());
             return application;
         }).collect(Collectors.toList());
         return applicationResponses;

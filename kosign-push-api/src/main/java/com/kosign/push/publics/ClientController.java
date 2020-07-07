@@ -11,6 +11,7 @@ import com.kosign.push.utils.messages.FCM;
 import com.kosign.push.notifications.NotificationService;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
+import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.Response;
@@ -116,7 +117,7 @@ public class ClientController extends SuperController{
             if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
                
 
-                APNS apns = new APNS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+                APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
                 apns.setAppId(app_id);
                 rabbitSender.sendToApns(apns);
                 logger.info("[ Response Sucess : APNS ]");
@@ -155,7 +156,7 @@ public class ClientController extends SuperController{
         for (Agent device : devices) {
             try{
                 if(KeyConf.PlatForm.IOS.equals(device.getPlatform_id())){
-                    APNS apns = new APNS(KeyConf.PlatForm.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message);
+                    APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message);
                     apns.setAppId(app_id);
                     rabbitSender.sendToApns(apns);
                 }else{

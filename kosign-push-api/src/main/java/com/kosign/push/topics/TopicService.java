@@ -9,6 +9,7 @@ import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.notifications.utils.TopicUtil;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
+import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.HttpClient;
 import com.kosign.push.utils.KeyConf;
@@ -194,7 +195,7 @@ public class TopicService {
        devices.forEach(device -> {
            //otificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
             //(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
-           rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
+           rabbitSender.sendToApns(new APNS(FileStorage.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
        });
 
        return topic;

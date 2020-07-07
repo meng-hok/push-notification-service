@@ -1,41 +1,52 @@
 CREATE EXTENSION IF NOT EXISTS tablefunc;
 
-CREATE  VIEW vw_read_application_detail_by_app_id as
-	SELECT * FROM crosstab(
-		$$
-					SELECT app_id as application ,CASE
-					WHEN platform_id = '1' THEN  'ios'
-					WHEN platform_id = '2' THEN  'android'
-					WHEN platform_id = '3' THEN  'web' end as platform
-					, count(*) as counter FROM ps_device_client group by app_id , platform_id ORDER BY 1,2
-
-		$$,$$
-		     VALUES ('ios'::text),('android'), ('web')
-
-		$$
-
-	)AS application_detail(application varchar, "ios" int, "android" int , "web" int);
 
 CREATE VIEW vw_history_count AS 
-	SELECT ps_history.app_id,
-		count(*) AS count
-	FROM ps_history
-	GROUP BY ps_history.app_id;
+	 SELECT application_detail.application AS app_id,
+    application_detail.to_ios,
+    application_detail.to_android,
+    application_detail.to_web
+    FROM crosstab('
+				SELECT ps_history.app_id AS application,
 
-CREATE VIEW vw_application_detail AS
-	SELECT p.id as application,
-		v.ios,
-		v.android,
-		v.web,
+						CASE 
+							WHEN to_platform = ''1'' THEN  ''to_ios''
+							WHEN to_platform = ''2'' THEN  ''to_android''
+							WHEN to_platform = ''3'' THEN  ''to_web'' end as platform,
+						count(*) AS count
+					   FROM ps_history
+				  GROUP BY ps_history.app_id, to_platform
+			'::text, 'VALUES (''to_ios''::text),(''to_android''), (''to_web'')'::text) application_detail(application character varying, to_ios integer, to_android integer, to_web integer);
+
+CREATE VIEW vw_platform_count AS 
+	SELECT ps_platform_setting.application_id AS app_id,
+    count(*) AS platform
+	FROM ps_platform_setting
+	GROUP BY ps_platform_setting.application_id;
+
+CREATE VIEW vw_subscriber_count AS
+	SELECT ps_device_client.app_id,
+	count(*) AS subscriber
+	FROM ps_device_client
+	GROUP BY ps_device_client.app_id;
+
+CREATE VIEW vw_application_detail AS 
+	SELECT p.id AS application,
 		p.name,
 		p.created_at,
 		p.updated_at,
 		p.user_id,
-		his.count
-	FROM vw_read_application_detail_by_app_id v
-		RIGHT JOIN ps_application p ON v.application::text = p.id::text
-		LEFT JOIN vw_history_count his ON v.application::text = his.app_id::text
-	WHERE p.status = '1'::bpchar; 
+		his.app_id,
+		his.to_ios,
+		his.to_android,
+		his.to_web,
+		pf.platform,
+		sc.subscriber
+	FROM ps_application p
+		LEFT JOIN vw_history_count his ON p.id::text = his.app_id::text
+		LEFT JOIN vw_platform_count pf ON p.id::text = pf.app_id::text
+		LEFT JOIN vw_subscriber_count sc ON p.id::text = sc.app_id::text
+	WHERE p.status = '1'::bpchar;
 
 ----------------------------------------------------
 -- create view to read flatform by application id --

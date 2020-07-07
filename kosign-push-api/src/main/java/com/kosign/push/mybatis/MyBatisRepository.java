@@ -45,8 +45,11 @@ public interface MyBatisRepository {
     @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId}")
     @Results({
             @Result(property = "id", column = "application"),
-            @Result(property = "totalPush", column = "count"),
-            @Result(property = "createdAt", column = "created_at")
+            @Result(property = "ios", column = "to_ios"),
+            @Result(property = "android", column = "to_android"),
+            @Result(property = "web", column = "to_web"),
+            @Result(property = "createdAt", column = "created_at"),
+            @Result(property = "createdBy", column = "user_id")
     })
     List<ApplicationResponse> findActiveByUserId(@org.apache.ibatis.annotations.Param("userId")String userId);
 

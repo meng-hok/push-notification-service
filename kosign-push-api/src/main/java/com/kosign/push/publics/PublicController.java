@@ -165,6 +165,7 @@ public class PublicController extends SuperController{
                 
                
             } catch (Exception e) {
+                e.printStackTrace();
                 return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
             }
     }
