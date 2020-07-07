@@ -8,6 +8,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kosign.push.utils.KeyConf;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -29,9 +30,12 @@ public class Platform {
     private String name;
     private String icon;
     private String code;
+    @JsonIgnore
     private Character status=KeyConf.Status.ACTIVE;
+    @JsonIgnore
     @CreationTimestamp
     private Timestamp registeredAt;
+    @JsonIgnore
     @UpdateTimestamp
     private Timestamp updatedAt;
     public Platform(){
