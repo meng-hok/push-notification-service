@@ -5,18 +5,13 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
-import com.kosign.push.apps.AppService;
+
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
-import com.kosign.push.devices.DeviceService;
-import com.kosign.push.mybatis.MybatisService;
+import com.kosign.push.history.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSetting;
-import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.Platform;
-import com.kosign.push.platforms.PlatformService;
-import com.kosign.push.topics.TopicService;
+
 import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.FileStorage;
@@ -30,12 +25,7 @@ import com.kosign.push.utils.messages.ApplicationResponseById;
 import com.kosign.push.utils.messages.DeviceClientRespose;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.trace.http.HttpTrace;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -46,19 +36,22 @@ import org.springframework.web.multipart.MultipartFile;
 @Api(tags = "KOSIGN Push Backend API")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
-@RequestMapping("/api/public")
-public class PublicController extends SuperController{
-    @Autowired
-    private DeviceService deviceService;
+@RequestMapping("/api/v1")
+public class BackendController extends SuperController{
+   
+   
 
     @GetMapping("/applications")
-    public Object getYourApplication() {
+    public Object getYourApplication(@RequestParam(required = false,defaultValue = "") String appName) {
         UserDetail userDetail = GlobalMethod.getUserCredential();
        
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponse> applications = mybatisService.getActiveAppsByUserId(userDetail.getId());
+            List<ApplicationResponse> applications;
+            
+                applications  = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
+          
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         
@@ -70,7 +63,7 @@ public class PublicController extends SuperController{
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponseById> applications = mybatisService.getActiveAppsByAppId(userDetail.getId(),id);
+            List<ApplicationResponseById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         
@@ -116,9 +109,9 @@ public class PublicController extends SuperController{
 
         return update ?
 
-                Response.getResponseBody(KeyConf.Message.SUCCESS," {} ",true) :
+                Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
 
-                Response.getResponseBody(KeyConf.Message.FAIL, " {} ", false);
+                Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
 
 
     }
@@ -183,16 +176,23 @@ public class PublicController extends SuperController{
 
     }
 
-    @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns/delete")
     public Object deleteApnsConfiguration (String appId) {
-        return null;
+        try {
+            return platformSettingService.removeApnsConfiguration(appId) ? 
+                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+
+        } catch (Exception e) {
+            return Response.getResponseBody(KeyConf.Message.FAIL,e.getLocalizedMessage().toUpperCase(), false);
+        }
+       
     }
 /**
  *
  * FCM
  * */
-
+  
     @GetMapping("/platforms/setting/fcm")
     public Object getFcm(String appId) throws Exception{
 
@@ -226,11 +226,6 @@ public class PublicController extends SuperController{
         
     }
 
-//    @PostMapping("platforms/fcm/create")
-    public Object saveFcmTest(String appId,String authKey){
-        return null;
-
-    }
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("platforms/setting/fcm/update")
     public Object updateFcm(String appId,String authKey){
@@ -244,7 +239,18 @@ public class PublicController extends SuperController{
 
     }
 
+    @Transactional(rollbackOn = Exception.class)
+    @PutMapping("/platforms/setting/fcm/delete")
+    public Object deleteFcmConfiguration (String appId,String platform) {
+        try {
+            return platformSettingService.removeFcmConfiguration(appId,platform) ? 
+                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
 
+        } catch (Exception e) {
+            return  Response.getResponseBody(KeyConf.Message.FAIL,e.getLocalizedMessage().toUpperCase(), false);
+        }
+    }
     @Transactional(rollbackOn = Exception.class)
     @GetMapping("/devices")
     public Object getDevice(String appId){
@@ -274,8 +280,37 @@ public class PublicController extends SuperController{
     public Object remove (@RequestBody Platform platform) { 
        
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
+    } 
+    
+    @PostMapping("/history")
+    public Object getHistory(String startDate,String endDate,String msgTitle) {
+
+        List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
+        
+        return Response.getResponseBody(KeyConf.Message.SUCCESS,listHis , true);
     }
-     
+    
+    @GetMapping("/history/{id}")
+    public Object displayHistory(@PathVariable("id")Integer id){
+     ResponseHistoryDto notiHisto= historyService.getPushNotificationHistoryById(id);
+     return Response.getResponseBody(KeyConf.Message.SUCCESS,notiHisto, true);
+    }
+    @Transactional(rollbackOn = Exception.class)
+    @ResponseBody
+    @PostMapping("/create/request")
+    public Object  create(String username,String password) throws Exception{
+        
+        return Response.getResponseBody(KeyConf.Message.SUCCESS ,userService.saveUserToRequestStatus(username, password),true);
+    }
+   
+    @Transactional(rollbackOn = Exception.class)
+    @ResponseBody
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @PostMapping(value="/{userId}/approval")
+    public Object approval(@PathVariable("userId") String userId) throws Exception{
+        return userService.approveUser(userId);
+    }
+  
     @PostMapping("/devices/client")
     public Object create(String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
 

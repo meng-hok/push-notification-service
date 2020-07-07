@@ -10,13 +10,11 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.kosign.push.utils.KeyConf;
 
 @Data
-public class ApplicationResponse {
+public class ApplicationResponse extends ApplicationIdentifier{
 
-    protected String id;
-
-    protected String name;
 
     @JsonProperty("subs_cnt")
     private Integer subscriber=0;
@@ -46,5 +44,5 @@ public class ApplicationResponse {
     @JsonProperty("created_by")
     private String createdBy;
 
-    private Character status = '1';
+    private Character status = KeyConf.Status.ACTIVE;
 }

@@ -17,15 +17,7 @@ public class FirebaseUtil {
     public static final String FIREBASE_SERVER_KEY = "AAAAaO0Mlvo:APA91bECN2HOnEXHEGtqhmZyWZFj7Fo07uYH_nBgii67hR3q51b7qbixv1c4-kFSpCqwwbsjFWsrKUHVflUMO-jUSyld_0TimLUemtoNu2NVT1iXb6YVHdRXbTRbQlCaT_BQ2tnn-bOn";
     public static final String FIREBASE_API_URL = "https://fcm.googleapis.com/fcm/send";
 
-    // public static FirebaseResponse getErrorFirebaseResponse() {
-    //     FirebaseResponse firebaseResponse = new FirebaseResponse();
-    //     firebaseResponse.setMulticast_id(0);
-    //     firebaseResponse.setSuccess(0);
-    //     firebaseResponse.setCanonical_ids(null);
-    //     firebaseResponse.setFailure(1);
-    //     firebaseResponse.setResults(null);
-    //     return firebaseResponse;
-    // }
+
 
     public static JSONObject getNotificationJsonForm(HashMap<String, Object> requestBody) throws Exception{
 

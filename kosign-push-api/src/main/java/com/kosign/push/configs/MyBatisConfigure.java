@@ -1,4 +1,4 @@
-package com.kosign.push.mybatis;
+package com.kosign.push.configs;
 
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.annotation.MapperScan;

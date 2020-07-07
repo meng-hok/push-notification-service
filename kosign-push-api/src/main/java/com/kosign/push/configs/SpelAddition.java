@@ -2,12 +2,13 @@ package com.kosign.push.configs;
 
 import java.io.Serializable;
 
+import com.kosign.push.apps.AppRepository;
 import com.kosign.push.apps.AppService;
 import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.history.NotificationHistoryRepository;
-import com.kosign.push.mybatis.MyBatisRepository;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
+import com.kosign.push.utils.KeyConf;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
@@ -24,17 +25,18 @@ import org.springframework.stereotype.Component;
 public class SpelAddition  {
     
     @Autowired
-    AppService appService;
+    AppRepository appRepo;
     Logger logger = LoggerFactory.getLogger(SpelAddition.class);
     @Autowired
     private NotificationHistoryRepository notificationHistoryRepository;
-    @Autowired
-    private MyBatisRepository myBatisRepository;
+
     // @Pointcut("execution(* com.kosign.push.publics.PublicRestController.*(..)) and args(appId,..) && !execution(com.kosign.push.publics.PublicRestController.create(..)) ")
     // @Pointcut("@args(* com.kosign.push.publics.PublicRestController.*(..)) && !execution(* com.kosign.push.publics.PublicRestController.create(..))  and args(appId,..) ")
     // private void selectAll(){}
     
-    @Before("execution(* com.kosign.push.publics.*.*(..))  && !execution(* com.kosign.push.publics.PublicController.create(..)) && !execution(* com.kosign.push.publics.DevelopmentController.*(..)) and args(appId,..) ")
+    @Pointcut("!execution(* com.kosign.push.publics.*.getHistory(..))")
+    public void notToExcute(){}
+    @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute() && !execution(* com.kosign.push.publics.BackendController.create(..)) && !execution(* com.kosign.push.publics.*.getYourApplication(..))  and args(appId,..) ")
     public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
         
         logger.info("AOP Before method:" + joinPoint.getSignature());
@@ -43,7 +45,8 @@ public class SpelAddition  {
         try {
                 UserDetail userDetail = GlobalMethod.getUserCredential();
             
-                String ownerId = appService.getOwnerIdByAppId(appId);
+                // String ownerId = appService.getOwnerIdByAppId(appId);
+                String ownerId = appRepo.findUserIdByAppId(appId,KeyConf.Status.ACTIVE);
                 if(userDetail.getId().equals(ownerId) ){
                     logger.info("User "+userDetail.getId()+" is valid");
                 }else{
@@ -63,37 +66,37 @@ public class SpelAddition  {
 
     }
 
-    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
-            returning = "result")
-    public void afterFcmReturning(JoinPoint joinPoint, NotificationHistory result) {
-        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " starts :  }" );
-        System.out.println(result);
-        NotificationHistory notificationHistory = result ;
-
-        notificationHistoryRepository.save(notificationHistory);
-
-       logger.info(" [Save Success] ");
-    }
-
-    @AfterThrowing(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
-            throwing =  "exception")
-    public void afterFcmReturningError(JoinPoint joinPoint, Throwable exception) {
-        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " Error Occur :  }" );
-        System.out.println(exception);
-
-
-        logger.info(" [Save Fail] ");
-    }
-
-    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToIOS(..) )",
-            returning = "result")
-    public void afterApnsReturning(JoinPoint joinPoint, Object result) {
-        logger.info("{} returned with value {}", joinPoint, result);
-        NotificationHistory notificationHistory = new NotificationHistory();
-        notificationHistory.setMessage(result.toString());
-        notificationHistoryRepository.save(notificationHistory);
-        logger.info(" [Save Success] ");
-    }
+//    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
+//            returning = "result")
+//    public void afterFcmReturning(JoinPoint joinPoint, NotificationHistory result) {
+//        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " starts :  }" );
+//        System.out.println(result);
+//        NotificationHistory notificationHistory = result ;
+//
+//        notificationHistoryRepository.save(notificationHistory);
+//
+//       logger.info(" [Save Success] ");
+//    }
+//
+//    @AfterThrowing(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
+//            throwing =  "exception")
+//    public void afterFcmReturningError(JoinPoint joinPoint, Throwable exception) {
+//        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " Error Occur :  }" );
+//        System.out.println(exception);
+//
+//
+//        logger.info(" [Save Fail] ");
+//    }
+//
+//    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToIOS(..) )",
+//            returning = "result")
+//    public void afterApnsReturning(JoinPoint joinPoint, Object result) {
+//        logger.info("{} returned with value {}", joinPoint, result);
+//        NotificationHistory notificationHistory = new NotificationHistory();
+//        notificationHistory.setMessage(result.toString());
+//        notificationHistoryRepository.save(notificationHistory);
+//        logger.info(" [Save Success] ");
+//    }
 
 
 

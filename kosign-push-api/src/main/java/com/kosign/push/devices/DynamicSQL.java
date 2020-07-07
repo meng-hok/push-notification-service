@@ -1,4 +1,4 @@
-package com.kosign.push.mybatis;
+package com.kosign.push.devices;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;

@@ -13,5 +13,19 @@ public class Response {
         response.put("status",status);
         return response;
     }
-    
+
+    public static Map<String, Object> getSuccessResponseNonDataBody(String msg) 
+    {
+        Map<String, Object> response = new HashMap<>();
+        response.put("msg", msg);
+        response.put("status",true);
+        return response;
+    }
+    public static Map<String, Object> getFailResponseNonDataBody(String msg) 
+    {
+        Map<String, Object> response = new HashMap<>();
+        response.put("msg", msg);
+        response.put("status",false);
+        return response;
+    }
 }

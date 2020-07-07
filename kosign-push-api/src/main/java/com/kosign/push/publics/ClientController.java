@@ -5,6 +5,7 @@ import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.RequestDevice;
+import com.kosign.push.history.dto.ResponseHistoryDto;
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.FCM;
@@ -31,60 +32,11 @@ import io.swagger.annotations.ApiOperation;
 @RequestMapping("/api/public")
 public class ClientController extends SuperController{
    
-    // @Autowired
-    // private NotificationService notificationService;
-
-    // @Autowired
-    // private DeviceService deviceService;
-   
-    // @Autowired
-    // private PlatformSettingService settingService;
-
-    // @Autowired 
-    // private RabbitSender rabbitSender;
 
     Logger logger = LoggerFactory.getLogger(ClientController.class);
     
     
     
-/*
-    @PostMapping("/send/single/user")
-    public Object sendByUser(String app_id, String receiver_id, String title,String message) {
-        try {
-              System.out.println(app_id + receiver_id);
-           
-              Agent agent = deviceService.getActiveDeviceByUserIdAndAppIdRaw(receiver_id, app_id);
-           
-            String response = null;
-            
-            if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
-               
-               rabbitSender.sendToApns(new APNS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message)); ;
-                response= agent.toString();
-                logger.info("[ Response Sucess : APNS ]");
-                // logger.info(device.toString());
-   
-               return Response.getResponseBody(KeyConf.Message.SUCCESS,response , true);
-          
-            }else if(KeyConf.PlatForm.ANDROID.equals(agent.platform_id) ){
-
-                rabbitSender.sendToFcm(new FCM(agent.authorized_key, agent.token,title,message));
-                response= agent.toString();
-                logger.info("[ Response Sucess : FCM ]");
-                // logger.info(device.toString());
-   
-               return Response.getResponseBody(KeyConf.Message.SUCCESS,new JSONObject(response).toMap() , true);
-            }
-            
-            throw new Exception("Device Id not found");
-         
-        } catch (Exception e) {
-            logger.info(e.getMessage());
-            return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
-        }
-      
-    }
-    */
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required ")
     @PostMapping("/devices/create")
     public Object save(String appId,String deviceId,String platformId,String token){
@@ -110,35 +62,45 @@ public class ClientController extends SuperController{
         try {
             //   System.out.println(app_id + deviceId);
            
-              Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(deviceId,app_id);
+            Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(deviceId,app_id);
            
             String response = null;
+             FCM fcm;
+            switch (agent.platform_id){
+                case "1":
+
+                    APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+                    apns.setAppId(app_id);
+                    rabbitSender.sendToApns(apns);
+                    logger.info("[ Response Sucess : APNS ]");
+
+                    response = agent.toString();
+
+                    break;
             
-            if(agent.platform_id.equals(KeyConf.PlatForm.IOS)){
-               
+                case "2" :
 
-                APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
-                apns.setAppId(app_id);
-                rabbitSender.sendToApns(apns);
-                logger.info("[ Response Sucess : APNS ]");
+                    fcm = new FCM( agent.authorized_key, agent.token,title,message);
+                    fcm.setAppId(app_id);
+                    rabbitSender.sendToFcm(fcm);
+                    logger.info("[ Response Sucess : FCM ]");
 
-                response = agent.toString();
+                    response=agent.toString();
+                    break;
+                case "3" :
+                    fcm = new FCM( agent.authorized_key, agent.token,title,message);
+                    fcm.setAppId(app_id);
+                    rabbitSender.sendToFcm(fcm);
+                    logger.info("[ Response Sucess : FCM ]");
 
-                return Response.getResponseBody(KeyConf.Message.SUCCESS,response , true);
-          
-            }else if(KeyConf.PlatForm.ANDROID.equals(agent.platform_id) ){
-
-                FCM fcm = new FCM( agent.authorized_key, agent.token,title,message);
-                fcm.setAppId(app_id);
-               rabbitSender.sendToFcm(fcm);
-                logger.info("[ Response Sucess : FCM ]");
-
-                response=agent.toString();
-               return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}" , true);
+                    response=agent.toString();
+                    break;
+                
+                default : 
+                    throw new Exception("Device Id not found");
             }
-            
-            throw new Exception("Device Id not found");
-         
+
+            return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
         } catch (Exception e) {
             logger.info(e.getMessage());
             return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
@@ -154,17 +116,32 @@ public class ClientController extends SuperController{
         List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),app_id);
 
         for (Agent device : devices) {
+            FCM fcm;
+            ++success;
             try{
-                if(KeyConf.PlatForm.IOS.equals(device.getPlatform_id())){
-                    APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message);
-                    apns.setAppId(app_id);
-                    rabbitSender.sendToApns(apns);
-                }else{
-                    FCM fcm = new FCM(device.getAuthorized_key(), device.getToken(),title,message);
-                    fcm.setAppId(app_id);
-                    rabbitSender.sendToFcm(fcm);
+                switch (device.platform_id){
+                    case "1":
+                        APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), title, message);
+                        apns.setAppId(app_id);
+                        rabbitSender.sendToApns(apns);
+                        break;
+                    case "2":
+                        fcm = new FCM(device.getAuthorized_key(), device.getToken(),title,message);
+                        fcm.setAppId(app_id);
+                        rabbitSender.sendToFcm(fcm);
+                        break;
+                    case "3":
+                        fcm = new FCM(device.getAuthorized_key(), device.getToken(),title,message);
+                        fcm.setAppId(app_id);
+                        rabbitSender.sendToFcm(fcm);
+                        break;
+                    default : 
+                        logger.info("Out of Platform");
+                        --success;
+                        ++fail ;
+                        break;    
                 }
-                ++success;
+               
             }catch(Exception e){
                 logger.info("Error Message");
                 System.out.println(e.getMessage());
@@ -178,6 +155,63 @@ public class ClientController extends SuperController{
 
         return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}", true);
     }
+
    
-   
+
+    @ApiOperation( value = "Send Notification To Single Device")
+    @PostMapping("/notifications/devices/send/all")
+    public Object sendAll(String app_id, String title,String message) {
+        try {
+            //   System.out.println(app_id + deviceId);
+           
+            List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(app_id);
+            Integer fail = 0;
+           
+            for(Agent agent : agents){
+                FCM fcm;
+                switch (agent.platform_id){
+                    case "1":
+    
+                        APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+                        apns.setAppId(app_id);
+                        rabbitSender.sendToApns(apns);
+                        logger.info("[ Response Sucess : APNS ]");
+    
+    
+                        break;
+                
+                    case "2" :
+    
+                        fcm = new FCM( agent.authorized_key, agent.token,title,message);
+                        fcm.setAppId(app_id);
+                        rabbitSender.sendToFcm(fcm);
+                        logger.info("[ Response Sucess : FCM ]");
+    
+                        break;
+                    case "3" :
+                        fcm = new FCM( agent.authorized_key, agent.token,title,message);
+                        fcm.setAppId(app_id);
+                        rabbitSender.sendToFcm(fcm);
+                        logger.info("[ Response Sucess : FCM ]");
+    
+                        break;
+                    
+                    default : 
+                        logger.info("Out of Platform");
+                        fail ++;
+                        break;
+                        // throw new Exception("Device Id not found");
+                }
+
+            };
+            logger.info("Push Done");
+            System.out.println("Device found : " + agents.size());
+            System.out.println("Fail : " +fail);
+            return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+        } catch (Exception e) {
+            logger.info(e.getMessage());
+            return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
+        }
+      
+    }
 }

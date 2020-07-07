@@ -3,9 +3,6 @@ package com.kosign.push.devices;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import com.kosign.push.mybatis.MyBatisRepository;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.DeviceClientRespose;
@@ -23,22 +20,22 @@ public class DeviceService {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private MyBatisRepository myBatisRepository;
+    private DeviceMybatisRepository deviceMybatisRepository;
     
-    public List<Device> getDevicesByUserId(Integer userId){
-    //    return deviceRepo.findByUserIdAndStatus(userId, KeyConf.Status.ACTIVE);
-        return null;
-    }
+    // public List<Device> getDevicesByUserId(Integer userId){
+    // //    return deviceRepo.findByUserIdAndStatus(userId, KeyConf.Status.ACTIVE);
+    //     return null;
+    // }
 
-    public Device getActiveDeviceByDeviceIdAndAppId(String deviceId,String appId){
-        logger.info("[ Request To Repository ]");
-        Device device = deviceRepo.findByDeviceIdAndAppId(deviceId,appId);
-        System.out.println(device);
-        // if(device.getStatus().equals(KeyConf.Status.DISABLED)){
-        //     return null;
-        // }
-        return device;
-    }
+    // public Device getActiveDeviceByDeviceIdAndAppId(String deviceId,String appId){
+    //     logger.info("[ Request To Repository ]");
+    //     Device device = deviceRepo.findByDeviceIdAndAppId(deviceId,appId);
+    //     System.out.println(device);
+    //     // if(device.getStatus().equals(KeyConf.Status.DISABLED)){
+    //     //     return null;
+    //     // }
+    //     return device;
+    // }
 
 
     public List<Device> getActiveDeviceByAppId (String appId) {
@@ -52,49 +49,41 @@ public class DeviceService {
     }
 
     public Device saveDevice(Device device){
+        
         Device _device = deviceRepo.save(device);
-
+        logger.info(device.toString());
         return _device;
     }
 
     public Agent  getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId){
 
-        List<Map<String,String>> maps = deviceRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
-        if(maps.size() > 0 ){
-             // Agent  agent =  gson.from (jsonElement, MyPojo.class);
-            ObjectMapper mapper = new ObjectMapper();
-            Agent agent = mapper.convertValue(maps.get(0), Agent.class);
-            return agent;
-        }
-        return null;
+        // List<Map<String,String>> maps = deviceRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
+        // if(maps.size() > 0 ){
+        //      // Agent  agent =  gson.from (jsonElement, MyPojo.class);
+        //     ObjectMapper mapper = new ObjectMapper();
+        //     Agent agent = mapper.convertValue(maps.get(0), Agent.class);
+        //     return agent;
+        // }
+        // return null;
+        return deviceMybatisRepository.findByDeviceIdAndAppIdRaw(deviceId, appId);
     }
 
 
 
-    public Agent  getActiveDeviceByUserIdAndAppIdRaw(String userId,String appId){
-
-        List<Map<String,String>> maps = deviceRepo.findByUserIdAndAppIdRaw(userId, appId);
-        if(maps.size() > 0 ){
-             // Agent  agent =  gson.from (jsonElement, MyPojo.class);
-            ObjectMapper mapper = new ObjectMapper();
-            Agent agent = mapper.convertValue(maps.get(0), Agent.class);
-            return agent;
-        }
-        return null;
-    }
+   
 
     public List<Agent> getActiveDevicesByDeviceIdListAndAppId(ArrayList<String> deviceUniqueIdList , String appId ) {
 
-        return  myBatisRepository.findByDeviceIdListAndAppIdRaw(deviceUniqueIdList,appId);
+        return  deviceMybatisRepository.findByDeviceIdListAndAppIdRaw(deviceUniqueIdList,appId);
 
     }
 
-    public List<Map<String,String>>  getActiveDeviceByAppIdRaw(String appId){
+    public List<Agent>  getActiveDeviceByAppIdRaw(String appId){
 
-        List<Map<String,String>> maps = deviceRepo.findByAppIdRaw(appId);
-        return maps;
+        List<Agent> agents = deviceMybatisRepository.findAllDeviceByAppIdRaw(appId);
+        return agents;
     }
     public List<DeviceClientRespose> getAllDevicesClient(String startDate, String endDate, String token, String modelName, String platform, String os  ){
-        return myBatisRepository.finddAllDevicesClient(startDate, endDate, token, modelName, platform, os);
+        return deviceMybatisRepository.findAllDevicesClient(startDate, endDate, token, modelName, platform, os);
     }
 }

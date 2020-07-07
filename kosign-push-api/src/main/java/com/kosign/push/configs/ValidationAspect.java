@@ -12,17 +12,17 @@ import org.springframework.stereotype.Component;
  *
  * For validate request parameter if exist
  * */
-@Aspect
-@Component
+// @Aspect
+// @Component
 public class ValidationAspect {
 
-    @Pointcut("execution(* com.kosign.push.publics.PublicController.saveFcmTest (..)) ")
-    public void customPointCut() {}
+    // @Pointcut("execution(* com.kosign.push.publics.PublicController.saveFcmTest (..)) ")
+    // public void customPointCut() {}
 
-    @Around("customPointCut()")
-    public void validateApplicationPlatformSettingNewSaving (JoinPoint joinPoint){
-        final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
-        logger.info("[ "+joinPoint.getSignature().getName()+" starts ]");
+    // @Around("customPointCut()")
+    // public void validateApplicationPlatformSettingNewSaving (JoinPoint joinPoint){
+    //     final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
+    //     logger.info("[ "+joinPoint.getSignature().getName()+" starts ]");
 
-    }
+    // }
 }
