@@ -30,12 +30,11 @@ public class SpelAddition  {
     @Autowired
     private NotificationHistoryRepository notificationHistoryRepository;
 
-    // @Pointcut("execution(* com.kosign.push.publics.PublicRestController.*(..)) and args(appId,..) && !execution(com.kosign.push.publics.PublicRestController.create(..)) ")
-    // @Pointcut("@args(* com.kosign.push.publics.PublicRestController.*(..)) && !execution(* com.kosign.push.publics.PublicRestController.create(..))  and args(appId,..) ")
-    // private void selectAll(){}
-    
-    @Pointcut("!execution(* com.kosign.push.publics.*.getHistory(..))")
+
+    @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..)) && !execution(* com.kosign.push.publics.BackendController.approval(..))")
     public void notToExcute(){}
+    // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..))")
+    // public void notToExcuteApproval(){}
     @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute() && !execution(* com.kosign.push.publics.BackendController.create(..)) && !execution(* com.kosign.push.publics.*.getYourApplication(..))  and args(appId,..) ")
     public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
         
@@ -50,7 +49,7 @@ public class SpelAddition  {
                 if(userDetail.getId().equals(ownerId) ){
                     logger.info("User "+userDetail.getId()+" is valid");
                 }else{
-                    throw ownerId == null ? new NullPointerException(" Application is being removed") : new Exception("Permisson Denied");
+                    throw ownerId == null ? new NullPointerException(" Application not available") : new Exception("Permisson Denied");
                 }
         } catch (Exception e) {
             logger.info("{Error Occur}");
