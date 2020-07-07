@@ -8,11 +8,12 @@ import com.kosign.push.apps.AppService;
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.mybatis.MybatisService;
+import com.kosign.push.history.NotificationHistoryService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.PlatformService;
 import com.kosign.push.topics.TopicService;
+import com.kosign.push.users.UserService;
 import com.kosign.push.utils.RabbitSender;
 
 import io.swagger.annotations.Api;
@@ -31,10 +32,11 @@ public class SuperController {
     @Autowired
     public TopicService topicService;
     @Autowired
-    public MybatisService mybatisService;
-    @Autowired
     public PlatformService platformService;
-
+    @Autowired
+    public NotificationHistoryService historyService;
+    @Autowired
+    public UserService userService;
     @Autowired 
     public RabbitSender rabbitSender;
 

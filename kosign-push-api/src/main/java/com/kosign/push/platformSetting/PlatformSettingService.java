@@ -38,9 +38,15 @@ public class PlatformSettingService {
         return settingRepo.findAuthorizedKeyByAppIdAndPlatFormRaw(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
     }
 
-    public PlatformSetting saveApns(String appId, String file, String fileKey, String teamId, String bundleId){
+    public PlatformSetting saveApns(String appId, String file, String fileKey, String teamId, String bundleId) throws Exception{
+        
+        PlatformSetting _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
 
-        PlatformSetting _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new Application(appId),fileKey,teamId,bundleId,file);
+        if(_platformSetting != null ){ 
+            throw new Exception ("Application Platform Setting already saved");
+        }
+        
+        _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new Application(appId),fileKey,teamId,bundleId,file);
         return settingRepo.save(_platformSetting);
     }
 
@@ -85,15 +91,26 @@ public class PlatformSettingService {
         return true;
     }
 
-    public Boolean removeApnsConfiguration(String appId) {
-        PlatformSetting platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
-        return null;
+    public Boolean removeApnsConfiguration(String appId) throws Exception{
+        PlatformSetting platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.IOS,KeyConf.Status.ACTIVE);
+        platformSetting.setStatus(KeyConf.Status.DISABLED);
+         settingRepo.save(platformSetting);
+         return true;
     }
-    public Boolean removeFcmConfiguration(String appId) {
-        return null;
+    public Boolean removeFcmConfiguration(String appId,String platform) throws Exception {
+        PlatformSetting platformSetting;
+        if(KeyConf.PlatForm.ANDROID.equals(platform)) { 
+            platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
+        }else if(KeyConf.PlatForm.WEB.equals(platform)) { 
+            platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.WEB,KeyConf.Status.ACTIVE);
+        }else {
+            throw new Exception("Incorrect Platform Exception");
+        }
+
+        platformSetting.setStatus(KeyConf.Status.DISABLED);
+        settingRepo.save(platformSetting);
+        return true;
     }
-    // public Object saveApns(String appId, String file, String fileKey, String teamId, String bundleId) {
-	// 	return null;
-	// }
+  
 
 }

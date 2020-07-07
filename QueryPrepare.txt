@@ -1,0 +1,46 @@
+SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id , p_s.team_id ,p_s.push_url as pFileName
+ FROM ps_device_client d INNER JOIN ps_platform_setting p_s
+ ON d.platform_id = p_s.id
+ WHERE d.device_id = 'TheMenghok' AND app_id ='1' AND d.status = '1'
+
+ CREATE EXTENSION tablefunc;
+
+create view platformDev as
+ SELECT app_id as application ,CASE
+		WHEN platform_id = '1' THEN  'ios'
+		WHEN platform_id = '2' THEN  'android'
+		WHEN platform_id = '3' THEN  'web' end as platform
+		, count(*) as counter FROM ps_device_client group by app_id , platform_id ORDER BY 1,2
+
+ CREATE OR REPLACE FUNCTION public.fn_read_application_detail_by_app_id(_app_id varchar)
+     RETURNS TABLE (application varchar ,ios int , android int , web int)
+     LANGUAGE 'plpgsql'
+
+ AS $BODY$
+ begin
+ 	  RETURN QUERY SELECT *
+ 		FROM crosstab(
+ 			$$SELECT * FROM platformDev where application = _app_id $$ ,$$VALUES ('ios'::text),('android'), ('web')$$
+ 		   ) AS ct (application varchar, "ios" int, "android" int , "web" int);
+ end
+  $BODY$
+
+
+  CREATE OR REPLACE VIEW  SELECT * FROM
+  			crosstab($$
+				SELECT ps_history.app_id AS application,
+
+						CASE 
+							WHEN to_platform = '1' THEN  'to_ios'
+							WHEN to_platform = '2' THEN  'to_android'
+							WHEN to_platform = '3' THEN  'to_web' end as platform,
+						count(*) AS count
+					   FROM ps_history
+				  GROUP BY ps_history.app_id, to_platform
+			$$, 'VALUES (''to_ios''::text),(''to_android''), (''to_web'')'::text) 
+			application_detail(application character varying, to_ios integer, to_android integer, to_web integer);
+CREATE VIEW vw_subscriber_count as 
+select app_id, count(*) as subscriber FROM ps_device_client group by app_id 
+
+CREATE VIEW vw_platform_count as
+select application_id as app_id, count(platform) as platform FROM ps_platform_setting group by app_id , 			

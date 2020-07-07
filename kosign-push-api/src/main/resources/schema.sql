@@ -15,19 +15,21 @@ CREATE VIEW vw_history_count AS
 							WHEN to_platform = ''3'' THEN  ''to_web'' end as platform,
 						count(*) AS count
 					   FROM ps_history
-				  GROUP BY ps_history.app_id, to_platform
+				  GROUP BY application ,platform  
 			'::text, 'VALUES (''to_ios''::text),(''to_android''), (''to_web'')'::text) application_detail(application character varying, to_ios integer, to_android integer, to_web integer);
 
 CREATE VIEW vw_platform_count AS 
 	SELECT ps_platform_setting.application_id AS app_id,
     count(*) AS platform
 	FROM ps_platform_setting
+	WHERE status <> '9'
 	GROUP BY ps_platform_setting.application_id;
 
 CREATE VIEW vw_subscriber_count AS
 	SELECT ps_device_client.app_id,
 	count(*) AS subscriber
 	FROM ps_device_client
+	WHERE status <> '9'
 	GROUP BY ps_device_client.app_id;
 
 CREATE VIEW vw_application_detail AS 

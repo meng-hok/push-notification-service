@@ -38,9 +38,6 @@ public class ApplicationResponse extends ApplicationIdentifier{
     @JsonIgnore
     private Integer web=0;
     
-
-
-
     @JsonProperty("created_at")
     private Timestamp createdAt;
   

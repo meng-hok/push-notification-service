@@ -22,14 +22,20 @@ public class PlatformService {
     
     @Autowired
     PlatformRepository platformRepository;
-
+    
     private Platform getActivePlatformById(String id) { 
         Platform platform = platformRepository.getOne(id);
        
         return KeyConf.Status.DISABLED.equals(platform.getStatus())? 
               null : platform;
     }
-
+   
+    public List<Platform> getActivePlatform() {
+        return platformRepository.findAll().stream()
+                .filter(platform -> ! KeyConf.Status.DISABLED.equals(platform.getStatus()))
+                .collect(Collectors.toList()); 
+	}
+   
     public Platform insert(Platform platform){
 
        return platformRepository.save(platform);
@@ -51,9 +57,5 @@ public class PlatformService {
         return true;
     }
 
-	public List<Platform> getActivePlatform() {
-        return platformRepository.findAll().stream()
-                .filter(platform -> ! KeyConf.Status.DISABLED.equals(platform.getStatus()))
-                .collect(Collectors.toList()); 
-	}
+	
 }

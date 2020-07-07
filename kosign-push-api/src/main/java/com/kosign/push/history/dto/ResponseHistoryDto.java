@@ -2,6 +2,8 @@ package com.kosign.push.history.dto;
 
 import java.sql.Timestamp;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+
 import lombok.Data;
 
 @Data
@@ -12,6 +14,7 @@ public class ResponseHistoryDto
     private String title;
     private String message;
     private String to_platform;
+    @JsonRawValue
     private String response_msg;
     private Integer count;
     private Timestamp created_at;

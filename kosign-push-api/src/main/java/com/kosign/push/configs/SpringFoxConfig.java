@@ -70,7 +70,9 @@ public class SpringFoxConfig {
   @Bean
   public Docket api() {
     return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
-        .paths(PathSelectors.ant("/api/public/**")).build().securitySchemes(Collections.singletonList(securitySchema()))
+        .paths(PathSelectors.ant("/api/**"))
+        .build()
+        .securitySchemes(Collections.singletonList(securitySchema()))
 //            .paths(PathSelectors.any()).build().securitySchemes(Collections.singletonList(securitySchema()))
         .securityContexts(Collections.singletonList(securityContext()));
   }

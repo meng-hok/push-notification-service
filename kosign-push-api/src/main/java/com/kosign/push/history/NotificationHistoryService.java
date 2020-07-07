@@ -24,8 +24,11 @@ public class NotificationHistoryService {
 
         historyRepo.save(history);
     }
+    public void insertHistory(NotificationHistory history) { 
+        historyBatisRepo.insertHistory(history);
+    }
 
-    // @RabbitListener(queues = "pusher.queue.history")
+
     public void saveHistoryWithRabbit(NotificationHistory history){
         logger.info("{ Response from History Queue  }");
         historyRepo.save(history);

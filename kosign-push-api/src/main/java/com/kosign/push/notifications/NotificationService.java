@@ -18,7 +18,6 @@ import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.history.NotificationHistoryService;
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.FCM;
-import com.kosign.push.mybatis.MyBatisRepository;
 import com.kosign.push.notifications.utils.APNsUtil;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.utils.HttpClient;
@@ -47,8 +46,7 @@ public class NotificationService {
     private DeviceService deviceService;
     @Autowired
     RabbitSender rabbitSender;
-    @Autowired
-    MyBatisRepository myBatisRepository;
+   
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCM(FCM fcm){
         System.out.println("Response Message from " + fcm);
@@ -112,7 +110,7 @@ public class NotificationService {
             NotificationHistory history = new NotificationHistory(appId, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
 
 
-            myBatisRepository.insertHistory(history);
+            historyService.insertHistory(history);
             return history;
 
         } catch (Exception e) {
@@ -120,7 +118,7 @@ public class NotificationService {
             logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
              NotificationHistory historyException = new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage());
-            myBatisRepository.insertHistory(historyException);
+             historyService.insertHistory(historyException);
 
 
             return historyException;
@@ -170,22 +168,14 @@ public class NotificationService {
             }
 
             NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
-            myBatisRepository.insertHistory(history);
+            historyService.insertHistory(history);
             return history.toString();
 
         }catch (Exception e ) {
             NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
-            myBatisRepository.insertHistory(history);
+            historyService.insertHistory(history);
             return history.toString();
         }
-
-    }
-    public void sendNotificationByUserId(Integer userId){
-        deviceService.getDevicesByUserId(userId).forEach(device -> {
-            System.out.println(device);
-            // String requestNotificationBody = this.sendNotification(device.getApp().get(), device.getToken());
-            // historyService.saveHistory(new NotificationHistory(requestNotificationBody,new User(userId)));
-        });
 
     }
 
