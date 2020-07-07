@@ -283,7 +283,7 @@ public class BackendController extends SuperController{
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     } 
     
-    @PostMapping("/history")
+    @PostMapping("push/history")
     public Object getHistory(String startDate,String endDate,String msgTitle) {
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
@@ -291,7 +291,7 @@ public class BackendController extends SuperController{
         return Response.getResponseBody(KeyConf.Message.SUCCESS,listHis , true);
     }
     
-    @GetMapping("/history/{id}")
+    @GetMapping("/push/history/{id}")
     public Object displayHistory(@PathVariable("id")Integer id){
      ResponseHistoryDto notiHisto= historyService.getPushNotificationHistoryById(id);
      return Response.getResponseBody(KeyConf.Message.SUCCESS,notiHisto, true);
