@@ -104,8 +104,8 @@ public class ClientController extends SuperController{
 
     }
 
-    @ApiOperation( value = "Send Notification to Single Device")
-    @PostMapping("/notifications/send/single/device")
+    @ApiOperation( value = "Send Notification To Single Device")
+    @PostMapping("/notifications/devices/send/single")
     public Object sendByDevice(String app_id, String deviceId, String title,String message) {
         try {
             //   System.out.println(app_id + deviceId);
@@ -146,8 +146,8 @@ public class ClientController extends SuperController{
       
     }
 
-    @ApiOperation( value = "Send Notification to Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
-    @PostMapping("/notifications/devices/send")
+    @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
+    @PostMapping("/notifications/devices/send/groups")
     public Object send(String app_id, String title, String message , @RequestBody RequestDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
