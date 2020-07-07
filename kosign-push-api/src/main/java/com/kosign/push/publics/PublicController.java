@@ -27,6 +27,7 @@ import com.kosign.push.utils.Response;
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.ApplicationResponse;
 import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.utils.messages.DeviceClientRespose;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -47,8 +48,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/api/public")
 public class PublicController extends SuperController{
-   
-   
+    @Autowired
+    private DeviceService deviceService;
 
     @GetMapping("/applications")
     public Object getYourApplication() {
@@ -274,5 +275,12 @@ public class PublicController extends SuperController{
        
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     }
+     
+    @PostMapping("/devices/client")
+    public Object create(String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
 
+        List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(startDate, endDate, push_id, modelName, plat_code, os_version);
+        
+        return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
+    }
 }

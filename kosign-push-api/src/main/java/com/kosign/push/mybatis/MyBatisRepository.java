@@ -1,11 +1,13 @@
 package com.kosign.push.mybatis;
 
 import com.kosign.push.apps.Application;
+import com.kosign.push.devices.Device;
 import com.kosign.push.history.NotificationHistory;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.users.User;
 import com.kosign.push.utils.messages.ApplicationResponse;
 import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.utils.messages.DeviceClientRespose;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 
 import org.apache.ibatis.annotations.*;
@@ -63,4 +65,8 @@ public interface MyBatisRepository {
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
     List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);
+
+    @SelectProvider(method = "getSQL",type = DynamicSQL.class)
+    List<DeviceClientRespose> finddAllDevicesClient(@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
+    @org.apache.ibatis.annotations.Param("plat_code") String platform, @org.apache.ibatis.annotations.Param("os_version") String os);
 }

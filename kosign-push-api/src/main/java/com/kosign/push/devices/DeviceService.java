@@ -8,6 +8,7 @@ import com.kosign.push.mybatis.MyBatisRepository;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kosign.push.utils.messages.Agent;
+import com.kosign.push.utils.messages.DeviceClientRespose;
 import com.kosign.push.utils.KeyConf;
 
 import org.slf4j.Logger;
@@ -92,5 +93,8 @@ public class DeviceService {
 
         List<Map<String,String>> maps = deviceRepo.findByAppIdRaw(appId);
         return maps;
+    }
+    public List<DeviceClientRespose> getAllDevicesClient(String startDate, String endDate, String token, String modelName, String platform, String os  ){
+        return myBatisRepository.finddAllDevicesClient(startDate, endDate, token, modelName, platform, os);
     }
 }
