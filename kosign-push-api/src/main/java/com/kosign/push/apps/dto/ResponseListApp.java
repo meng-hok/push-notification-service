@@ -13,9 +13,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kosign.push.utils.KeyConf;
 
 @Data
-public class ResponseListApp extends RequestAppIdentifier{
-
-
+public class ResponseListApp extends RequestAppIdentifier
+{
     @JsonProperty("subs_cnt")
     private Integer subscriber=0;
 
