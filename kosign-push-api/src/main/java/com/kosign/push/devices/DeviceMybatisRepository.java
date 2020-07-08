@@ -34,6 +34,6 @@ public interface DeviceMybatisRepository {
     Agent findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId);
     
     @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DynamicSQL.class)
-    List<DeviceClientRespose> findAllDevicesClient(@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
+    List<DeviceClientRespose> findAllDevicesClient(@org.apache.ibatis.annotations.Param("app_id") String appId,@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
     @org.apache.ibatis.annotations.Param("plat_code") String platform, @org.apache.ibatis.annotations.Param("os_version") String os);
 }

@@ -83,7 +83,7 @@ public class DeviceService {
         List<Agent> agents = deviceMybatisRepository.findAllDeviceByAppIdRaw(appId);
         return agents;
     }
-    public List<DeviceClientRespose> getAllDevicesClient(String startDate, String endDate, String token, String modelName, String platform, String os  ){
-        return deviceMybatisRepository.findAllDevicesClient(startDate, endDate, token, modelName, platform, os);
+    public List<DeviceClientRespose> getAllDevicesClient(String appId ,String startDate, String endDate, String token, String modelName, String platform, String os  ){
+        return deviceMybatisRepository.findAllDevicesClient(appId,startDate, endDate, token, modelName, platform, os);
     }
 }

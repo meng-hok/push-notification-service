@@ -26,6 +26,8 @@ import com.kosign.push.utils.messages.ApplicationResponseById;
 import com.kosign.push.utils.messages.DeviceClientRespose;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -252,13 +254,7 @@ public class BackendController extends SuperController{
             return  Response.getResponseBody(KeyConf.Message.FAIL,e.getLocalizedMessage().toUpperCase(), false);
         }
     }
-    @Transactional(rollbackOn = Exception.class)
-    @GetMapping("/devices")
-    public Object getDevice(String appId){
-            List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
-    }
-
+  
     
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @GetMapping("/platforms")
@@ -311,11 +307,18 @@ public class BackendController extends SuperController{
     public Object approval(@PathVariable("userId") String userId) throws Exception{
         return userService.approveUser(userId);
     }
-  
-    @GetMapping("/devices/client")
-    public Object create(String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
+    // @Transactional(rollbackOn = Exception.class)
+    // @GetMapping("/devices")
+    // public Object getDevice(String appId){
+    //         List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
+    //         return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
+    // }
 
-        List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(startDate, endDate, push_id, modelName, plat_code, os_version);
+    @ApiOperation("Get Device detail")
+    @GetMapping("/devices")
+    public Object getDeviceDetail(String appId,String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
+
+        List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, push_id, modelName, plat_code, os_version);
         
         return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
     }

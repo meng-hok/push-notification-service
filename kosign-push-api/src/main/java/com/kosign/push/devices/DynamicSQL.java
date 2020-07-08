@@ -5,14 +5,14 @@ import org.apache.ibatis.annotations.Param;
 
 
 public class DynamicSQL {
-    public String getSQL(@Param("start_date") String startDate, @Param("end_date") String endDate, @Param("push_id") String token, @Param("model_name") String modelName,
+    public String getSQL(@Param("app_id") String appId,@Param("start_date") String startDate, @Param("end_date") String endDate, @Param("push_id") String token, @Param("model_name") String modelName,
     @Param("plat_code") String platform, @Param("os_version") String os){
         String sql= "select dc.token as push_id , dc.model_name, \n" 
 		+"(select pl.code from ps_platform pl where pl.id = dc.platform_id ) as plat_code, \n"
 		+"dc.os as os_version, \n"
 		+"dc.created_at \n"
 	    +"from ps_device_client dc \n"
-	    +"where dc.status = '1' and dc.created_at >= CONCAT(#{start_date},' 00:00:00')::TIMESTAMP AND \n"
+	    +"where dc.app_id = #{app_id} AND  dc.status = '1' and dc.created_at >= CONCAT(#{start_date},' 00:00:00')::TIMESTAMP AND \n"
         +"dc.created_at <= CONCAT(#{end_date},' 23:59:59'):: TIMESTAMP";
         if(StringUtils.isNotBlank(token)){
             sql+=" AND dc.token LIKE  '%' || #{push_id} || '%'";
