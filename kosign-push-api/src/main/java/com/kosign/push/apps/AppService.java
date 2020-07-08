@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 public class AppService {
 
     private AppRepository appRepo;
-    private AppMybatisRepository appMybatisRepo;
+    private AppBatisRepository appMybatisRepo;
     private PlatformSettingService platformSettingService;
 
     public AppEntity save(AppEntity app){
