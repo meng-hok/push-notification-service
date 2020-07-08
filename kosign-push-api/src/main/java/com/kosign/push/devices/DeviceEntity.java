@@ -16,7 +16,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.platforms.PlatformEntity;
-import com.kosign.push.users.User;
+import com.kosign.push.users.UserEntity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;

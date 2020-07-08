@@ -12,7 +12,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 import com.kosign.push.apps.AppEntity;
-import com.kosign.push.users.User;
+import com.kosign.push.users.UserEntity;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;

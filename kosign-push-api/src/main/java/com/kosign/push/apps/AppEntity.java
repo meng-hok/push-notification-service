@@ -7,7 +7,7 @@ import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kosign.push.users.User;
+import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
 
@@ -34,7 +34,7 @@ public class AppEntity {
 
     @JsonProperty("created_by")
     @ManyToOne(optional = true)
-    public User user;
+    public UserEntity user;
     
     @CreationTimestamp
     public Timestamp createdAt;
@@ -55,7 +55,7 @@ public class AppEntity {
         String userId = GlobalMethod.getUserCredential().getId();
         this.updatedBy = userId;
         if(this.user == null ){
-            this.user = new User();
+            this.user = new UserEntity();
         }
         user.setId(userId);
     }

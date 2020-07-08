@@ -25,7 +25,7 @@ import lombok.Data;
 @Data
 @Table(name ="ps_platform_setting")
 @Entity
-public class PlatformSetting {
+public class PlatformSettingEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -45,7 +45,7 @@ public class PlatformSetting {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public PlatformSetting(PlatformEntity platform, AppEntity application, String keyId, String teamId, String bundleId,
+    public PlatformSettingEntity(PlatformEntity platform, AppEntity application, String keyId, String teamId, String bundleId,
             String pushUrl) {
         this.platform = platform;
         this.application = application;
@@ -55,13 +55,13 @@ public class PlatformSetting {
         this.pushUrl = pushUrl;
     }
 
-    public PlatformSetting(PlatformEntity platform, AppEntity application, String authorizedKey) {
+    public PlatformSettingEntity(PlatformEntity platform, AppEntity application, String authorizedKey) {
         this.platform = platform;
         this.application = application;
         this.authorizedKey = authorizedKey;
     }
    
-    public PlatformSetting(){}
+    public PlatformSettingEntity(){}
 
     public void setApnsConfiguration(String keyId, String teamId, String bundleId, String pushUrl) {
         this.keyId = keyId;

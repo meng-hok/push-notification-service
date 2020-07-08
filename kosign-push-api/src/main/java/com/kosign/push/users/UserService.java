@@ -21,8 +21,8 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder encoder;
 
-    public User saveUserToRequestStatus(String username,String password){
-        User user = new User();
+    public UserEntity saveUserToRequestStatus(String username,String password){
+        UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPassword(encoder.encode(password)); 
         user.setRole("USER");
@@ -30,8 +30,8 @@ public class UserService implements UserDetailsService {
         return userRepo.save(user);
     }
    
-    public User approveUser(String userId){
-        User user = userRepo.getOne(userId);
+    public UserEntity approveUser(String userId){
+        UserEntity user = userRepo.getOne(userId);
      
         user.setStatus(KeyConf.Status.ACTIVE);
         return userRepo.save(user);
@@ -40,7 +40,7 @@ public class UserService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) 
     {
-        User user = userRepo.findByUsernameAndStatus(username, KeyConf.Status.ACTIVE);
+        UserEntity user = userRepo.findByUsernameAndStatus(username, KeyConf.Status.ACTIVE);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }else{

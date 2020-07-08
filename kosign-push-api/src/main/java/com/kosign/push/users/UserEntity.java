@@ -17,7 +17,7 @@ import lombok.Data;
 @Data
 @Table(name ="ps_user")
 @Entity
-public class User {
+public class UserEntity {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -37,11 +37,11 @@ public class User {
 
     private Character status = '0';
 
-    public User(String id) {
+    public UserEntity(String id) {
         this.id = id;
     }
 
-    public User() {
+    public UserEntity() {
      
     }
 

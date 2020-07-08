@@ -3,7 +3,7 @@ import lombok.Data;
 import lombok.ToString;
 @Data
 @ToString
-public class APNS extends RequestAPNS{
+public class APNS extends APNSIdentifier{
     
 
    

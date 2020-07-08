@@ -21,13 +21,13 @@ public class PlatformSettingService {
 
     Logger logger = LoggerFactory.getLogger(PlatformSettingService.class);
 
-    public List<PlatformSetting> getActivePlatformsConfiguredByAppId(String appId) {
-        List<PlatformSetting> platforms = settingRepo.findByApplicationIdAndStatus(appId,KeyConf.Status.ACTIVE);
+    public List<PlatformSettingEntity> getActivePlatformsConfiguredByAppId(String appId) {
+        List<PlatformSettingEntity> platforms = settingRepo.findByApplicationIdAndStatus(appId,KeyConf.Status.ACTIVE);
         return platforms;
     }
     
-    public PlatformSetting getActivePlatformConfiguredByAppIdAndPlatFormId(String appId,String platformId){
-        PlatformSetting platform = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,platformId,KeyConf.Status.ACTIVE);
+    public PlatformSettingEntity getActivePlatformConfiguredByAppIdAndPlatFormId(String appId,String platformId){
+        PlatformSettingEntity platform = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,platformId,KeyConf.Status.ACTIVE);
 //        if(platform == null | platform.getStatus().equals(KeyConf.Status.DISABLED)){
 //            return null;
 //        }
@@ -38,30 +38,30 @@ public class PlatformSettingService {
         return settingRepo.findAuthorizedKeyByAppIdAndPlatFormRaw(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
     }
 
-    public PlatformSetting saveApns(String appId, String file, String fileKey, String teamId, String bundleId) throws Exception{
+    public PlatformSettingEntity saveApns(String appId, String file, String fileKey, String teamId, String bundleId) throws Exception{
         
-        PlatformSetting _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
+        PlatformSettingEntity _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
 
         if(_platformSetting != null ){ 
             throw new Exception ("Application Platform Setting already saved");
         }
         
-        _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new AppEntity(appId),fileKey,teamId,bundleId,file);
+        _platformSetting = new PlatformSettingEntity(GlobalMethod.getIos(),new AppEntity(appId),fileKey,teamId,bundleId,file);
         return settingRepo.save(_platformSetting);
     }
 
-    public PlatformSetting saveFcm(String appId, String platform , String authKey) throws Exception{
+    public PlatformSettingEntity saveFcm(String appId, String platform , String authKey) throws Exception{
 
-        PlatformSetting _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,platform) ;
+        PlatformSettingEntity _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,platform) ;
 
         if(_platformSetting != null ){ 
             throw new Exception ("Application Platform Setting already saved");
         }
 
         if ( KeyConf.PlatForm.ANDROID.equals(platform)  ) { 
-            _platformSetting  = new PlatformSetting(GlobalMethod.getAndroid(),new AppEntity(appId),authKey);
+            _platformSetting  = new PlatformSettingEntity(GlobalMethod.getAndroid(),new AppEntity(appId),authKey);
         }else if(KeyConf.PlatForm.WEB.equals(platform)) { 
-            _platformSetting  = new PlatformSetting(GlobalMethod.getBrowser(),new AppEntity(appId),authKey);
+            _platformSetting  = new PlatformSettingEntity(GlobalMethod.getBrowser(),new AppEntity(appId),authKey);
         }else{
             return null;
         }
@@ -70,7 +70,7 @@ public class PlatformSettingService {
     }
 
     public Boolean updateFcm(String appId, String authKey) {
-        PlatformSetting platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
+        PlatformSettingEntity platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
         if(platformSetting == null ){
             return false;
 
@@ -81,7 +81,7 @@ public class PlatformSettingService {
     }
 
     public Boolean updateApns(String appId, APNS apns){
-        PlatformSetting platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.IOS,KeyConf.Status.ACTIVE);
+        PlatformSettingEntity platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.IOS,KeyConf.Status.ACTIVE);
         if(platformSetting == null ){
             return false;
 
@@ -92,13 +92,13 @@ public class PlatformSettingService {
     }
 
     public Boolean removeApnsConfiguration(String appId) throws Exception{
-        PlatformSetting platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.IOS,KeyConf.Status.ACTIVE);
+        PlatformSettingEntity platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.IOS,KeyConf.Status.ACTIVE);
         platformSetting.setStatus(KeyConf.Status.DISABLED);
          settingRepo.save(platformSetting);
          return true;
     }
     public Boolean removeFcmConfiguration(String appId,String platform) throws Exception {
-        PlatformSetting platformSetting;
+        PlatformSettingEntity platformSetting;
         if(KeyConf.PlatForm.ANDROID.equals(platform)) { 
             platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
         }else if(KeyConf.PlatForm.WEB.equals(platform)) { 

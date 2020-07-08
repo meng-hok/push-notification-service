@@ -7,7 +7,7 @@ import com.kosign.push.devices.DeviceService;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.notifications.utils.TopicUtil;
-import com.kosign.push.platformSetting.PlatformSetting;
+import com.kosign.push.platformSetting.PlatformSettingEntity;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
@@ -187,7 +187,7 @@ public class TopicService {
     }
 
     public Object sentToApns(String appId, String topicName, String title, String message){
-        PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
+        PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
         /* Android including **/
        Topic topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
        List<DeviceEntity> devices =  topic.getDevice();

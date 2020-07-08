@@ -9,7 +9,7 @@ import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.notificationHistory.NotificationHistoryService;
-import com.kosign.push.platformSetting.PlatformSetting;
+import com.kosign.push.platformSetting.PlatformSettingEntity;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.PlatformService;
 import com.kosign.push.topics.TopicService;
