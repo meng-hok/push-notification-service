@@ -224,8 +224,10 @@ public class BackendController extends SuperController{
             PlatformSettingEntity platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.WEB);
             
             List<PlatformSettingEntity> platformList = new ArrayList<>();
-            platformList.add(platformSetting);
-            platformList.add(platformSettingWeb);
+            if (platformSetting != null  )
+                platformList.add(platformSetting);
+            if (platformSettingWeb != null  )
+                platformList.add(platformSettingWeb);
             return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformList, true));
 
 
@@ -235,12 +237,17 @@ public class BackendController extends SuperController{
     }
 
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
+    @ApiOperation(value = "To register platform setting",notes = "Code = 2 (Fcm android ) & 3 (Fcm Web) ")
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/setting/fcm")
     public Object saveFcm(@RequestBody RequestCreateFcm requestFcm){
         try {
-            PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
-            return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+            if(KeyConf.PlatForm.ANDROID.equals(requestFcm.getPlatformId()) | KeyConf.PlatForm.WEB.equals(requestFcm.getPlatformId()) ) {
+                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
+                return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+            }
+
+           return Response.getFailResponseNonDataBody("Incorrect Requested Platform Code ");
         } catch (Exception e) {
           
               return  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
