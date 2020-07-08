@@ -13,7 +13,7 @@ import org.springframework.stereotype.Repository;
 @Repository()
 public interface NotificationHistoryBatisRepository
 {
-    @SelectProvider(method = "getSQL", type = DynamicSQL.class)
+    @SelectProvider(method = "getSQL", type = NotificationHistoryBatisDynamicSql.class)
     public List<ResponseHistoryDto> findAllHistory(@Param("startDate") String startDate ,@Param("endDate") String endDate,@Param("msgTitle") String msgTitle);
 
     @Select("SELECT  ph.id,ph.reciever_id,ph.title,ph.message,ph.to_platform,ph.status,ph.response_msg,ph.created_at,ph.count FROM  ps_history ph \n"+

@@ -19,7 +19,7 @@ import java.util.List;
 //uniqueConstraints={
 //@UniqueConstraint(columnNames = {"productId", "serial"}
 @Entity
-public class Topic {
+public class TopicEntity {
 
     @Id
     @GeneratedValue(generator = "uuid")
@@ -49,7 +49,7 @@ public class Topic {
     @CreationTimestamp
     private Timestamp timestamp;
 
-    public Topic(String name, AppEntity application) {
+    public TopicEntity(String name, AppEntity application) {
         this.name = name;
         this.application = application;
     }

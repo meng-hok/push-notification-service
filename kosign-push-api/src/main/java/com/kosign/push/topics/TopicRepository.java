@@ -6,13 +6,13 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface TopicRepository extends JpaRepository<Topic,String> {
-    List<Topic> findAllByApplicationIdAndStatus(String appId, Character active);
+public interface TopicRepository extends JpaRepository<TopicEntity,String> {
+    List<TopicEntity> findAllByApplicationIdAndStatus(String appId, Character active);
 
-    List<Topic>  findByNameAndApplicationId(String topicName, String appId);
+    List<TopicEntity>  findByNameAndApplicationId(String topicName, String appId);
 
     /* unique constraint*/
-    Topic findAllByApplicationIdAndNameAndStatus(String appId, String topicName, Character active);
+    TopicEntity findAllByApplicationIdAndNameAndStatus(String appId, String topicName, Character active);
 
-    Topic findByNameAndApplicationIdAndAgentAndStatus(String topicName, String appId, Character apns, Character status);
+    TopicEntity findByNameAndApplicationIdAndAgentAndStatus(String topicName, String appId, Character apns, Character status);
 }

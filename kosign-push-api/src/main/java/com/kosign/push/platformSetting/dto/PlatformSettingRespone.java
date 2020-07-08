@@ -1,4 +1,4 @@
-package com.kosign.push.utils.messages;
+package com.kosign.push.platformSetting.dto;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

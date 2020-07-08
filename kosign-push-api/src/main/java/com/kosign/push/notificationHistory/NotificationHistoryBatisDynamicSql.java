@@ -3,7 +3,7 @@ package com.kosign.push.notificationHistory;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 
-public class DynamicSQL {
+public class NotificationHistoryBatisDynamicSql {
 
     public String getSQL(@Param("startDate") String startDate ,@Param("endDate") String endDate,@Param("msgTitle") String msgTitle)
     {

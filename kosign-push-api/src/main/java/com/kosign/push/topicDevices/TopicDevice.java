@@ -1,7 +1,7 @@
 package com.kosign.push.topicDevices;
 
 import com.kosign.push.devices.DeviceEntity;
-import com.kosign.push.topics.Topic;
+import com.kosign.push.topics.TopicEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,7 +27,7 @@ public class TopicDevice {
 
     @ManyToOne
     @JoinColumn(name = "topic_id")
-    private Topic topic;
+    private TopicEntity topic;
 
     @ManyToOne
     @JoinColumn(name = "device_id")
@@ -37,7 +37,7 @@ public class TopicDevice {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    public TopicDevice( Topic topic,DeviceEntity device) {
+    public TopicDevice( TopicEntity topic,DeviceEntity device) {
         this.topic = topic;
         this.device = device;
     }

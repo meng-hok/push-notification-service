@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
-import com.kosign.push.utils.messages.PlatformSettingRespone;
+import com.kosign.push.platformSetting.dto.*;
 
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;

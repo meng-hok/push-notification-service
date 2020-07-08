@@ -20,7 +20,7 @@ public class DeviceService {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private DeviceMybatisRepository deviceMybatisRepository;
+    private DeviceBatisRepository deviceMybatisRepository;
     
     // public List<Device> getDevicesByUserId(Integer userId){
     // //    return deviceRepo.findByUserIdAndStatus(userId, KeyConf.Status.ACTIVE);

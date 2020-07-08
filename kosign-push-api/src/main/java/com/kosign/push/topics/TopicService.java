@@ -54,24 +54,24 @@ public class TopicService {
 //    }
 //
 
-    public Topic  getTopicDetailByAppIdAndTopicName(String appId, String topicName) {
+    public TopicEntity  getTopicDetailByAppIdAndTopicName(String appId, String topicName) {
         return topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
     }
-    public List<Topic> getActiveTopicsByAppId(String AppId){
+    public List<TopicEntity> getActiveTopicsByAppId(String AppId){
        return topicRepository.findAllByApplicationIdAndStatus(AppId,KeyConf.Status.ACTIVE);
     }
 
 
     public Object registerTopic(String appId,String topicName) throws PSQLException {
-        Topic topic =new Topic();
+        TopicEntity topic =new TopicEntity();
         topic.setApplication(new AppEntity(appId));
         topic.setName(topicName);
         return topicRepository.save(topic);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Topic subscribeUserToTopic(String appId,String topicName,List<DeviceEntity> devices){
-        Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+    public TopicEntity subscribeUserToTopic(String appId,String topicName,List<DeviceEntity> devices){
+        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
         if(topic == null ){
             return null;
         }
@@ -84,7 +84,7 @@ public class TopicService {
 
     @Transactional(rollbackOn = Exception.class)
     public Object unsubscribeUserFromTopic(String appId, String topicName, ArrayList<DeviceEntity> devices) {
-        Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
 //        List<TopicDevice> topicDevices = getTopicDetailByAppIdAndTopicName();
         return null;
     }
@@ -108,12 +108,12 @@ public class TopicService {
      * Dynasmic work
      * */
     @Transactional(rollbackOn = Exception.class)
-    public List<Topic> createByTopicNameAndAppId(String topicName , String appId) throws Exception{
+    public List<TopicEntity> createByTopicNameAndAppId(String topicName , String appId) throws Exception{
         try{
 
-            List<Topic> existData = topicRepository.findByNameAndApplicationId(topicName,appId);
+            List<TopicEntity> existData = topicRepository.findByNameAndApplicationId(topicName,appId);
 
-            List<Topic> topicList = new ArrayList<>();
+            List<TopicEntity> topicList = new ArrayList<>();
 
             List<DeviceEntity> androidDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.ANDROID);
             List<DeviceEntity> iosDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.IOS);
@@ -134,7 +134,7 @@ public class TopicService {
                 logger.info("[ Response for FCM Subscribe... ]");
                 System.out.println(obj);
 
-                Topic fcmTopic =new Topic(topicName,new AppEntity(appId));
+                TopicEntity fcmTopic =new TopicEntity(topicName,new AppEntity(appId));
 
                 fcmTopic.setFcm();
                 fcmTopic.setDevice(androidDevices);
@@ -150,7 +150,7 @@ public class TopicService {
             }
 
             if((!iosDevices.isEmpty())) {
-                Topic apnsTopic = new Topic(topicName, new AppEntity(appId));
+                TopicEntity apnsTopic = new TopicEntity(topicName, new AppEntity(appId));
 
                 apnsTopic.setDevice(iosDevices);
                 apnsTopic.setApns();
@@ -189,7 +189,7 @@ public class TopicService {
     public Object sentToApns(String appId, String topicName, String title, String message){
         PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
         /* Android including **/
-       Topic topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
+       TopicEntity topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
        List<DeviceEntity> devices =  topic.getDevice();
 
        devices.forEach(device -> {

@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 import com.kosign.push.devices.dto.*;
 @Repository
-public interface DeviceMybatisRepository {
+public interface DeviceBatisRepository {
     
     @Select({"<script>","SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
         "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
@@ -33,7 +33,7 @@ public interface DeviceMybatisRepository {
             "WHERE d.device_id = #{deviceId} AND app_id = #{appId}  AND d.status = '1' LIMIT 1")
     Agent findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId);
     
-    @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DynamicSQL.class)
+    @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DeviceBatisDynasmicSql.class)
     List<ResponseDevice> findAllDevicesClient(@org.apache.ibatis.annotations.Param("app_id") String appId,@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
     @org.apache.ibatis.annotations.Param("plat_code") String platform, @org.apache.ibatis.annotations.Param("os_version") String os);
 }

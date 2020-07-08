@@ -4,7 +4,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
 
 
-public class DynamicSQL {
+public class DeviceBatisDynasmicSql {
     public String getSQL(@Param("app_id") String appId,@Param("start_date") String startDate, @Param("end_date") String endDate, @Param("push_id") String token, @Param("model_name") String modelName,
     @Param("plat_code") String platform, @Param("os_version") String os){
         String sql= "select dc.token as push_id , dc.model_name, \n" 

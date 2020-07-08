@@ -9,7 +9,7 @@ import com.kosign.push.utils.KeyConf;
 
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
-import com.kosign.push.utils.messages.PlatformSettingRespone;
+import com.kosign.push.platformSetting.dto.PlatformSettingRespone;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
