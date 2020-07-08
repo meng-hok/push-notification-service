@@ -83,6 +83,11 @@ public class BackendController extends SuperController{
     @PostMapping("/applications")
     public Object create(@RequestBody RequestCreateApp applicationCreateRequest){
         try {
+            if(appService.getAppByNameAndUserId(applicationCreateRequest.getName()) != null) {
+
+                throw new Exception("Application is Being Registered");
+            }
+
             AppEntity app = new AppEntity();
             app.setName(applicationCreateRequest.getName());
             AppEntity responseApp =  appService.save(app);
@@ -92,6 +97,7 @@ public class BackendController extends SuperController{
             //  ResponseCommonApp responseCommonApp =  new ResponseCommonApp(responseApp);
              return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
         } catch (Exception e) {
+            System.out.println(e.getLocalizedMessage());
             return  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
       

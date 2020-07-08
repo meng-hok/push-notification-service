@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 @Data
-public class PlatformSettingRespone {
+public class ResponsePlatformSetting {
     private  String plat_id;
 
     private String plat_nm;
