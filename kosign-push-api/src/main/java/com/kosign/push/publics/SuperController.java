@@ -8,7 +8,7 @@ import com.kosign.push.apps.AppService;
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.history.NotificationHistoryService;
+import com.kosign.push.notificationHistory.NotificationHistoryService;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.platforms.PlatformService;

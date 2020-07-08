@@ -1,4 +1,4 @@
-package com.kosign.push.devices;
+package com.kosign.push.devices.dto;
 
 import lombok.Data;
 

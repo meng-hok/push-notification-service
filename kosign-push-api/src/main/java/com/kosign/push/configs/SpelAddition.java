@@ -4,8 +4,8 @@ import java.io.Serializable;
 
 import com.kosign.push.apps.AppRepository;
 import com.kosign.push.apps.AppService;
-import com.kosign.push.history.NotificationHistory;
-import com.kosign.push.history.NotificationHistoryRepository;
+import com.kosign.push.notificationHistory.NotificationHistory;
+import com.kosign.push.notificationHistory.NotificationHistoryRepository;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;

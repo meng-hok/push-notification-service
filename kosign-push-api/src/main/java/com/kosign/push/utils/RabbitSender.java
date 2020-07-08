@@ -1,6 +1,6 @@
 package com.kosign.push.utils;
 
-import com.kosign.push.history.NotificationHistory;
+import com.kosign.push.notificationHistory.NotificationHistory;
 import com.kosign.push.utils.messages.APNS;
 import com.kosign.push.utils.messages.FCM;
 

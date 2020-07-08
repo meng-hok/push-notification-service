@@ -1,5 +1,5 @@
 
-package com.kosign.push.history;
+package com.kosign.push.notificationHistory;
 import java.sql.Date;
 import java.sql.Timestamp;
 

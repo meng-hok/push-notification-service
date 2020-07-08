@@ -13,9 +13,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.Api;
-
 @Api(tags = "Test APIs")
-@RestController
+// @RestController
 @RequestMapping("/api/public")
 public class TestController 
 {

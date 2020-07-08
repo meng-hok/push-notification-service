@@ -1,12 +1,11 @@
-package com.kosign.push.history;
+package com.kosign.push.notificationHistory;
 
 import java.util.List;
 
-import com.kosign.push.history.dto.ResponseHistoryDto;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ public class NotificationHistoryService {
     @Autowired
     NotificationHistoryRepository historyRepo; 
     @Autowired
-    HistoryBatisRepository historyBatisRepo; 
+    NotificationHistoryBatisRepository historyBatisRepo; 
 
     private Logger logger = LoggerFactory.getLogger(NotificationHistoryService.class);
 

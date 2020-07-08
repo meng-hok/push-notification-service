@@ -1,4 +1,4 @@
-package com.kosign.push.topic_devices;
+package com.kosign.push.topicDevices;
 
 import com.kosign.push.devices.Device;
 import com.kosign.push.topics.Topic;

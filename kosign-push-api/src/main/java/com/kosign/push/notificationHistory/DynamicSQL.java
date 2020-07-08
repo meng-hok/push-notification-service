@@ -1,4 +1,4 @@
-package com.kosign.push.history;
+package com.kosign.push.notificationHistory;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;

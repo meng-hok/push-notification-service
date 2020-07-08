@@ -1,4 +1,4 @@
-package com.kosign.push.history.dto;
+package com.kosign.push.notificationHistory.dto;
 
 import java.sql.Timestamp;
 

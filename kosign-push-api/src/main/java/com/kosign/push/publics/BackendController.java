@@ -8,7 +8,7 @@ import javax.transaction.Transactional;
 
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
-import com.kosign.push.history.dto.ResponseHistoryDto;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platforms.Platform;
 
@@ -71,7 +71,7 @@ public class BackendController extends SuperController{
     }
     
 
-    @PostMapping("/applications/create")
+    @PostMapping("/applications")
     public Object create(String name){
         try {
             Application app = new Application();
@@ -85,7 +85,7 @@ public class BackendController extends SuperController{
     }
 
 
-    @PutMapping("/applications/update")
+    @PutMapping("/applications")
     public Object updateName(@RequestBody ApplicationIdentifier application) throws Exception{
 
 
@@ -101,7 +101,7 @@ public class BackendController extends SuperController{
 
     }
 
-    @PutMapping("/applications/delete")
+    @DeleteMapping("/applications")
     public Object disabled(@RequestBody ApplicationIdentifier application){
 
 
@@ -149,7 +149,7 @@ public class BackendController extends SuperController{
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/setting/apns/create")
+    @PostMapping("/platforms/setting/apns")
     public Object saveApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception{
             
             try {
@@ -166,7 +166,7 @@ public class BackendController extends SuperController{
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/setting/apns/update")
+    @PutMapping("/platforms/setting/apns")
     public Object updateApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception {
 
             String file = FileStorage.uploadFile(p8file);
@@ -177,7 +177,7 @@ public class BackendController extends SuperController{
 
     }
 
-    @PutMapping("/platforms/setting/apns/delete")
+    @DeleteMapping("/platforms/setting/apns")
     public Object deleteApnsConfiguration (String appId) {
         try {
             return platformSettingService.removeApnsConfiguration(appId) ? 
@@ -215,7 +215,7 @@ public class BackendController extends SuperController{
 
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/setting/fcm/create")
+    @PostMapping("platforms/setting/fcm")
     public Object saveFcm(String appId,String platformId,String authKey){
         try {
             PlatformSetting platformSetting= platformSettingService.saveFcm(appId,platformId, authKey);
@@ -228,7 +228,7 @@ public class BackendController extends SuperController{
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("platforms/setting/fcm/update")
+    @PutMapping("platforms/setting/fcm")
     public Object updateFcm(String appId,String authKey){
         try {
             Boolean updateStatus = platformSettingService.updateFcm(appId, authKey);
@@ -241,7 +241,7 @@ public class BackendController extends SuperController{
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/setting/fcm/delete")
+    @DeleteMapping("/platforms/setting/fcm")
     public Object deleteFcmConfiguration (String appId,String platform) {
         try {
             return platformSettingService.removeFcmConfiguration(appId,platform) ? 
@@ -261,29 +261,29 @@ public class BackendController extends SuperController{
 
     
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PostMapping("/platforms")
+    @GetMapping("/platforms")
     public Object get(){
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PostMapping("/platforms/save")
+    @PostMapping("/platforms")
     public Object save (@RequestBody Platform platform) { 
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.insert(platform), true))  ;
     }
 
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PutMapping("/platforms/update")
+    @PutMapping("/platforms")
     public Object update (@RequestBody Platform platform) { 
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.update(platform),true))  ;
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PutMapping("/platforms/remove")
+    @DeleteMapping("/platforms")
     public Object remove (@RequestBody Platform platform) { 
        
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     } 
     
-    @PostMapping("/push/history")
+    @GetMapping("/push/history")
     public Object getHistory(String startDate,String endDate,String msgTitle) {
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
@@ -312,7 +312,7 @@ public class BackendController extends SuperController{
         return userService.approveUser(userId);
     }
   
-    @PostMapping("/devices/client")
+    @GetMapping("/devices/client")
     public Object create(String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
 
         List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(startDate, endDate, push_id, modelName, plat_code, os_version);

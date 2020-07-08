@@ -1,3 +1,4 @@
+package com.kosign.push.topicDevices;
 //package com.kosign.push.topic_devices;
 //
 //import org.springframework.data.jpa.repository.JpaRepository;

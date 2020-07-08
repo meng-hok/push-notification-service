@@ -1,3 +1,4 @@
+package com.kosign.push.topicDevices;
 //package com.kosign.push.topic_devices;
 //
 //import lombok.AllArgsConstructor;

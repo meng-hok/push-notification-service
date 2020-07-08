@@ -1,8 +1,8 @@
-package com.kosign.push.history;
+package com.kosign.push.notificationHistory;
 
 import java.util.List;
 
-import com.kosign.push.history.dto.ResponseHistoryDto;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -11,7 +11,7 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
 @Repository()
-public interface HistoryBatisRepository
+public interface NotificationHistoryBatisRepository
 {
     @SelectProvider(method = "getSQL", type = DynamicSQL.class)
     public List<ResponseHistoryDto> findAllHistory(@Param("startDate") String startDate ,@Param("endDate") String endDate,@Param("msgTitle") String msgTitle);
