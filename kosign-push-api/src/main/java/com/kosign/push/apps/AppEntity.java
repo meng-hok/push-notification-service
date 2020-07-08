@@ -14,37 +14,39 @@ import com.kosign.push.utils.KeyConf;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
-import lombok.Data;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+@AllArgsConstructor
 @Data
 @Table(name ="ps_application",uniqueConstraints={
         @UniqueConstraint(columnNames = {"user_id", "name"})}
 )
 @Entity
-public class Application {
+public class AppEntity {
     // @GeneratedValue(strategy = GenerationType.AUTO )
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
-    private String id;
+    public String id;
 
-    private String name;
+    public String name;
 
     @JsonProperty("created_by")
     @ManyToOne(optional = true)
-    private User user;
+    public User user;
     
     @CreationTimestamp
-    private Timestamp createdAt;
+    public Timestamp createdAt;
     @UpdateTimestamp
-    private Timestamp updatedAt;
-    private Character status = KeyConf.Status.ACTIVE;
+    public Timestamp updatedAt;
+    public Character status = KeyConf.Status.ACTIVE;
 
-    private String updatedBy;
+    public String updatedBy;
 
-    public Application(){}
+    public AppEntity(){}
 
-	public Application(String  id ) {
+	public AppEntity(String  id ) {
 		this.id = id;
 	
     }

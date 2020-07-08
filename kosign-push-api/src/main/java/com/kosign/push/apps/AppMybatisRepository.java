@@ -2,8 +2,8 @@ package com.kosign.push.apps;
 
 import java.util.List;
 
-import com.kosign.push.apps.dto.ApplicationResponse;
-import com.kosign.push.apps.dto.ApplicationResponseById;
+import com.kosign.push.apps.dto.ResponseAppById;
+import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 
 import org.apache.ibatis.annotations.Result;
@@ -23,7 +23,7 @@ public interface AppMybatisRepository {
             @Result(property = "createdAt", column = "created_at"),
             @Result(property = "createdBy", column = "user_id")
     })
-    List<ApplicationResponse> findActiveByUserIdAndName(@org.apache.ibatis.annotations.Param("userId")String userId,@org.apache.ibatis.annotations.Param("name")String name);
+    List<ResponseListApp> findActiveByUserIdAndName(@org.apache.ibatis.annotations.Param("userId")String userId,@org.apache.ibatis.annotations.Param("name")String name);
    
     @Select("SELECT * FROM vw_application_detail WHERE user_id = #{userId} and application = #{appId}")
     @Results({
@@ -31,7 +31,7 @@ public interface AppMybatisRepository {
             @Result(property = "totalPush", column = "count"),
             @Result(property = "createdAt", column = "created_at")
     })
-    List<ApplicationResponseById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
+    List<ResponseAppById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
     List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);

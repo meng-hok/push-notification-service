@@ -1,6 +1,6 @@
 package com.kosign.push.publics;
 
-import com.kosign.push.devices.Device;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.topics.TopicService;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.RabbitSender;
@@ -50,7 +50,7 @@ public class TopicPushController {
 
     @ApiOperation(value = "Unsubscribe Device from Topic ")
     @PostMapping("/topics/remove")
-    public Object registerTopic (String appId, String topicName, ArrayList<Device> devices){
+    public Object registerTopic (String appId, String topicName, ArrayList<DeviceEntity> devices){
         try {
 
             return Response.getResponseBody(KeyConf.Message.SUCCESS,  topicService.unsubscribeUserFromTopic(appId,topicName,devices) ,true);
@@ -86,7 +86,7 @@ public class TopicPushController {
      * */
     @ApiOperation(value = "Add Many Device to FCM")
     @PostMapping("/topics/devices/insert")
-    public Object addDeviceToTopic (String appId, String topicName, @RequestBody ArrayList<Device> devices){
+    public Object addDeviceToTopic (String appId, String topicName, @RequestBody ArrayList<DeviceEntity> devices){
 
 
         /**
@@ -124,7 +124,7 @@ public class TopicPushController {
 
     @ApiOperation(value = "Unsubscribe Device from Topic")
     @PostMapping("/topics/devices/remove")
-    public Object unsubscribeDeviceFromTopic(String appId, String topicName, @RequestBody ArrayList<Device> devices){
+    public Object unsubscribeDeviceFromTopic(String appId, String topicName, @RequestBody ArrayList<DeviceEntity> devices){
         try {
             return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.unsubscribeUserFromTopic(appId, topicName, devices),true);
         } catch (Exception ex){

@@ -14,10 +14,10 @@ import com.eatthepath.pushy.apns.util.SimpleApnsPayloadBuilder;
 import com.eatthepath.pushy.apns.util.SimpleApnsPushNotification;
 import com.eatthepath.pushy.apns.util.concurrent.PushNotificationFuture;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.notificationHistory.NotificationHistory;
+import com.kosign.push.notificationHistory.NotificationHistoryEntity;
 import com.kosign.push.notificationHistory.NotificationHistoryService;
-import com.kosign.push.utils.messages.APNS;
-import com.kosign.push.utils.messages.FCM;
+import com.kosign.push.platformSetting.dto.APNS;
+import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.notifications.utils.APNsUtil;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.utils.HttpClient;
@@ -84,7 +84,7 @@ public class NotificationService {
     * return object will be saved by Aspect
     *
     * */
-    public NotificationHistory sendNotificationToFCM(String appId,String appAuthorizedKey, String userToken,String title ,String message) {
+    public NotificationHistoryEntity sendNotificationToFCM(String appId,String appAuthorizedKey, String userToken,String title ,String message) {
         HttpClient httpClient = FirebaseUtil.getHttpClientWithFirebaseHeader(appAuthorizedKey);
 
         JSONObject json = new JSONObject();
@@ -107,7 +107,7 @@ public class NotificationService {
 
             logger.info(strResult.toString());
 
-            NotificationHistory history = new NotificationHistory(appId, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
+            NotificationHistoryEntity history = new NotificationHistoryEntity(appId, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
 
 
             historyService.insertHistory(history);
@@ -117,7 +117,7 @@ public class NotificationService {
 
             logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
-             NotificationHistory historyException = new NotificationHistory(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage());
+             NotificationHistoryEntity historyException = new NotificationHistoryEntity(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage());
              historyService.insertHistory(historyException);
 
 
@@ -167,12 +167,12 @@ public class NotificationService {
                 responseMsg = sendNotificationFuture.get().getRejectionReason();
             }
 
-            NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
             historyService.insertHistory(history);
             return history.toString();
 
         }catch (Exception e ) {
-            NotificationHistory history =  new NotificationHistory(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
             historyService.insertHistory(history);
             return history.toString();
         }

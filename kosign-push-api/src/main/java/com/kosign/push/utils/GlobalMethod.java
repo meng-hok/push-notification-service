@@ -1,7 +1,7 @@
 package com.kosign.push.utils;
 
-import com.kosign.push.devices.Device;
-import com.kosign.push.platforms.Platform;
+import com.kosign.push.devices.DeviceEntity;
+import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.users.UserDetail;
 
 import org.springframework.security.core.Authentication;
@@ -12,15 +12,15 @@ import java.util.List;
 
 public class GlobalMethod {
     
-   public static Platform getAndroid () {
-      return new Platform(KeyConf.PlatForm.ANDROID);
+   public static PlatformEntity getAndroid () {
+      return new PlatformEntity(KeyConf.PlatForm.ANDROID);
    }
-   public static Platform getIos () {
-      return new Platform(KeyConf.PlatForm.IOS);
+   public static PlatformEntity getIos () {
+      return new PlatformEntity(KeyConf.PlatForm.IOS);
    }
    
-   public static Platform getBrowser() {
-      return new Platform(KeyConf.PlatForm.WEB);
+   public static PlatformEntity getBrowser() {
+      return new PlatformEntity(KeyConf.PlatForm.WEB);
    }
 
    public static UserDetail getUserCredential(){
@@ -34,7 +34,7 @@ public class GlobalMethod {
       }
    }
 
-   public static List<String> convertDeviceListToTokenList(List<Device> devices){
+   public static List<String> convertDeviceListToTokenList(List<DeviceEntity> devices){
       List<String> tokens = new ArrayList<>();
       devices.forEach(device -> {
          tokens.add(device.getToken());

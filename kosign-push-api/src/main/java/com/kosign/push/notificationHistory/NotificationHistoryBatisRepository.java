@@ -23,7 +23,7 @@ public interface NotificationHistoryBatisRepository
     @Insert("INSERT INTO public.ps_history \n" +
         "(message, reciever_id, title, app_id, status, to_platform, response_msg,count) VALUES  \n"+
         "(#{history.message},#{history.recieverId},#{history.title},#{history.appId},#{history.status},#{history.toPlatform},#{history.responseMsg},#{history.count})")
-    Integer insertHistory(@org.apache.ibatis.annotations.Param("history")  NotificationHistory history);
+    Integer insertHistory(@org.apache.ibatis.annotations.Param("history")  NotificationHistoryEntity history);
 
 }
 

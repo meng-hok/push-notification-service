@@ -38,19 +38,19 @@ public class DeviceService {
     // }
 
 
-    public List<Device> getActiveDeviceByAppId (String appId) {
-        List<Device> devices= deviceRepo.findByAppIdAndStatus(appId,KeyConf.Status.ACTIVE);
+    public List<DeviceEntity> getActiveDeviceByAppId (String appId) {
+        List<DeviceEntity> devices= deviceRepo.findByAppIdAndStatus(appId,KeyConf.Status.ACTIVE);
         return devices;
     }
 
-    public List<Device> getActiveDeviceByAppIdAndPlatformId(String appId,String platFormId){
-        List<Device> devices= deviceRepo.findByAppIdAndPlatformIdAndStatus(appId,platFormId,KeyConf.Status.ACTIVE);
+    public List<DeviceEntity> getActiveDeviceByAppIdAndPlatformId(String appId,String platFormId){
+        List<DeviceEntity> devices= deviceRepo.findByAppIdAndPlatformIdAndStatus(appId,platFormId,KeyConf.Status.ACTIVE);
         return devices;
     }
 
-    public Device saveDevice(Device device){
+    public DeviceEntity saveDevice(DeviceEntity device){
         
-        Device _device = deviceRepo.save(device);
+        DeviceEntity _device = deviceRepo.save(device);
         logger.info(device.toString());
         return _device;
     }

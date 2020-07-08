@@ -1,20 +1,20 @@
 package com.kosign.push.publics;
 import java.util.List;
 
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.dto.RequestDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
-import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.AgentBody;
 import com.kosign.push.utils.messages.AgentIdentifier;
 import com.kosign.push.utils.messages.AgentRequest;
-import com.kosign.push.utils.messages.FCM;
+import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.notifications.NotificationService;
 import com.kosign.push.platformSetting.PlatformSettingService;
-import com.kosign.push.platforms.Platform;
+import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.RabbitSender;
@@ -46,7 +46,7 @@ public class ClientController extends SuperController{
       
         try {
            
-            Device device = deviceService.saveDevice(new Device(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new Application(agentIdentifier.getApp_id()),new Platform( agentIdentifier.getPlatform_id() )));
+            DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);

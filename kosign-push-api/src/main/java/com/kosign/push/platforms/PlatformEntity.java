@@ -23,7 +23,7 @@ import lombok.Data;
 @Data
 @Table(name ="ps_platform")
 @Entity
-public class Platform {
+public class PlatformEntity {
  
     @Id
     private String id;
@@ -38,14 +38,14 @@ public class Platform {
     @JsonIgnore
     @UpdateTimestamp
     private Timestamp updatedAt;
-    public Platform(){
+    public PlatformEntity(){
         
     }
-    public Platform(String id) {
+    public PlatformEntity(String id) {
         this.id = id;
     }
 
-    public void setToNewPlatform(Platform platform) {
+    public void setToNewPlatform(PlatformEntity platform) {
         this.id = platform.id;
         this.name = platform.name == null ?  this.name : platform.name;
         this.icon = platform.icon == null ?  this.icon : platform.icon;

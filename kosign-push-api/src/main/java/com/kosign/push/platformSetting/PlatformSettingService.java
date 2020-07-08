@@ -2,11 +2,11 @@ package com.kosign.push.platformSetting;
 
 import java.util.List;
 
-import com.kosign.push.apps.Application;
+import com.kosign.push.apps.AppEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
 
-import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.platformSetting.dto.APNS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class PlatformSettingService {
             throw new Exception ("Application Platform Setting already saved");
         }
         
-        _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new Application(appId),fileKey,teamId,bundleId,file);
+        _platformSetting = new PlatformSetting(GlobalMethod.getIos(),new AppEntity(appId),fileKey,teamId,bundleId,file);
         return settingRepo.save(_platformSetting);
     }
 
@@ -59,9 +59,9 @@ public class PlatformSettingService {
         }
 
         if ( KeyConf.PlatForm.ANDROID.equals(platform)  ) { 
-            _platformSetting  = new PlatformSetting(GlobalMethod.getAndroid(),new Application(appId),authKey);
+            _platformSetting  = new PlatformSetting(GlobalMethod.getAndroid(),new AppEntity(appId),authKey);
         }else if(KeyConf.PlatForm.WEB.equals(platform)) { 
-            _platformSetting  = new PlatformSetting(GlobalMethod.getBrowser(),new Application(appId),authKey);
+            _platformSetting  = new PlatformSetting(GlobalMethod.getBrowser(),new AppEntity(appId),authKey);
         }else{
             return null;
         }

@@ -7,7 +7,7 @@ import com.kosign.push.utils.messages.PlatformSettingRespone;
 
 import lombok.Data;
 @Data
-public class ApplicationResponseById extends ApplicationResponse {
+public class ResponseAppById extends ResponseListApp {
   
     @JsonProperty("PLAT_REC")
     protected List<PlatformSettingRespone> platRec;

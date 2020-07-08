@@ -1,10 +1,10 @@
 package com.kosign.push.topics;
 
 import com.kosign.push.apps.AppService;
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.notifications.utils.TopicUtil;
 import com.kosign.push.platformSetting.PlatformSetting;
@@ -64,13 +64,13 @@ public class TopicService {
 
     public Object registerTopic(String appId,String topicName) throws PSQLException {
         Topic topic =new Topic();
-        topic.setApplication(new Application(appId));
+        topic.setApplication(new AppEntity(appId));
         topic.setName(topicName);
         return topicRepository.save(topic);
     }
 
     @Transactional(rollbackOn = Exception.class)
-    public Topic subscribeUserToTopic(String appId,String topicName,List<Device> devices){
+    public Topic subscribeUserToTopic(String appId,String topicName,List<DeviceEntity> devices){
         Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
         if(topic == null ){
             return null;
@@ -83,7 +83,7 @@ public class TopicService {
 
 
     @Transactional(rollbackOn = Exception.class)
-    public Object unsubscribeUserFromTopic(String appId, String topicName, ArrayList<Device> devices) {
+    public Object unsubscribeUserFromTopic(String appId, String topicName, ArrayList<DeviceEntity> devices) {
         Topic topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
 //        List<TopicDevice> topicDevices = getTopicDetailByAppIdAndTopicName();
         return null;
@@ -115,8 +115,8 @@ public class TopicService {
 
             List<Topic> topicList = new ArrayList<>();
 
-            List<Device> androidDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.ANDROID);
-            List<Device> iosDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.IOS);
+            List<DeviceEntity> androidDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.ANDROID);
+            List<DeviceEntity> iosDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.IOS);
 
             logger.info("Android size : " + androidDevices.size());
             logger.info("IOS size : " + iosDevices.size());
@@ -134,7 +134,7 @@ public class TopicService {
                 logger.info("[ Response for FCM Subscribe... ]");
                 System.out.println(obj);
 
-                Topic fcmTopic =new Topic(topicName,new Application(appId));
+                Topic fcmTopic =new Topic(topicName,new AppEntity(appId));
 
                 fcmTopic.setFcm();
                 fcmTopic.setDevice(androidDevices);
@@ -150,7 +150,7 @@ public class TopicService {
             }
 
             if((!iosDevices.isEmpty())) {
-                Topic apnsTopic = new Topic(topicName, new Application(appId));
+                Topic apnsTopic = new Topic(topicName, new AppEntity(appId));
 
                 apnsTopic.setDevice(iosDevices);
                 apnsTopic.setApns();
@@ -190,7 +190,7 @@ public class TopicService {
         PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
         /* Android including **/
        Topic topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
-       List<Device> devices =  topic.getDevice();
+       List<DeviceEntity> devices =  topic.getDevice();
 
        devices.forEach(device -> {
            //otificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);

@@ -11,8 +11,8 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
-import com.kosign.push.apps.Application;
-import com.kosign.push.platforms.Platform;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.platforms.PlatformEntity;
 
 import com.kosign.push.utils.KeyConf;
 import org.hibernate.annotations.CreationTimestamp;
@@ -31,9 +31,9 @@ public class PlatformSetting {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     @OneToOne(fetch = FetchType.LAZY)
-    private Platform platform;
+    private PlatformEntity platform;
     @ManyToOne
-    private Application application;
+    private AppEntity application;
     private String authorizedKey;
     private String keyId;
     private String teamId;
@@ -45,7 +45,7 @@ public class PlatformSetting {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    public PlatformSetting(Platform platform, Application application, String keyId, String teamId, String bundleId,
+    public PlatformSetting(PlatformEntity platform, AppEntity application, String keyId, String teamId, String bundleId,
             String pushUrl) {
         this.platform = platform;
         this.application = application;
@@ -55,7 +55,7 @@ public class PlatformSetting {
         this.pushUrl = pushUrl;
     }
 
-    public PlatformSetting(Platform platform, Application application, String authorizedKey) {
+    public PlatformSetting(PlatformEntity platform, AppEntity application, String authorizedKey) {
         this.platform = platform;
         this.application = application;
         this.authorizedKey = authorizedKey;

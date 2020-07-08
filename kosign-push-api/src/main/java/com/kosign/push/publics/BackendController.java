@@ -6,12 +6,12 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSetting;
-import com.kosign.push.platforms.Platform;
+import com.kosign.push.platforms.PlatformEntity;
 
 import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
@@ -20,12 +20,13 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
-import com.kosign.push.utils.messages.APNS;
+import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.utils.messages.RequestObjectIdentifier;
-import com.kosign.push.apps.dto.ApplicationCreateRequest;
-import com.kosign.push.apps.dto.ApplicationIdentifier;
-import com.kosign.push.apps.dto.ApplicationResponse;
-import com.kosign.push.apps.dto.ApplicationResponseById;
+import com.kosign.push.apps.dto.RequestAppIdentifier;
+import com.kosign.push.apps.dto.RequestCreateApp;
+import com.kosign.push.apps.dto.ResponseAppById;
+import com.kosign.push.apps.dto.ResponseCommonApp;
+import com.kosign.push.apps.dto.ResponseListApp;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -53,7 +54,7 @@ public class BackendController extends SuperController{
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponse> applications;
+            List<ResponseListApp> applications;
             
                 applications  = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
           
@@ -68,7 +69,7 @@ public class BackendController extends SuperController{
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponseById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
+            List<ResponseAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         
@@ -76,12 +77,16 @@ public class BackendController extends SuperController{
     
 
     @PostMapping("/applications")
-    public Object create(@RequestBody ApplicationCreateRequest applicationCreateRequest){
+    public Object create(@RequestBody RequestCreateApp applicationCreateRequest){
         try {
-            Application app = new Application();
+            AppEntity app = new AppEntity();
             app.setName(applicationCreateRequest.getName());
-            
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, appService.save(app), true);
+            AppEntity responseApp =  appService.save(app);
+            if(responseApp==null ){ 
+                throw new Exception("Create Fail");
+            }
+             ResponseCommonApp responseCommonApp =  new ResponseCommonApp(responseApp);
+            return Response.getResponseBody(KeyConf.Message.SUCCESS, responseCommonApp, true);
         } catch (Exception e) {
             return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
         }
@@ -90,7 +95,7 @@ public class BackendController extends SuperController{
 
 
     @PutMapping("/applications")
-    public Object updateName(@RequestBody ApplicationIdentifier application) throws Exception{
+    public Object updateName(@RequestBody RequestAppIdentifier application) throws Exception{
 
 
         Boolean update = appService.updateApplication(application.getId(),application.getName());
@@ -98,9 +103,9 @@ public class BackendController extends SuperController{
 
         return update ?
 
-                Response.getResponseBody(KeyConf.Message.SUCCESS," {} ",true) :
+                Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
 
-                Response.getResponseBody(KeyConf.Message.FAIL, " {} ", false);
+                Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
 
 
     }
@@ -265,18 +270,18 @@ public class BackendController extends SuperController{
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @PostMapping("/platforms")
-    public Object save (@RequestBody Platform platform) { 
+    public Object save (@RequestBody PlatformEntity platform) { 
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.insert(platform), true))  ;
     }
 
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @PutMapping("/platforms")
-    public Object update (@RequestBody Platform platform) { 
+    public Object update (@RequestBody PlatformEntity platform) { 
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.update(platform),true))  ;
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @DeleteMapping("/platforms")
-    public Object remove (@RequestBody Platform platform) { 
+    public Object remove (@RequestBody PlatformEntity platform) { 
        
         return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
     } 

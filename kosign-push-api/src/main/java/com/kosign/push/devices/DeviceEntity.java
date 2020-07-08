@@ -14,8 +14,8 @@ import javax.persistence.UniqueConstraint;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.kosign.push.apps.Application;
-import com.kosign.push.platforms.Platform;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.users.User;
 
 import org.hibernate.annotations.CreationTimestamp;
@@ -27,7 +27,7 @@ import lombok.Data;
 @Data
 @Table(name ="ps_device_client")
 @Entity
-public class Device {
+public class DeviceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private Integer id;
@@ -41,10 +41,10 @@ public class Device {
 
     // @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
     @ManyToOne(fetch = FetchType.EAGER)
-    private Application app;
+    private AppEntity app;
     // @JsonIgnoreProperties(value={"hibernateLazyInitializer","handler","fieldHandler"})
     @ManyToOne(fetch = FetchType.EAGER)
-    private Platform platform;
+    private PlatformEntity platform;
 
     @CreationTimestamp
     private Timestamp createdAt;
@@ -53,7 +53,7 @@ public class Device {
 
     private Character status='1';
 
-    public Device(String deviceId, String token, Application app, Platform platform, Character status) {
+    public DeviceEntity(String deviceId, String token, AppEntity app, PlatformEntity platform, Character status) {
         this.deviceId = deviceId;
         this.token = token;
         this.app = app;
@@ -61,22 +61,22 @@ public class Device {
         this.status = status;
     }
 
-    public Device(){
+    public DeviceEntity(){
         
     }
 
-    public Device(String deviceId){
+    public DeviceEntity(String deviceId){
         this.deviceId = deviceId; 
     }
 
-    public Device(String deviceId, String token, Application app, Platform platform) {
+    public DeviceEntity(String deviceId, String token, AppEntity app, PlatformEntity platform) {
         this.deviceId = deviceId;
         this.token = token;
         this.app = app;
         this.platform = platform;
     }
 
-	public Device(String token, Application application, Platform platform, String userId) {
+	public DeviceEntity(String token, AppEntity application, PlatformEntity platform, String userId) {
         this.userId = userId;
         this.token = token;
         this.app = application;

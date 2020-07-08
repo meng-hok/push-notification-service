@@ -19,16 +19,16 @@ public class NotificationHistoryService {
 
     private Logger logger = LoggerFactory.getLogger(NotificationHistoryService.class);
 
-    public void saveHistory (NotificationHistory history){
+    public void saveHistory (NotificationHistoryEntity history){
 
         historyRepo.save(history);
     }
-    public void insertHistory(NotificationHistory history) { 
+    public void insertHistory(NotificationHistoryEntity history) { 
         historyBatisRepo.insertHistory(history);
     }
 
 
-    public void saveHistoryWithRabbit(NotificationHistory history){
+    public void saveHistoryWithRabbit(NotificationHistoryEntity history){
         logger.info("{ Response from History Queue  }");
         historyRepo.save(history);
     }

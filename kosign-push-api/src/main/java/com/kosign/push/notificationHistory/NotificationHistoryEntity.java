@@ -11,7 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import com.kosign.push.apps.Application;
+import com.kosign.push.apps.AppEntity;
 import com.kosign.push.users.User;
 
 import org.hibernate.annotations.ColumnDefault;
@@ -26,7 +26,7 @@ import lombok.Data;
 @Data
 @Table(name ="ps_history")
 @Entity
-public class NotificationHistory {
+public class NotificationHistoryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private Integer id;
@@ -44,16 +44,16 @@ public class NotificationHistory {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    public NotificationHistory(String appId, String recieverId, String title, String message) {
+    public NotificationHistoryEntity(String appId, String recieverId, String title, String message) {
         this.appId = appId;
         this.recieverId = recieverId;
         this.title = title;
         this.message = message;
     }
 
-    public NotificationHistory(){}
+    public NotificationHistoryEntity(){}
 
-    public NotificationHistory(String appId, String recieverId, String title, String message, String toPlatform,
+    public NotificationHistoryEntity(String appId, String recieverId, String title, String message, String toPlatform,
             String status,String responseMsg) {
         this.appId = appId;
         this.recieverId = recieverId;

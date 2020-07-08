@@ -5,8 +5,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.kosign.push.apps.AppService;
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.notificationHistory.NotificationHistoryService;
 import com.kosign.push.platformSetting.PlatformSetting;

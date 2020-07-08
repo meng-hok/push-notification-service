@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ApplicationIdentifier {
+public class RequestAppIdentifier {
     
     
     public String id;

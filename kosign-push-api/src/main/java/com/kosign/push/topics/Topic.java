@@ -1,7 +1,7 @@
 package com.kosign.push.topics;
 
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.utils.KeyConf;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -31,7 +31,7 @@ public class Topic {
     private Character agent;
 
     @ManyToOne
-    private Application application;
+    private AppEntity application;
     /*
     * Topic Device created Middle table
     * */
@@ -42,14 +42,14 @@ public class Topic {
             inverseJoinColumns = @JoinColumn(name = "device_id")
     )
 //    @OneToMany(mappedBy = "topic")
-    private List<Device> device;
+    private List<DeviceEntity> device;
 
 
     private Character status='1';
     @CreationTimestamp
     private Timestamp timestamp;
 
-    public Topic(String name, Application application) {
+    public Topic(String name, AppEntity application) {
         this.name = name;
         this.application = application;
     }

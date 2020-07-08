@@ -1,8 +1,8 @@
 package com.kosign.push.utils;
 
-import com.kosign.push.notificationHistory.NotificationHistory;
-import com.kosign.push.utils.messages.APNS;
-import com.kosign.push.utils.messages.FCM;
+import com.kosign.push.notificationHistory.NotificationHistoryEntity;
+import com.kosign.push.platformSetting.dto.APNS;
+import com.kosign.push.platformSetting.dto.FCM;
 
 import org.slf4j.Logger;
 import org.springframework.amqp.core.AmqpTemplate;
@@ -62,7 +62,7 @@ public class RabbitSender {
 		amqpTemplate.convertAndSend(topicKey, object);
 	}
 
-	public void sendToHistoryQueue(NotificationHistory history){
+	public void sendToHistoryQueue(NotificationHistoryEntity history){
 		logger.info("{ Request Message to "+historyKey+" }");
 		System.out.println(history);
 		amqpTemplate.convertAndSend(historyKey,history);
