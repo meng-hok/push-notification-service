@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.kosign.push.utils.messages.Agent;
-import com.kosign.push.utils.messages.DeviceClientRespose;
+import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.utils.KeyConf;
 
 import org.slf4j.Logger;
@@ -83,7 +83,7 @@ public class DeviceService {
         List<Agent> agents = deviceMybatisRepository.findAllDeviceByAppIdRaw(appId);
         return agents;
     }
-    public List<DeviceClientRespose> getAllDevicesClient(String appId ,String startDate, String endDate, String token, String modelName, String platform, String os  ){
+    public List<ResponseDevice> getAllDevicesClient(String appId ,String startDate, String endDate, String token, String modelName, String platform, String os  ){
         return deviceMybatisRepository.findAllDevicesClient(appId,startDate, endDate, token, modelName, platform, os);
     }
 }

@@ -8,6 +8,7 @@ import javax.transaction.Transactional;
 
 import com.kosign.push.apps.Application;
 import com.kosign.push.devices.Device;
+import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platforms.Platform;
@@ -20,10 +21,11 @@ import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
 import com.kosign.push.utils.messages.APNS;
-import com.kosign.push.utils.messages.ApplicationIdentifier;
-import com.kosign.push.utils.messages.ApplicationResponse;
-import com.kosign.push.utils.messages.ApplicationResponseById;
-import com.kosign.push.utils.messages.DeviceClientRespose;
+import com.kosign.push.utils.messages.RequestObjectIdentifier;
+import com.kosign.push.apps.dto.ApplicationCreateRequest;
+import com.kosign.push.apps.dto.ApplicationIdentifier;
+import com.kosign.push.apps.dto.ApplicationResponse;
+import com.kosign.push.apps.dto.ApplicationResponseById;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -74,11 +76,11 @@ public class BackendController extends SuperController{
     
 
     @PostMapping("/applications")
-    public Object create(String name){
+    public Object create(@RequestBody ApplicationCreateRequest applicationCreateRequest){
         try {
             Application app = new Application();
-            app.setName(name);
-            app.setUser(new User(GlobalMethod.getUserCredential().getId()));
+            app.setName(applicationCreateRequest.getName());
+            
             return Response.getResponseBody(KeyConf.Message.SUCCESS, appService.save(app), true);
         } catch (Exception e) {
             return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
@@ -104,10 +106,10 @@ public class BackendController extends SuperController{
     }
 
     @DeleteMapping("/applications")
-    public Object disabled(@RequestBody ApplicationIdentifier application){
+    public Object disabled(@RequestBody RequestObjectIdentifier object){
 
 
-            Boolean update = appService.disableApplication(application.getId());
+            Boolean update = appService.disableApplication(object.getId());
 
 
         return update ?
@@ -318,7 +320,7 @@ public class BackendController extends SuperController{
     @GetMapping("/devices")
     public Object getDeviceDetail(String appId,String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
 
-        List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, push_id, modelName, plat_code, os_version);
+        List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, push_id, modelName, plat_code, os_version);
         
         return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
     }

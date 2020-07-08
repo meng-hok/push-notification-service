@@ -6,6 +6,7 @@ import java.sql.Timestamp;
 import javax.persistence.*;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kosign.push.users.User;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
@@ -29,7 +30,7 @@ public class Application {
 
     private String name;
 
-    @JsonIgnore
+    @JsonProperty("created_by")
     @ManyToOne(optional = true)
     private User user;
     
@@ -47,7 +48,15 @@ public class Application {
 		this.id = id;
 	
     }
-    
+    @PrePersist()
+    public void onPrepersist() {
+        String userId = GlobalMethod.getUserCredential().getId();
+        this.updatedBy = userId;
+        if(this.user == null ){
+            this.user = new User();
+        }
+        user.setId(userId);
+    }
     @PreUpdate
     public void onPreUpdate() {
         this.updatedBy = GlobalMethod.getUserCredential().getId();

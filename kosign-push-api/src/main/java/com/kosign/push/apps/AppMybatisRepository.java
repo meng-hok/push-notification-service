@@ -2,8 +2,8 @@ package com.kosign.push.apps;
 
 import java.util.List;
 
-import com.kosign.push.utils.messages.ApplicationResponse;
-import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.apps.dto.ApplicationResponse;
+import com.kosign.push.apps.dto.ApplicationResponseById;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 
 import org.apache.ibatis.annotations.Result;

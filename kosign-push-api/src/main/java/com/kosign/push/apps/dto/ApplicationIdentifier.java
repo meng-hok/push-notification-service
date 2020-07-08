@@ -1,4 +1,4 @@
-package com.kosign.push.utils.messages;
+package com.kosign.push.apps.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

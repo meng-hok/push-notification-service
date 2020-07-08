@@ -7,11 +7,10 @@ import java.util.stream.Collectors;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.KeyConf;
 
-import com.kosign.push.utils.messages.ApplicationIdentifier;
-import com.kosign.push.utils.messages.ApplicationResponse;
-import com.kosign.push.utils.messages.ApplicationResponseById;
+import com.kosign.push.apps.dto.ApplicationIdentifier;
+import com.kosign.push.apps.dto.ApplicationResponse;
+import com.kosign.push.apps.dto.ApplicationResponseById;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
-import com.kosign.push.utils.messages.ApplicationResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

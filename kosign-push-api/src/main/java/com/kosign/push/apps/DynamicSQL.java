@@ -1,6 +1,6 @@
 package com.kosign.push.apps;
 
-import com.kosign.push.utils.messages.ApplicationIdentifier;
+import com.kosign.push.apps.dto.ApplicationIdentifier;
 
 import org.apache.commons.lang3.StringUtils;
 
