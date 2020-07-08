@@ -24,6 +24,7 @@ import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.RequestCreateApns;
 import com.kosign.push.platformSetting.dto.RequestCreateFcm;
 import com.kosign.push.platformSetting.dto.RequestRemoveApns;
+import com.kosign.push.platformSetting.dto.RequestRemoveFcm;
 import com.kosign.push.platformSetting.dto.RequestUpdateFcm;
 import com.kosign.push.apps.dto.RequestAppIdentifier;
 import com.kosign.push.apps.dto.RequestCreateApp;
@@ -256,9 +257,9 @@ public class BackendController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @DeleteMapping("/platforms/setting/fcm")
-    public Object deleteFcmConfiguration (@RequestBody RequestRemoveApp requestFcm) {
+    public Object deleteFcmConfiguration (@RequestBody RequestRemoveFcm requestFcm) {
         try {
-            return platformSettingService.removeFcmConfiguration(requestFcm.appId,requestFcm.platform) ? 
+            return platformSettingService.removeFcmConfiguration(requestFcm.appId,requestFcm.platformId) ? 
                     Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
                     Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
 

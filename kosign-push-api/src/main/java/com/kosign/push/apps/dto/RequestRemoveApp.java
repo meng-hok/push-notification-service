@@ -5,5 +5,4 @@ import lombok.Data;
 @Data
 public class RequestRemoveApp {
     public String appId;
-    public String platform;
 }
