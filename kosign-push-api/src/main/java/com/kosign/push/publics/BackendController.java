@@ -13,7 +13,6 @@ import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSetting;
 import com.kosign.push.platforms.PlatformEntity;
 
-import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
@@ -21,10 +20,10 @@ import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
 
 import com.kosign.push.platformSetting.dto.APNS;
-import com.kosign.push.utils.messages.RequestObjectIdentifier;
 import com.kosign.push.apps.dto.RequestAppIdentifier;
 import com.kosign.push.apps.dto.RequestCreateApp;
-import com.kosign.push.apps.dto.ResponseAppById;
+import com.kosign.push.apps.dto.RequestRemoveApp;
+import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseCommonApp;
 import com.kosign.push.apps.dto.ResponseListApp;
 
@@ -69,7 +68,7 @@ public class BackendController extends SuperController{
         if(userDetail == null ){
             return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ResponseAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
+            List<ResponseListAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
             return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
         }
         
@@ -111,7 +110,7 @@ public class BackendController extends SuperController{
     }
 
     @DeleteMapping("/applications")
-    public Object disabled(@RequestBody RequestObjectIdentifier object){
+    public Object disabled(@RequestBody RequestRemoveApp object){
 
 
             Boolean update = appService.disableApplication(object.getId());

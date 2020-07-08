@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.KeyConf;
 
-import com.kosign.push.apps.dto.ResponseAppById;
+import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 import lombok.AllArgsConstructor;
@@ -51,8 +51,8 @@ public class AppService {
         return applicationResponses;
     }
 
-    public List<ResponseAppById> getActiveAppsByAppId(String userId, String appId){
-        List<ResponseAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
+    public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId){
+        List<ResponseListAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
         List<PlatformSettingRespone> platformSettingRespones = appMybatisRepo.findPlatformrByAppId(appId);
 
         applicationResponses = applicationResponses.stream().map(application -> {

@@ -2,7 +2,7 @@ package com.kosign.push.apps;
 
 import java.util.List;
 
-import com.kosign.push.apps.dto.ResponseAppById;
+import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.utils.messages.PlatformSettingRespone;
 
@@ -31,7 +31,7 @@ public interface AppMybatisRepository {
             @Result(property = "totalPush", column = "count"),
             @Result(property = "createdAt", column = "created_at")
     })
-    List<ResponseAppById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
+    List<ResponseListAppById> findActiveByAppId(@org.apache.ibatis.annotations.Param("userId")String userId, @org.apache.ibatis.annotations.Param("appId") String appId);
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
     List<PlatformSettingRespone> findPlatformrByAppId( @org.apache.ibatis.annotations.Param("appId") String appId);
