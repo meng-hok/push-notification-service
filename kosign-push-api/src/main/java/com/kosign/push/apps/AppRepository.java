@@ -20,6 +20,9 @@ public interface AppRepository extends JpaRepository<AppEntity,String>{
 
 	public AppEntity findByIdAndStatus(String appId, Character status);
 
+
+	public AppEntity findByUserIdAndNameAndStatus(String userId, String name, Character active);
+
 	// public List<Application> findByProjectIdAndStatus(String id, Character aCTIVE);
     
 

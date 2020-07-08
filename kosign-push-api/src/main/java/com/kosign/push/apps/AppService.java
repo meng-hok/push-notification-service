@@ -1,17 +1,16 @@
 package com.kosign.push.apps;
 
-import java.security.Key;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.kosign.push.platformSetting.PlatformSettingService;
+import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.KeyConf;
 
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
-import com.kosign.push.platformSetting.dto.PlatformSettingRespone;
+import com.kosign.push.platformSetting.dto.ResponsePlatformSetting;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
@@ -53,11 +52,11 @@ public class AppService {
 
     public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId){
         List<ResponseListAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
-        List<PlatformSettingRespone> platformSettingRespones = appMybatisRepo.findPlatformrByAppId(appId);
+        List<ResponsePlatformSetting> responsePlatformSettings = appMybatisRepo.findPlatformrByAppId(appId);
 
         applicationResponses = applicationResponses.stream().map(application -> {
             application.setPlatform(application.getAndroid() + application.getIos() + application.getFcm());
-            application.setPlatRec(platformSettingRespones);
+            application.setPlatRec(responsePlatformSettings);
             return application;
         }).collect(Collectors.toList());
         return applicationResponses;
@@ -95,5 +94,10 @@ public class AppService {
         application.setName(name);
         appRepo.save(application);
         return true;
+    }
+
+    public AppEntity getAppByNameAndUserId(String name) {
+        String userId = GlobalMethod.getUserCredential().getId();
+        return appRepo.findByUserIdAndNameAndStatus(userId,name,KeyConf.Status.ACTIVE);
     }
 }
