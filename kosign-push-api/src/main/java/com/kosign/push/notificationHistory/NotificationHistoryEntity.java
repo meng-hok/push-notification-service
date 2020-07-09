@@ -38,6 +38,7 @@ public class NotificationHistoryEntity {
     private String toPlatform;
     @Column(length = 8)
     private String status;
+    @Column(length = 1000)
     private String responseMsg;
     private Integer count=1;
     @ColumnDefault(value = "now()")

@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kosign.push.utils.messages.AgentBody;
 import com.kosign.push.utils.messages.AgentIdentifier;
-import com.kosign.push.utils.messages.AgentRequest;
+import com.kosign.push.utils.messages.RequestAgent;
 
 @Data
-public class RequestPushDevice extends AgentRequest{
+public class RequestPushDevice extends RequestAgent{
 
     public ArrayList<String> deviceIdList;
 

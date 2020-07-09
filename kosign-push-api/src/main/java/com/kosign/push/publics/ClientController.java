@@ -10,7 +10,8 @@ import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.utils.messages.AgentBody;
 import com.kosign.push.utils.messages.AgentIdentifier;
-import com.kosign.push.utils.messages.AgentRequest;
+import com.kosign.push.utils.messages.RequestAgent;
+import com.kosign.push.utils.messages.RequestPushAgentAll;
 import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.notifications.NotificationService;
 import com.kosign.push.platformSetting.PlatformSettingService;
@@ -40,25 +41,30 @@ public class ClientController extends SuperController{
     
     
     
-    @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required ")
+    @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
     @PostMapping("/devices/create")
-    public Object save(@RequestBody AgentIdentifier agentIdentifier){
+    public Object save(@RequestBody final AgentIdentifier agentIdentifier){
+      
       
         try {
+            final Integer platformId = new Integer(agentIdentifier.platform_id);
+            if (platformId < 0 | platformId > 3 ) { 
+                return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
+            }
+
             Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
             if (agent != null ) { 
                 return Response.getFailResponseNonDataBody(KeyConf.Message.ALREADYREGISTEREDDEVICE);
             }
-            DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             // return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);
             return ( device != null ) ? 
              Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
              Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             
-//            System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
             return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
@@ -67,18 +73,18 @@ public class ClientController extends SuperController{
 
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/notifications/devices/send/single")
-    public Object sendByDevice(@RequestBody AgentRequest agentBody) {
+    public Object sendByDevice(@RequestBody final RequestAgent agentBody) {
         try {
             //   System.out.println(app_id + deviceId);
            
-            Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
+            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
            
             String response = null;
              FCM fcm;
             switch (agent.platform_id){
                 case "1":
 
-                    APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
+                    final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
                     apns.setAppId(agentBody.getApp_id());
                     rabbitSender.sendToApns(apns);
                     logger.info("[ Response Sucess : APNS ]");
@@ -110,7 +116,7 @@ public class ClientController extends SuperController{
             }
 
             return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.info(e.getMessage());
            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
@@ -119,18 +125,18 @@ public class ClientController extends SuperController{
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
     @PostMapping("/notifications/devices/send/groups")
-    public Object send( @RequestBody RequestPushDevice requestDevice) {
+    public Object send( @RequestBody final RequestPushDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
-        List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
+        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
 
-        for (Agent device : devices) {
+        for (final Agent device : devices) {
             FCM fcm;
             ++success;
             try{
                 switch (device.platform_id){
                     case "1":
-                        APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
+                        final APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
                         apns.setAppId(requestDevice.getApp_id());
                         rabbitSender.sendToApns(apns);
                         break;
@@ -151,13 +157,13 @@ public class ClientController extends SuperController{
                         break;    
                 }
                
-            }catch(Exception e){
+            }catch(final Exception e){
                 logger.info("Error Message");
                 System.out.println(e.getMessage());
                 ++fail;
             }
         }
-        JSONObject jsonObject = new JSONObject();
+        final JSONObject jsonObject = new JSONObject();
         jsonObject.put("success",success) ;
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
@@ -169,19 +175,19 @@ public class ClientController extends SuperController{
 
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/notifications/devices/send/all")
-    public Object sendAll(@RequestBody AgentRequest agentBody){
+    public Object sendAll(@RequestBody final RequestPushAgentAll agentBody){
         try {
             //   System.out.println(app_id + deviceId);
            
-            List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
+            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
             Integer fail = 0;
            
-            for(Agent agent : agents){
+            for(final Agent agent : agents){
                 FCM fcm;
                 switch (agent.platform_id){
                     case "1":
     
-                        APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
+                        final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
                         apns.setAppId(agentBody.getApp_id());
                         rabbitSender.sendToApns(apns);
                         logger.info("[ Response Sucess : APNS ]");
@@ -217,7 +223,7 @@ public class ClientController extends SuperController{
             System.out.println("Device found : " + agents.size());
             System.out.println("Fail : " +fail);
             return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             logger.info(e.getMessage()); 
             return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
