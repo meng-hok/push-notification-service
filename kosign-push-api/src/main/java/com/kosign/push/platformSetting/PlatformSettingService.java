@@ -69,8 +69,8 @@ public class PlatformSettingService {
         return settingRepo.save(_platformSetting);
     }
 
-    public Boolean updateFcm(String appId, String authKey) {
-        PlatformSettingEntity platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,KeyConf.PlatForm.ANDROID,KeyConf.Status.ACTIVE);
+    public Boolean updateFcm(String appId, String platform,String authKey) {
+        PlatformSettingEntity platformSetting = settingRepo.findByApplicationIdAndPlatformIdAndStatus(appId,platform,KeyConf.Status.ACTIVE);
         if(platformSetting == null ){
             return false;
 

@@ -259,8 +259,14 @@ public class BackendController extends SuperController{
     @PutMapping("platforms/setting/fcm")
     public Object updateFcm(@RequestBody RequestUpdateFcm requestFcm){
         try {
-            Boolean updateStatus = platformSettingService.updateFcm(requestFcm.appId, requestFcm.authorizedKey);
-            return  Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+            if( KeyConf.PlatForm.ANDROID.equals(requestFcm.getPlatformId()) | KeyConf.PlatForm.WEB.equals(requestFcm.getPlatformId()) ) {
+
+                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.appId, requestFcm.platformId ,requestFcm.authorizedKey);
+                return updateStatus ?
+                        Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
+                        Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            }
+            return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
 
             return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);

@@ -5,6 +5,8 @@ public interface KeyConf {
     class Message {
         public static String SUCCESS = "Successful";
         public static String FAIL = "Fail";
+        public static String SETTINGNOTFOUNT = "Setting Not Found";
+        public static String INCORRECTPLATFORM = "Incorrect Platform Code";
     }
     class Notification{
        public static String TITILE = "Push Server";
