@@ -9,6 +9,7 @@ public interface KeyConf {
         public static final String SETTINGNOTFOUNT = "Setting Not Found";
         public static final String INCORRECTPLATFORM = "Incorrect Platform Code";
         public static final String PLATFORMSETTINGREGISTERED = "Platform Setting Registered";
+		public static final String ALREADYREGISTEREDDEVICE = "This Device id already exist";
     }
     class Notification{
        public static String TITILE = "Push Server";

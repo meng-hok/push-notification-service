@@ -5,9 +5,9 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
+import com.kosign.push.devices.dto.RequestDevice;
 import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.PlatformSettingEntity;
@@ -36,7 +36,6 @@ import com.kosign.push.apps.dto.ResponseListApp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-import jdk.jfr.ContentType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -330,7 +329,7 @@ public class BackendController extends SuperController{
     } 
     
     @GetMapping("/push/history")
-    public Object getHistory(String startDate,String endDate,String msgTitle) {
+    public Object getHistory(@RequestParam(required = true) String startDate,@RequestParam(required = true) String endDate,String msgTitle) {
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
         
@@ -367,9 +366,9 @@ public class BackendController extends SuperController{
 
     @ApiOperation("Get Device detail")
     @GetMapping("/devices")
-    public Object getDeviceDetail(String appId,String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
+    public Object getDeviceDetail(RequestDevice requestDevice) {
 
-        List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, push_id, modelName, plat_code, os_version);
+        List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(requestDevice.appId,requestDevice.startDate, requestDevice.endDate, requestDevice.push_id,requestDevice.modelName, requestDevice.plat_code, requestDevice.os_version);
         
         return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
     }

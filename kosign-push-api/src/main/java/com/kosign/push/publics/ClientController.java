@@ -4,7 +4,7 @@ import java.util.List;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.devices.dto.RequestDevice;
+import com.kosign.push.devices.dto.RequestPushDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.utils.messages.Agent;
@@ -45,16 +45,22 @@ public class ClientController extends SuperController{
     public Object save(@RequestBody AgentIdentifier agentIdentifier){
       
         try {
-           
+            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
+            if (agent != null ) { 
+                return Response.getFailResponseNonDataBody(KeyConf.Message.ALREADYREGISTEREDDEVICE);
+            }
             DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);
+            // return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);
+            return ( device != null ) ? 
+             Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
+             Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         } catch (Exception e) {
             
 //            System.out.println(e.getLocalizedMessage());
             e.printStackTrace();
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getLocalizedMessage(), false);
+            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
 
     }
@@ -106,14 +112,14 @@ public class ClientController extends SuperController{
             return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
         } catch (Exception e) {
             logger.info(e.getMessage());
-            return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
+           return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
       
     }
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
     @PostMapping("/notifications/devices/send/groups")
-    public Object send( @RequestBody RequestDevice requestDevice) {
+    public Object send( @RequestBody RequestPushDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
         List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
@@ -156,7 +162,7 @@ public class ClientController extends SuperController{
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,"{}", true);
+        return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
     }
 
    
@@ -212,8 +218,8 @@ public class ClientController extends SuperController{
             System.out.println("Fail : " +fail);
             return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
         } catch (Exception e) {
-            logger.info(e.getMessage());
-            return Response.getResponseBody("Push notification fail", e.getLocalizedMessage(), false);
+            logger.info(e.getMessage()); 
+            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
         }
       
     }
