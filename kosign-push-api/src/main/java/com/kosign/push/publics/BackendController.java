@@ -6,7 +6,6 @@ import java.util.List;
 import javax.transaction.Transactional;
 
 import com.kosign.push.apps.AppEntity;
-import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.dto.RequestDevice;
 import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
@@ -17,9 +16,9 @@ import com.kosign.push.users.UserDetail;
 import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
-import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
-
+import com.kosign.push.utils.enums.PlatformEnum;
+import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.RequestCreateApns;
 import com.kosign.push.platformSetting.dto.RequestCreateFcm;
@@ -30,7 +29,6 @@ import com.kosign.push.apps.dto.RequestAppIdentifier;
 import com.kosign.push.apps.dto.RequestCreateApp;
 import com.kosign.push.apps.dto.RequestRemoveApp;
 import com.kosign.push.apps.dto.ResponseListAppById;
-import com.kosign.push.apps.dto.ResponseCommonApp;
 import com.kosign.push.apps.dto.ResponseListApp;
 
 import io.swagger.annotations.Api;
@@ -57,13 +55,13 @@ public class BackendController extends SuperController{
         UserDetail userDetail = GlobalMethod.getUserCredential();
        
         if(userDetail == null ){
-            return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
+            return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
         }else{ 
             List<ResponseListApp> applications;
             
                 applications  = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
           
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
+            return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
         
     }
@@ -72,10 +70,10 @@ public class BackendController extends SuperController{
         UserDetail userDetail = GlobalMethod.getUserCredential();
        
         if(userDetail == null ){
-            return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
+            return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
         }else{ 
             List<ResponseListAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
+            return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
         
     }
@@ -96,10 +94,10 @@ public class BackendController extends SuperController{
                 throw new Exception("Create Fail");
             }
             //  ResponseCommonApp responseCommonApp =  new ResponseCommonApp(responseApp);
-             return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+             return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
-            return  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
       
     }
@@ -114,9 +112,9 @@ public class BackendController extends SuperController{
 
         return update ?
 
-                Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
+                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
 
-                Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
 
     }
@@ -130,9 +128,9 @@ public class BackendController extends SuperController{
 
         return update ?
 
-                Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
+                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
 
-                Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
 
     }
@@ -145,11 +143,11 @@ public class BackendController extends SuperController{
             List<PlatformSettingEntity> platformSettings = platformSettingService.getActivePlatformsConfiguredByAppId(appId);
 
 
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSettings, true));
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformSettings, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 /**
@@ -161,12 +159,12 @@ public class BackendController extends SuperController{
 
         try {
 
-            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true));
+            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.IOS);
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformSetting, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 
@@ -179,19 +177,19 @@ public class BackendController extends SuperController{
 
                     if (p8file.isEmpty() ) {
 
-                        return Response.getFailResponseNonDataBody(KeyConf.Message.P8FILENOTFOUND);
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
                     }
-                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,KeyConf.PlatForm.IOS) != null ) {
-                        return Response.getFailResponseNonDataBody(KeyConf.Message.PLATFORMSETTINGREGISTERED);
+                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,PlatformEnum.Platform.IOS) != null ) {
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORMSETTINGREGISTERED);
                     }
                     String file = FileStorage.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.appId, file, requestCreateApns.fileKey, requestCreateApns.teamId, requestCreateApns.bundleId);
-                    return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+                    return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
                 
                
             } catch (Exception e) {
                 e.printStackTrace();
-                return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
             }
     }
 
@@ -200,13 +198,13 @@ public class BackendController extends SuperController{
     public Object updateApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns   ) throws Exception {
             if (p8file.isEmpty() ) {
 
-                return Response.getFailResponseNonDataBody(KeyConf.Message.P8FILENOTFOUND);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
             }
             String file = FileStorage.uploadFile(p8file);
             Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.appId, new APNS(file,requestCreateApns.teamId,requestCreateApns.fileKey,requestCreateApns.bundleId));
             return updateStatus ?
-                  Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
-                  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                  Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+                  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
     }
 
@@ -214,11 +212,11 @@ public class BackendController extends SuperController{
     public Object deleteApnsConfiguration (@RequestBody RequestRemoveApns requestRemoveApns) {
         try {
             return platformSettingService.removeApnsConfiguration(requestRemoveApns.appId) ? 
-                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                    Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
         } catch (Exception e) {
-            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
         }
        
@@ -233,19 +231,19 @@ public class BackendController extends SuperController{
 
         try {
 
-            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.ANDROID);
-            PlatformSettingEntity platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.WEB);
+            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.ANDROID);
+            PlatformSettingEntity platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.WEB);
             
             List<PlatformSettingEntity> platformList = new ArrayList<>();
             if (platformSetting != null  )
                 platformList.add(platformSetting);
             if (platformSettingWeb != null  )
                 platformList.add(platformSettingWeb);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformList, true));
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformList, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 
@@ -255,15 +253,15 @@ public class BackendController extends SuperController{
     @PostMapping("platforms/setting/fcm")
     public Object saveFcm(@RequestBody RequestCreateFcm requestFcm){
         try {
-            if(KeyConf.PlatForm.ANDROID.equals(requestFcm.getPlatformId()) | KeyConf.PlatForm.WEB.equals(requestFcm.getPlatformId()) ) {
+            if(PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
                 PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
-                return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+                return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
             }
 
-           return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
+           return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
           
-              return  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+              return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
         
     }
@@ -272,17 +270,17 @@ public class BackendController extends SuperController{
     @PutMapping("platforms/setting/fcm")
     public Object updateFcm(@RequestBody RequestUpdateFcm requestFcm){
         try {
-            if( KeyConf.PlatForm.ANDROID.equals(requestFcm.getPlatformId()) | KeyConf.PlatForm.WEB.equals(requestFcm.getPlatformId()) ) {
+            if( PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
 
                 Boolean updateStatus = platformSettingService.updateFcm(requestFcm.appId, requestFcm.platformId ,requestFcm.authorizedKey);
                 return updateStatus ?
-                        Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
-                        Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                        Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+                        Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
             }
-            return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
 
-            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
 
     }
@@ -292,11 +290,11 @@ public class BackendController extends SuperController{
     public Object deleteFcmConfiguration (@RequestBody RequestRemoveFcm requestFcm) {
         try {
             return platformSettingService.removeFcmConfiguration(requestFcm.appId,requestFcm.platformId) ? 
-                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                    Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
         } catch (Exception e) {
-            return   Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return   Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
     }
   
@@ -304,13 +302,13 @@ public class BackendController extends SuperController{
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @GetMapping("/platforms")
     public Object get(){
-        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
+        return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @PostMapping("/platforms")
     public Object save (@RequestBody PlatformEntity platform) { 
         PlatformEntity _platform =  platformService.insert(platform);
-         return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+         return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
 
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
@@ -318,14 +316,14 @@ public class BackendController extends SuperController{
     public Object update (@RequestBody PlatformEntity platform) { 
 
         PlatformEntity _platform =  platformService.update(platform);
-        return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @DeleteMapping("/platforms")
     public Object remove (@RequestBody PlatformEntity platform) { 
         Boolean boo = platformService.remove(platform);
-        return boo ?  Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-                       Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+        return boo ?  Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                       Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
     } 
     
     @GetMapping("/push/history")
@@ -333,20 +331,20 @@ public class BackendController extends SuperController{
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
         
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,listHis , true);
+        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listHis , true);
     }
     
     @GetMapping("/push/history/{id}")
     public Object displayHistory(@PathVariable("id")Integer id){
      ResponseHistoryDto notiHisto= historyService.getPushNotificationHistoryById(id);
-     return Response.getResponseBody(KeyConf.Message.SUCCESS,notiHisto, true);
+     return Response.getResponseBody(ResponseEnum.Message.SUCCESS,notiHisto, true);
     }
     @Transactional(rollbackOn = Exception.class)
     @ResponseBody
     @PostMapping("/create/request")
     public Object  create(String username,String password) throws Exception{
         UserEntity user = userService.saveUserToRequestStatus(username, password);
-        return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
    
     @Transactional(rollbackOn = Exception.class)
@@ -355,13 +353,13 @@ public class BackendController extends SuperController{
     @PostMapping(value="/{userId}/approval")
     public Object approval(@PathVariable("userId") String userId) throws Exception{
          userService.approveUser(userId);
-        return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
     // @Transactional(rollbackOn = Exception.class)
     // @GetMapping("/devices")
     // public Object getDevice(String appId){
     //         List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
-    //         return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
+    //         return Response.getResponseBody(ResponseEnum.Message.SUCCESS,devices,true);
     // }
 
     @ApiOperation("Get Device detail")
@@ -370,6 +368,6 @@ public class BackendController extends SuperController{
 
         List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(requestDevice.appId,requestDevice.startDate, requestDevice.endDate, requestDevice.push_id,requestDevice.modelName, requestDevice.plat_code, requestDevice.os_version);
         
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
+        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listDeviceClients , true);
     }
 }

@@ -5,7 +5,7 @@ import java.util.stream.Collectors;
 
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.GlobalMethod;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
@@ -26,16 +26,16 @@ public class AppService {
    
     public AppEntity getActiveAppDetail(String appId) {
 
-        return appRepo.findByIdAndStatus(appId,KeyConf.Status.ACTIVE);
+        return appRepo.findByIdAndStatus(appId, KeyConfEnum.Status.ACTIVE);
  
      }
  
     public List<AppEntity> getAllApps(){
-        return appRepo.findByStatus(KeyConf.Status.ACTIVE);
+        return appRepo.findByStatus(KeyConfEnum.Status.ACTIVE);
     }
 
     public List<AppEntity> getActiveAppsByUserId(String userId){
-        return appRepo.findByUserIdAndStatus(userId,KeyConf.Status.ACTIVE);
+        return appRepo.findByUserIdAndStatus(userId, KeyConfEnum.Status.ACTIVE);
     }
     
     public List<ResponseListApp> getActiveAppsByUserIdAndName(String userId,String appName){
@@ -64,7 +64,7 @@ public class AppService {
 
     public String getOwnerIdByAppId(String appId){
         
-        String ownerId = appRepo.findUserIdByAppId(appId,KeyConf.Status.ACTIVE);
+        String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
         System.out.println(ownerId);
         return ownerId;
     }
@@ -81,7 +81,7 @@ public class AppService {
         if(application == null ){
             return false;
         }
-        application.setStatus(KeyConf.Status.DISABLED);
+        application.setStatus(KeyConfEnum.Status.DISABLED);
         appRepo.save(application);
         return true;
     }
@@ -98,6 +98,6 @@ public class AppService {
 
     public AppEntity getAppByNameAndUserId(String name) {
         String userId = GlobalMethod.getUserCredential().getId();
-        return appRepo.findByUserIdAndNameAndStatus(userId,name,KeyConf.Status.ACTIVE);
+        return appRepo.findByUserIdAndNameAndStatus(userId,name, KeyConfEnum.Status.ACTIVE);
     }
 }

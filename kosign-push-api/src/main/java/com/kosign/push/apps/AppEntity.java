@@ -1,15 +1,13 @@
 package com.kosign.push.apps;
 
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.*;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.GlobalMethod;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -40,7 +38,7 @@ public class AppEntity {
     public Timestamp createdAt;
     @UpdateTimestamp
     public Timestamp updatedAt;
-    public Character status = KeyConf.Status.ACTIVE;
+    public Character status = KeyConfEnum.Status.ACTIVE;
 
     public String updatedBy;
 

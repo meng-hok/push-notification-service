@@ -2,7 +2,8 @@ package com.kosign.push.topics;
 
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.AgentEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,10 +55,10 @@ public class TopicEntity {
         this.application = application;
     }
     public void setApns(){
-        this.agent = KeyConf.Agent.APNS;
+        this.agent = AgentEnum.Agent.APNS;
     }
     public void setFcm(){
-        this.agent = KeyConf.Agent.FCM;
+        this.agent = AgentEnum.Agent.FCM;
     }
 
 //    public Topic(String name, Application application) {

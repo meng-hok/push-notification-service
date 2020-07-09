@@ -2,11 +2,10 @@ package com.kosign.push.devices;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import com.fasterxml.jackson.databind.ObjectMapper;
+
 import com.kosign.push.utils.messages.Agent;
 import com.kosign.push.devices.dto.ResponseDevice;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,12 +65,12 @@ public class DeviceService {
     }
 
     public List<DeviceEntity> getActiveDeviceByAppId (String appId) {
-        List<DeviceEntity> devices= deviceRepo.findByAppIdAndStatus(appId,KeyConf.Status.ACTIVE);
+        List<DeviceEntity> devices= deviceRepo.findByAppIdAndStatus(appId, KeyConfEnum.Status.ACTIVE);
         return devices;
     }
 
     public List<DeviceEntity> getActiveDeviceByAppIdAndPlatformId(String appId,String platFormId){
-        List<DeviceEntity> devices= deviceRepo.findByAppIdAndPlatformIdAndStatus(appId,platFormId,KeyConf.Status.ACTIVE);
+        List<DeviceEntity> devices= deviceRepo.findByAppIdAndPlatformIdAndStatus(appId,platFormId, KeyConfEnum.Status.ACTIVE);
         return devices;
     }
 

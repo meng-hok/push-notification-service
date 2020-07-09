@@ -3,6 +3,7 @@ package com.kosign.push.utils;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.users.UserDetail;
+import com.kosign.push.utils.enums.PlatformEnum;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -13,14 +14,14 @@ import java.util.List;
 public class GlobalMethod {
     
    public static PlatformEntity getAndroid () {
-      return new PlatformEntity(KeyConf.PlatForm.ANDROID);
+      return new PlatformEntity(PlatformEnum.Platform.ANDROID);
    }
    public static PlatformEntity getIos () {
-      return new PlatformEntity(KeyConf.PlatForm.IOS);
+      return new PlatformEntity(PlatformEnum.Platform.IOS);
    }
    
    public static PlatformEntity getBrowser() {
-      return new PlatformEntity(KeyConf.PlatForm.WEB);
+      return new PlatformEntity(PlatformEnum.Platform.WEB);
    }
 
    public static UserDetail getUserCredential(){

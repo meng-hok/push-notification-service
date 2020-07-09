@@ -10,7 +10,7 @@ import java.sql.Timestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 @Data
 public class ResponseListApp extends RequestAppIdentifier
@@ -43,5 +43,5 @@ public class ResponseListApp extends RequestAppIdentifier
     @JsonProperty("created_by")
     private String createdBy;
 
-    private Character status = KeyConf.Status.ACTIVE;
+    private Character status = KeyConfEnum.Status.ACTIVE;
 }

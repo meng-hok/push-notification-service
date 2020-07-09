@@ -13,18 +13,17 @@ import com.kosign.push.utils.messages.AgentIdentifier;
 import com.kosign.push.utils.messages.RequestAgent;
 import com.kosign.push.utils.messages.RequestPushAgentAll;
 import com.kosign.push.platformSetting.dto.FCM;
-import com.kosign.push.notifications.NotificationService;
-import com.kosign.push.platformSetting.PlatformSettingService;
+
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.utils.FileStorage;
-import com.kosign.push.utils.KeyConf;
-import com.kosign.push.utils.RabbitSender;
+
 import com.kosign.push.utils.Response;
+import com.kosign.push.utils.enums.ResponseEnum;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
@@ -49,24 +48,24 @@ public class ClientController extends SuperController{
         try {
             final Integer platformId = new Integer(agentIdentifier.platform_id);
             if (platformId < 0 | platformId > 3 ) { 
-                return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
             }
 
             Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
             if (agent != null ) { 
-                return Response.getFailResponseNonDataBody(KeyConf.Message.ALREADYREGISTEREDDEVICE);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.ALREADYREGISTEREDDEVICE);
             }
             final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
-            // return Response.getResponseBody(KeyConf.Message.SUCCESS,device  , true);
+            // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
             return ( device != null ) ? 
-             Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-             Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+             Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+             Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         } catch (final Exception e) {
             
             e.printStackTrace();
-            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
 
     }
@@ -115,10 +114,10 @@ public class ClientController extends SuperController{
                     throw new Exception("Device Id not found");
             }
 
-            return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+            return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
         } catch (final Exception e) {
             logger.info(e.getMessage());
-           return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+           return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
       
     }
@@ -168,7 +167,7 @@ public class ClientController extends SuperController{
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
 
    
@@ -222,10 +221,10 @@ public class ClientController extends SuperController{
             logger.info("Push Done");
             System.out.println("Device found : " + agents.size());
             System.out.println("Fail : " +fail);
-            return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
+            return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
         } catch (final Exception e) {
             logger.info(e.getMessage()); 
-            return Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
       
     }
