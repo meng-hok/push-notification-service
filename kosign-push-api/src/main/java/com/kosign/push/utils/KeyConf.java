@@ -3,10 +3,12 @@ package com.kosign.push.utils;
 public interface KeyConf {
     
     class Message {
-        public static String SUCCESS = "Successful";
-        public static String FAIL = "Fail";
-        public static String SETTINGNOTFOUNT = "Setting Not Found";
-        public static String INCORRECTPLATFORM = "Incorrect Platform Code";
+        public static final String P8FILENOTFOUND = "P 8 File Not Found";
+        public static final String SUCCESS = "Successful";
+        public static final String FAIL = "Fail";
+        public static final String SETTINGNOTFOUNT = "Setting Not Found";
+        public static final String INCORRECTPLATFORM = "Incorrect Platform Code";
+        public static final String PLATFORMSETTINGREGISTERED = "Platform Setting Registered";
     }
     class Notification{
        public static String TITILE = "Push Server";

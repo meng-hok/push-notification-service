@@ -36,6 +36,7 @@ import com.kosign.push.apps.dto.ResponseListApp;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import jdk.jfr.ContentType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -137,12 +138,14 @@ public class BackendController extends SuperController{
 
     }
 
-    @GetMapping("/platforms/setting")
-    public Object getAllPlatformSetting(String appId) throws Exception{
+//    @GetMapping("/platforms/setting")
+    public Object getAllPlatformSetting(@RequestParam(required = true) String appId) throws Exception{
 
         try {
 
             List<PlatformSettingEntity> platformSettings = platformSettingService.getActivePlatformsConfiguredByAppId(appId);
+
+
             return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSettings, true));
 
 
@@ -154,8 +157,8 @@ public class BackendController extends SuperController{
  *
  * FCM
  * */
-    @GetMapping("/platforms/setting/apns")
-    public Object getApns(String appId) throws Exception{
+//    @GetMapping("/platforms/setting/apns")
+    public Object getApns(@RequestParam(required = true) String appId) throws Exception{
 
         try {
 
@@ -168,13 +171,21 @@ public class BackendController extends SuperController{
         }
     }
 
+    @CrossOrigin
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("/platforms/setting/apns")
-    public Object saveApns(@RequestBody RequestCreateApns requestCreateApns ) throws Exception{
+    @PostMapping( value = "/platforms/setting/apns")
+    public Object saveApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns  ) throws Exception{
             
             try {
-               
-                    String file = FileStorage.uploadFile(requestCreateApns.p8file);
+
+                    if (p8file.isEmpty() ) {
+
+                        return Response.getFailResponseNonDataBody(KeyConf.Message.P8FILENOTFOUND);
+                    }
+                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,KeyConf.PlatForm.IOS) != null ) {
+                        return Response.getFailResponseNonDataBody(KeyConf.Message.PLATFORMSETTINGREGISTERED);
+                    }
+                    String file = FileStorage.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.appId, file, requestCreateApns.fileKey, requestCreateApns.teamId, requestCreateApns.bundleId);
                     return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
                 
@@ -187,13 +198,16 @@ public class BackendController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns")
-    public Object updateApns(@RequestBody RequestCreateApns requestCreateApns ) throws Exception {
+    public Object updateApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns   ) throws Exception {
+            if (p8file.isEmpty() ) {
 
-            String file = FileStorage.uploadFile(requestCreateApns.p8file);
+                return Response.getFailResponseNonDataBody(KeyConf.Message.P8FILENOTFOUND);
+            }
+            String file = FileStorage.uploadFile(p8file);
             Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.appId, new APNS(file,requestCreateApns.teamId,requestCreateApns.fileKey,requestCreateApns.bundleId));
             return updateStatus ?
                   Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
-                  Response.getResponseBody(KeyConf.Message.FAIL,  "{}", false);
+                  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
 
     }
 
@@ -215,7 +229,7 @@ public class BackendController extends SuperController{
  * FCM
  * */
   
-    @GetMapping("/platforms/setting/fcm")
+//   @GetMapping("/platforms/setting/fcm")
     public Object getFcm(String appId) throws Exception{
 
         try {
@@ -247,7 +261,7 @@ public class BackendController extends SuperController{
                 return Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS);
             }
 
-           return Response.getFailResponseNonDataBody("Incorrect Requested Platform Code ");
+           return Response.getFailResponseNonDataBody(KeyConf.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
           
               return  Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
