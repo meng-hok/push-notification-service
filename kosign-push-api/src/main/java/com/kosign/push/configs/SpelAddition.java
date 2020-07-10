@@ -25,11 +25,11 @@ public class SpelAddition  {
     private NotificationHistoryRepository notificationHistoryRepository;
 
 
-    // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..)) && !execution(* com.kosign.push.publics.BackendController.approval(..))")
-    // public void notToExcute(){}
+    @Pointcut("!execution(* com.kosign.push.*.*.getHistory(..)) && !execution(* com.kosign.push.*.*.approval(..)) && !execution(* com.kosign.push.*.*.create(..)) && !execution(* com.kosign.push.*.*.getYourApplication(..)) ")
+    public void notToExcute(){}
     // // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..))")
     // // public void notToExcuteApproval(){}
-    // @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute() && !execution(* com.kosign.push.publics.BackendController.create(..)) && !execution(* com.kosign.push.publics.*.getYourApplication(..))  and args(appId,..) ")
+    // @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute()  and args(appId,..) ")
     // public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
         
     //     logger.info("AOP Before method:" + joinPoint.getSignature());

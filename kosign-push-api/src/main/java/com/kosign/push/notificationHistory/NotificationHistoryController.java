@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 
-@Api(tags = "KOSIGN Push Notification History API")
+@Api(tags = "Notifications History")
 @PreAuthorize("#oauth2.hasScope('READ')")
 // @PreAuthorize("hasRole('ROLE_OPERATOR')")
 @RestController

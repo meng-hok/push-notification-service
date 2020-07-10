@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "KOSIGN Push Notification API")
+@Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
 public class NotificationController extends SuperController{

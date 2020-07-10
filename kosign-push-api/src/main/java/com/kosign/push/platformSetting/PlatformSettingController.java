@@ -29,7 +29,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-@Api(tags = "KOSIGN Push Platform Setting API")
+@Api(tags = "Platforms Setting ")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")

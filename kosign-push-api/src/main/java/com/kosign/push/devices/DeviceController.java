@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "KOSIGN Push Device API")
+@Api(tags = " Devices ")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")

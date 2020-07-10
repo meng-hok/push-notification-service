@@ -12,7 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import io.swagger.annotations.Api;
 
-@Api(tags = "KOSIGN Push Platform Setting API")
+@Api(tags = "Platforms")
 // @PreAuthorize("#oauth2.hasScope('READ')")
 @PreAuthorize("hasRole('ROLE_OPERATOR')")
 @RestController

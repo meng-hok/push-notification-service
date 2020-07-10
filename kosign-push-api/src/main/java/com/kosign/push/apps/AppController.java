@@ -25,7 +25,7 @@ import com.kosign.push.utils.enums.ResponseEnum;
 
 import org.springframework.web.bind.annotation.*;
 
-@Api(tags = "KOSIGN Push Application API")
+@Api(tags = "Applications")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")
