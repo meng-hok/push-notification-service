@@ -20,7 +20,7 @@ import io.swagger.annotations.Api;
 
 
 @RestController
-@RequestMapping("/api/public")
+// @RequestMapping("/api/public")
 public class SuperController {
   
     @Autowired

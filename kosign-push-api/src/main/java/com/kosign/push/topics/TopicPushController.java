@@ -1,8 +1,8 @@
-package com.kosign.push.publics;
+package com.kosign.push.topics;
 
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.topics.TopicService;
-import com.kosign.push.utils.Response;
+import com.kosign.push.utils.messages.Response;
 import com.kosign.push.utils.enums.ResponseEnum;
 
 import io.swagger.annotations.ApiOperation;

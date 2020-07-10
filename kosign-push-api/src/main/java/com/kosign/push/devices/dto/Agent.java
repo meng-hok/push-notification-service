@@ -1,9 +1,7 @@
-package com.kosign.push.utils.messages;
+package com.kosign.push.devices.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.ToString;
-
-import javax.persistence.Id;
 
 @AllArgsConstructor
 @Data

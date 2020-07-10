@@ -3,7 +3,7 @@ package com.kosign.push.devices;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kosign.push.utils.messages.Agent;
+import com.kosign.push.devices.dto.Agent;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;

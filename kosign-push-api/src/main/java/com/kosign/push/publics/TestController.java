@@ -18,8 +18,8 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 
 @Api(tags = "Test APIs")
-@RestController
-@RequestMapping("/api/public")
+// @RestController
+@RequestMapping("/api/publics")
 public class TestController {
     @Autowired
     private TestService testService;

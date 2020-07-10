@@ -3,7 +3,7 @@ package com.kosign.push.devices;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.kosign.push.utils.messages.Agent;
+import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.utils.enums.KeyConfEnum;
 

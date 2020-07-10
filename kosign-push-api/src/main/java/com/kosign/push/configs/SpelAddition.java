@@ -25,31 +25,31 @@ public class SpelAddition  {
     private NotificationHistoryRepository notificationHistoryRepository;
 
 
-    @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..)) && !execution(* com.kosign.push.publics.BackendController.approval(..))")
-    public void notToExcute(){}
-    // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..))")
-    // public void notToExcuteApproval(){}
-    @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute() && !execution(* com.kosign.push.publics.BackendController.create(..)) && !execution(* com.kosign.push.publics.*.getYourApplication(..))  and args(appId,..) ")
-    public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
+    // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..)) && !execution(* com.kosign.push.publics.BackendController.approval(..))")
+    // public void notToExcute(){}
+    // // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..))")
+    // // public void notToExcuteApproval(){}
+    // @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute() && !execution(* com.kosign.push.publics.BackendController.create(..)) && !execution(* com.kosign.push.publics.*.getYourApplication(..))  and args(appId,..) ")
+    // public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
         
-        logger.info("AOP Before method:" + joinPoint.getSignature());
-        System.out.println(appId);
-        // System.out.println(authKey);
-        try {
-                UserDetail userDetail = GlobalMethod.getUserCredential();
+    //     logger.info("AOP Before method:" + joinPoint.getSignature());
+    //     System.out.println(appId);
+    //     // System.out.println(authKey);
+    //     try {
+    //             UserDetail userDetail = GlobalMethod.getUserCredential();
             
-                // String ownerId = appService.getOwnerIdByAppId(appId);
-                String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
-                if(userDetail.getId().equals(ownerId) ){
-                    logger.info("User "+userDetail.getId()+" is valid");
-                }else{
-                    throw ownerId == null ? new NullPointerException(" Application not available") : new Exception("Permisson Denied");
-                }
-        } catch (Exception e) {
-            logger.info("{Error Occur}");
-            throw e;
-        }
-	}
+    //             // String ownerId = appService.getOwnerIdByAppId(appId);
+    //             String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
+    //             if(userDetail.getId().equals(ownerId) ){
+    //                 logger.info("User "+userDetail.getId()+" is valid");
+    //             }else{
+    //                 throw ownerId == null ? new NullPointerException(" Application not available") : new Exception("Permisson Denied");
+    //             }
+    //     } catch (Exception e) {
+    //         logger.info("{Error Occur}");
+    //         throw e;
+    //     }
+	// }
 
 
     @Before("execution(* com.kosign.push.*.*.*(..)) ")

@@ -1,23 +1,21 @@
-package com.kosign.push.publics;
+package com.kosign.push.notifications;
 import java.util.List;
 
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
-import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.dto.RequestPushDevice;
-import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
 import com.kosign.push.platformSetting.dto.APNS;
-import com.kosign.push.utils.messages.Agent;
-import com.kosign.push.utils.messages.AgentBody;
-import com.kosign.push.utils.messages.AgentIdentifier;
-import com.kosign.push.utils.messages.RequestAgent;
-import com.kosign.push.utils.messages.RequestPushAgentAll;
+import com.kosign.push.devices.dto.Agent;
+import com.kosign.push.devices.dto.AgentIdentifier;
+import com.kosign.push.devices.dto.RequestAgent;
+import com.kosign.push.devices.dto.RequestPushAgentAll;
 import com.kosign.push.platformSetting.dto.FCM;
 
 import com.kosign.push.platforms.PlatformEntity;
+import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.FileStorage;
 
-import com.kosign.push.utils.Response;
+import com.kosign.push.utils.messages.Response;
 import com.kosign.push.utils.enums.ResponseEnum;
 
 import org.json.JSONObject;
@@ -27,16 +25,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiOperation;
 
-@Api(tags = "KOSIGN Push Client API")
+@Api(tags = "KOSIGN Push Notification API")
 @RestController
 @RequestMapping("/api/public")
-public class ClientController extends SuperController{
+public class NotificationController extends SuperController{
    
 
-    Logger logger = LoggerFactory.getLogger(ClientController.class);
+    Logger logger = LoggerFactory.getLogger(NotificationController.class);
     
     
     

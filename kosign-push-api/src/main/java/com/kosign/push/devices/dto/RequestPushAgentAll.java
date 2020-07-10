@@ -1,4 +1,4 @@
-package com.kosign.push.utils.messages;
+package com.kosign.push.devices.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

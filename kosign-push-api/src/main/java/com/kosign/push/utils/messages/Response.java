@@ -1,4 +1,4 @@
-package com.kosign.push.utils;
+package com.kosign.push.utils.messages;
 
 import java.util.HashMap;
 import java.util.Map;
