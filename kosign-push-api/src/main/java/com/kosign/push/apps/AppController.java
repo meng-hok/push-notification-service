@@ -16,6 +16,7 @@ package com.kosign.push.apps;
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.apps.dto.RequestAppIdentifier;
 import com.kosign.push.apps.dto.RequestAppList;
+import com.kosign.push.apps.dto.RequestAppUpdate;
 import com.kosign.push.apps.dto.RequestCreateApp;
 import com.kosign.push.apps.dto.RequestRemoveApp;
 import com.kosign.push.apps.dto.ResponseListAppById;
@@ -103,7 +104,7 @@ public class AppController extends SuperController
     }
 
     @PutMapping("/applications/{id}")
-    public Object updateName(@RequestBody RequestAppIdentifier request, @PathVariable("id") String id) throws Exception
+    public Object updateName(@RequestBody RequestAppUpdate request, @PathVariable("id") String id) throws Exception
     {
         Boolean update = appService.updateApplication(id, request.getName());
         return update ?
@@ -112,9 +113,9 @@ public class AppController extends SuperController
     }
 
     @DeleteMapping("/applications/{id}")
-    public Object disabled(@RequestBody RequestRemoveApp request, @PathVariable("id") String id)
+    public Object disabled(@PathVariable("id") String id)
     {
-    	Boolean update = appService.disableApplication(request.getAppId());
+    	Boolean update = appService.disableApplication(id);
         return update ?
         		Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
         		Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
