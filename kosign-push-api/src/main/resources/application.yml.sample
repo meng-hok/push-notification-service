@@ -17,6 +17,10 @@ spring:
     port: 
     username: 
     password: 
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+  
 #  jpa:
 #    properties:
 #      hibernate:
