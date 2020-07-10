@@ -60,7 +60,7 @@ public class AppController
     }
     
     @GetMapping("/applications/{id}")
-    public Object findAllApplicationById(@PathVariable("id") String id)
+    public Object findApplicationById(@PathVariable("id") String id)
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
