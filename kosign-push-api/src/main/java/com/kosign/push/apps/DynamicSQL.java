@@ -3,10 +3,11 @@ package com.kosign.push.apps;
 import com.kosign.push.utils.messages.ApplicationIdentifier;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.ibatis.annotations.Param;
 
 public class DynamicSQL {
   
-    public String getSQL(String userId,String name)
+    public String getSQL(@Param("userId") String userId,@Param("name")String name)
     {
         String sql="SELECT * FROM vw_application_detail WHERE user_id=#{userId} ";
         
