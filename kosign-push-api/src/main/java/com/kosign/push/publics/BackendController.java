@@ -5,27 +5,35 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
+import com.kosign.push.apps.AppEntity;
+import com.kosign.push.devices.dto.RequestDevice;
+import com.kosign.push.devices.dto.ResponseDevice;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
+import com.kosign.push.platformSetting.PlatformSettingEntity;
+import com.kosign.push.platforms.PlatformEntity;
 
-import com.kosign.push.apps.Application;
-import com.kosign.push.devices.Device;
-import com.kosign.push.history.dto.ResponseHistoryDto;
-import com.kosign.push.platformSetting.PlatformSetting;
-import com.kosign.push.platforms.Platform;
-
-import com.kosign.push.users.User;
 import com.kosign.push.users.UserDetail;
+import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
-import com.kosign.push.utils.KeyConf;
 import com.kosign.push.utils.Response;
-
-import com.kosign.push.utils.messages.APNS;
-import com.kosign.push.utils.messages.ApplicationIdentifier;
-import com.kosign.push.utils.messages.ApplicationResponse;
-import com.kosign.push.utils.messages.ApplicationResponseById;
-import com.kosign.push.utils.messages.DeviceClientRespose;
+import com.kosign.push.utils.enums.PlatformEnum;
+import com.kosign.push.utils.enums.ResponseEnum;
+import com.kosign.push.platformSetting.dto.APNS;
+import com.kosign.push.platformSetting.dto.RequestCreateApns;
+import com.kosign.push.platformSetting.dto.RequestCreateFcm;
+import com.kosign.push.platformSetting.dto.RequestRemoveApns;
+import com.kosign.push.platformSetting.dto.RequestRemoveFcm;
+import com.kosign.push.platformSetting.dto.RequestUpdateFcm;
+import com.kosign.push.apps.dto.RequestAppIdentifier;
+import com.kosign.push.apps.dto.RequestCreateApp;
+import com.kosign.push.apps.dto.RequestRemoveApp;
+import com.kosign.push.apps.dto.ResponseListAppById;
+import com.kosign.push.apps.dto.ResponseListApp;
 
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -47,13 +55,13 @@ public class BackendController extends SuperController{
         UserDetail userDetail = GlobalMethod.getUserCredential();
        
         if(userDetail == null ){
-            return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
+            return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponse> applications;
+            List<ResponseListApp> applications;
             
                 applications  = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
           
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
+            return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
         
     }
@@ -62,31 +70,41 @@ public class BackendController extends SuperController{
         UserDetail userDetail = GlobalMethod.getUserCredential();
        
         if(userDetail == null ){
-            return Response.getResponseBody(KeyConf.Message.FAIL, "User Id Not Found", false);
+            return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
         }else{ 
-            List<ApplicationResponseById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, applications, true);
+            List<ResponseListAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
+            return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
         
     }
     
 
-    @PostMapping("/applications/create")
-    public Object create(String name){
+    @PostMapping("/applications")
+    public Object create(@RequestBody RequestCreateApp applicationCreateRequest){
         try {
-            Application app = new Application();
-            app.setName(name);
-            app.setUser(new User(GlobalMethod.getUserCredential().getId()));
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, appService.save(app), true);
+            if(appService.getAppByNameAndUserId(applicationCreateRequest.getName()) != null) {
+
+                throw new Exception("Application is Being Registered");
+            }
+
+            AppEntity app = new AppEntity();
+            app.setName(applicationCreateRequest.getName());
+            AppEntity responseApp =  appService.save(app);
+            if(responseApp==null ){ 
+                throw new Exception("Create Fail");
+            }
+            //  ResponseCommonApp responseCommonApp =  new ResponseCommonApp(responseApp);
+             return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
         } catch (Exception e) {
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+            System.out.println(e.getLocalizedMessage());
+            return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
       
     }
 
 
-    @PutMapping("/applications/update")
-    public Object updateName(@RequestBody ApplicationIdentifier application) throws Exception{
+    @PutMapping("/applications")
+    public Object updateName(@RequestBody RequestAppIdentifier application) throws Exception{
 
 
         Boolean update = appService.updateApplication(application.getId(),application.getName());
@@ -94,98 +112,112 @@ public class BackendController extends SuperController{
 
         return update ?
 
-                Response.getResponseBody(KeyConf.Message.SUCCESS," {} ",true) :
+                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
 
-                Response.getResponseBody(KeyConf.Message.FAIL, " {} ", false);
+                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
 
     }
 
-    @PutMapping("/applications/delete")
-    public Object disabled(@RequestBody ApplicationIdentifier application){
+    @DeleteMapping("/applications")
+    public Object disabled(@RequestBody RequestRemoveApp object){
 
 
-            Boolean update = appService.disableApplication(application.getId());
+            Boolean update = appService.disableApplication(object.getAppId());
 
 
         return update ?
 
-                Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) :
+                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
 
-                Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
 
     }
 
-    @GetMapping("/platforms/setting")
-    public Object getAllPlatformSetting(String appId) throws Exception{
+//    @GetMapping("/platforms/setting")
+    public Object getAllPlatformSetting(@RequestParam(required = true) String appId) throws Exception{
 
         try {
 
-            List<PlatformSetting> platformSettings = platformSettingService.getActivePlatformsConfiguredByAppId(appId);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSettings, true));
+            List<PlatformSettingEntity> platformSettings = platformSettingService.getActivePlatformsConfiguredByAppId(appId);
+
+
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformSettings, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 /**
  *
  * FCM
  * */
-    @GetMapping("/platforms/setting/apns")
-    public Object getApns(String appId) throws Exception{
+//    @GetMapping("/platforms/setting/apns")
+    public Object getApns(@RequestParam(required = true) String appId) throws Exception{
 
         try {
 
-            PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true));
+            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.IOS);
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformSetting, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 
+    @CrossOrigin
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/setting/apns/create")
-    public Object saveApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception{
+    @PostMapping( value = "/platforms/setting/apns")
+    public Object saveApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns  ) throws Exception{
             
             try {
-               
+
+                    if (p8file.isEmpty() ) {
+
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
+                    }
+                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,PlatformEnum.Platform.IOS) != null ) {
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORMSETTINGREGISTERED);
+                    }
                     String file = FileStorage.uploadFile(p8file);
-                    PlatformSetting platformSetting= platformSettingService.saveApns(appId, file, fileKey, teamId, bundleId);
-                    return Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true);
+                    PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.appId, file, requestCreateApns.fileKey, requestCreateApns.teamId, requestCreateApns.bundleId);
+                    return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
                 
                
             } catch (Exception e) {
                 e.printStackTrace();
-                return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
             }
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/setting/apns/update")
-    public Object updateApns(String appId,MultipartFile p8file,String fileKey,String teamId,String bundleId) throws Exception {
+    @PutMapping("/platforms/setting/apns")
+    public Object updateApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns   ) throws Exception {
+            if (p8file.isEmpty() ) {
 
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
+            }
             String file = FileStorage.uploadFile(p8file);
-            Boolean updateStatus = platformSettingService.updateApns(appId, new APNS(file,teamId,fileKey,bundleId));
+            Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.appId, new APNS(file,requestCreateApns.teamId,requestCreateApns.fileKey,requestCreateApns.bundleId));
             return updateStatus ?
-                  ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, "{}", true)) :
-                  Response.getResponseBody(KeyConf.Message.FAIL,  "{}", false);
+                  Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+                  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
     }
 
-    @PutMapping("/platforms/setting/apns/delete")
-    public Object deleteApnsConfiguration (String appId) {
+    @DeleteMapping("/platforms/setting/apns")
+    public Object deleteApnsConfiguration (@RequestBody RequestRemoveApns requestRemoveApns) {
         try {
-            return platformSettingService.removeApnsConfiguration(appId) ? 
-                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return platformSettingService.removeApnsConfiguration(requestRemoveApns.appId) ? 
+                    Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
         } catch (Exception e) {
-            return Response.getResponseBody(KeyConf.Message.FAIL,e.getLocalizedMessage().toUpperCase(), false);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+
         }
        
     }
@@ -194,114 +226,125 @@ public class BackendController extends SuperController{
  * FCM
  * */
   
-    @GetMapping("/platforms/setting/fcm")
+//   @GetMapping("/platforms/setting/fcm")
     public Object getFcm(String appId) throws Exception{
 
         try {
 
-            PlatformSetting platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.ANDROID);
-            PlatformSetting platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.WEB);
+            PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.ANDROID);
+            PlatformSettingEntity platformSettingWeb = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.WEB);
             
-            List<PlatformSetting> platformList = new ArrayList<>();
-            platformList.add(platformSetting);
-            platformList.add(platformSettingWeb);
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformList, true));
+            List<PlatformSettingEntity> platformList = new ArrayList<>();
+            if (platformSetting != null  )
+                platformList.add(platformSetting);
+            if (platformSettingWeb != null  )
+                platformList.add(platformSettingWeb);
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformList, true));
 
 
         } catch (Exception e) {
-            return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.FAIL, e.getLocalizedMessage(), false) );
+            return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.FAIL, e.getLocalizedMessage(), false) );
         }
     }
 
     // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
+    @ApiOperation(value = "To register platform setting",notes = "Code = 2 (Fcm android ) & 3 (Fcm Web) ")
     @Transactional(rollbackOn = Exception.class)
-    @PostMapping("platforms/setting/fcm/create")
-    public Object saveFcm(String appId,String platformId,String authKey){
+    @PostMapping("platforms/setting/fcm")
+    public Object saveFcm(@RequestBody RequestCreateFcm requestFcm){
         try {
-            PlatformSetting platformSetting= platformSettingService.saveFcm(appId,platformId, authKey);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, platformSetting, true);
+            if(PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
+                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
+                return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
+            }
+
+           return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
           
-              return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+              return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
         
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("platforms/setting/fcm/update")
-    public Object updateFcm(String appId,String authKey){
+    @PutMapping("platforms/setting/fcm")
+    public Object updateFcm(@RequestBody RequestUpdateFcm requestFcm){
         try {
-            Boolean updateStatus = platformSettingService.updateFcm(appId, authKey);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, "{}", true);
+            if( PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
+
+                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.appId, requestFcm.platformId ,requestFcm.authorizedKey);
+                return updateStatus ?
+                        Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+                        Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+            }
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
         } catch (Exception e) {
 
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
 
     }
 
     @Transactional(rollbackOn = Exception.class)
-    @PutMapping("/platforms/setting/fcm/delete")
-    public Object deleteFcmConfiguration (String appId,String platform) {
+    @DeleteMapping("/platforms/setting/fcm")
+    public Object deleteFcmConfiguration (@RequestBody RequestRemoveFcm requestFcm) {
         try {
-            return platformSettingService.removeFcmConfiguration(appId,platform) ? 
-                    Response.getSuccessResponseNonDataBody(KeyConf.Message.SUCCESS) : 
-                    Response.getFailResponseNonDataBody(KeyConf.Message.FAIL);
+            return platformSettingService.removeFcmConfiguration(requestFcm.appId,requestFcm.platformId) ? 
+                    Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                    Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
         } catch (Exception e) {
-            return  Response.getResponseBody(KeyConf.Message.FAIL,e.getLocalizedMessage().toUpperCase(), false);
+            return   Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
     }
-    @Transactional(rollbackOn = Exception.class)
-    @GetMapping("/devices")
-    public Object getDevice(String appId){
-            List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,devices,true);
-    }
-
+  
     
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @GetMapping("/platforms")
+    public Object get(){
+        return ResponseEntity.ok(Response.getResponseBody(ResponseEnum.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
+    }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @PostMapping("/platforms")
-    public Object get(){
-        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.getActivePlatform(), true))  ;
-    }
-    @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PostMapping("/platforms/save")
-    public Object save (@RequestBody Platform platform) { 
-        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS, platformService.insert(platform), true))  ;
+    public Object save (@RequestBody PlatformEntity platform) { 
+        PlatformEntity _platform =  platformService.insert(platform);
+         return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
 
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PutMapping("/platforms/update")
-    public Object update (@RequestBody Platform platform) { 
-        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.update(platform),true))  ;
+    @PutMapping("/platforms")
+    public Object update (@RequestBody PlatformEntity platform) { 
+
+        PlatformEntity _platform =  platformService.update(platform);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
-    @PutMapping("/platforms/remove")
-    public Object remove (@RequestBody Platform platform) { 
-       
-        return ResponseEntity.ok(Response.getResponseBody(KeyConf.Message.SUCCESS,  platformService.remove(platform),true))  ;
+    @DeleteMapping("/platforms")
+    public Object remove (@RequestBody PlatformEntity platform) { 
+        Boolean boo = platformService.remove(platform);
+        return boo ?  Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                       Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
     } 
     
-    @PostMapping("/push/history")
-    public Object getHistory(String startDate,String endDate,String msgTitle) {
+    @GetMapping("/push/history")
+    public Object getHistory(@RequestParam(required = true) String startDate,@RequestParam(required = true) String endDate,String msgTitle) {
 
         List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
         
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,listHis , true);
+        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listHis , true);
     }
     
     @GetMapping("/push/history/{id}")
     public Object displayHistory(@PathVariable("id")Integer id){
      ResponseHistoryDto notiHisto= historyService.getPushNotificationHistoryById(id);
-     return Response.getResponseBody(KeyConf.Message.SUCCESS,notiHisto, true);
+     return Response.getResponseBody(ResponseEnum.Message.SUCCESS,notiHisto, true);
     }
     @Transactional(rollbackOn = Exception.class)
     @ResponseBody
     @PostMapping("/create/request")
     public Object  create(String username,String password) throws Exception{
-        
-        return Response.getResponseBody(KeyConf.Message.SUCCESS ,userService.saveUserToRequestStatus(username, password),true);
+        UserEntity user = userService.saveUserToRequestStatus(username, password);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
    
     @Transactional(rollbackOn = Exception.class)
@@ -309,14 +352,22 @@ public class BackendController extends SuperController{
     @PreAuthorize("hasRole('ROLE_OPERATOR')")
     @PostMapping(value="/{userId}/approval")
     public Object approval(@PathVariable("userId") String userId) throws Exception{
-        return userService.approveUser(userId);
+         userService.approveUser(userId);
+        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
     }
-  
-    @PostMapping("/devices/client")
-    public Object create(String startDate, String endDate, String push_id, String modelName, String plat_code, String os_version ) {
+    // @Transactional(rollbackOn = Exception.class)
+    // @GetMapping("/devices")
+    // public Object getDevice(String appId){
+    //         List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
+    //         return Response.getResponseBody(ResponseEnum.Message.SUCCESS,devices,true);
+    // }
 
-        List<DeviceClientRespose> listDeviceClients = deviceService.getAllDevicesClient(startDate, endDate, push_id, modelName, plat_code, os_version);
+    @ApiOperation("Get Device detail")
+    @GetMapping("/devices")
+    public Object getDeviceDetail(RequestDevice requestDevice) {
+
+        List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(requestDevice.appId,requestDevice.startDate, requestDevice.endDate, requestDevice.push_id,requestDevice.modelName, requestDevice.plat_code, requestDevice.os_version);
         
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,listDeviceClients , true);
+        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listDeviceClients , true);
     }
 }

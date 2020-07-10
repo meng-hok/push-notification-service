@@ -13,9 +13,9 @@ public class UserDetail implements UserDetails {
     /**
      *
      */
-    private final User user;
+    private final UserEntity user;
  
-    public UserDetail(final User user) {
+    public UserDetail(final UserEntity user) {
         this.user = user;
     }
 

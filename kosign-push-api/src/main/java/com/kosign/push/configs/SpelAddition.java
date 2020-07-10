@@ -1,22 +1,16 @@
 package com.kosign.push.configs;
 
-import java.io.Serializable;
-
 import com.kosign.push.apps.AppRepository;
-import com.kosign.push.apps.AppService;
-import com.kosign.push.history.NotificationHistory;
-import com.kosign.push.history.NotificationHistoryRepository;
+import com.kosign.push.notificationHistory.NotificationHistoryRepository;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.PermissionEvaluator;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
 
@@ -45,7 +39,7 @@ public class SpelAddition  {
                 UserDetail userDetail = GlobalMethod.getUserCredential();
             
                 // String ownerId = appService.getOwnerIdByAppId(appId);
-                String ownerId = appRepo.findUserIdByAppId(appId,KeyConf.Status.ACTIVE);
+                String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
                 if(userDetail.getId().equals(ownerId) ){
                     logger.info("User "+userDetail.getId()+" is valid");
                 }else{

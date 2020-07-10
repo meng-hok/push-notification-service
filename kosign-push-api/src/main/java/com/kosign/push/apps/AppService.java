@@ -1,48 +1,45 @@
 package com.kosign.push.apps;
 
-import java.security.Key;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import com.kosign.push.platformSetting.PlatformSettingService;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.GlobalMethod;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
-import com.kosign.push.utils.messages.ApplicationIdentifier;
-import com.kosign.push.utils.messages.ApplicationResponse;
-import com.kosign.push.utils.messages.ApplicationResponseById;
-import com.kosign.push.utils.messages.PlatformSettingRespone;
-import com.kosign.push.utils.messages.ApplicationResponse;
+import com.kosign.push.apps.dto.ResponseListAppById;
+import com.kosign.push.apps.dto.ResponseListApp;
+import com.kosign.push.platformSetting.dto.ResponsePlatformSetting;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 @AllArgsConstructor
 @Service
 public class AppService {
 
     private AppRepository appRepo;
-    private AppMybatisRepository appMybatisRepo;
+    private AppBatisRepository appMybatisRepo;
     private PlatformSettingService platformSettingService;
 
-    public Application save(Application app){
+    public AppEntity save(AppEntity app){
         return appRepo.save(app);
     }
    
-    public Application getActiveAppDetail(String appId) {
+    public AppEntity getActiveAppDetail(String appId) {
 
-        return appRepo.findByIdAndStatus(appId,KeyConf.Status.ACTIVE);
+        return appRepo.findByIdAndStatus(appId, KeyConfEnum.Status.ACTIVE);
  
      }
  
-    public List<Application> getAllApps(){
-        return appRepo.findByStatus(KeyConf.Status.ACTIVE);
+    public List<AppEntity> getAllApps(){
+        return appRepo.findByStatus(KeyConfEnum.Status.ACTIVE);
     }
 
-    public List<Application> getActiveAppsByUserId(String userId){
-        return appRepo.findByUserIdAndStatus(userId,KeyConf.Status.ACTIVE);
+    public List<AppEntity> getActiveAppsByUserId(String userId){
+        return appRepo.findByUserIdAndStatus(userId, KeyConfEnum.Status.ACTIVE);
     }
     
-    public List<ApplicationResponse> getActiveAppsByUserIdAndName(String userId,String appName){
-        List<ApplicationResponse> applicationResponses =  appMybatisRepo.findActiveByUserIdAndName(userId,appName);
+    public List<ResponseListApp> getActiveAppsByUserIdAndName(String userId,String appName){
+        List<ResponseListApp> applicationResponses =  appMybatisRepo.findActiveByUserIdAndName(userId,appName);
 
         applicationResponses = applicationResponses.stream().map(application -> {
             application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
@@ -53,13 +50,13 @@ public class AppService {
         return applicationResponses;
     }
 
-    public List<ApplicationResponseById> getActiveAppsByAppId(String userId, String appId){
-        List<ApplicationResponseById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
-        List<PlatformSettingRespone> platformSettingRespones = appMybatisRepo.findPlatformrByAppId(appId);
+    public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId){
+        List<ResponseListAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
+        List<ResponsePlatformSetting> responsePlatformSettings = appMybatisRepo.findPlatformrByAppId(appId);
 
         applicationResponses = applicationResponses.stream().map(application -> {
             application.setPlatform(application.getAndroid() + application.getIos() + application.getFcm());
-            application.setPlatRec(platformSettingRespones);
+            application.setPlatRec(responsePlatformSettings);
             return application;
         }).collect(Collectors.toList());
         return applicationResponses;
@@ -67,7 +64,7 @@ public class AppService {
 
     public String getOwnerIdByAppId(String appId){
         
-        String ownerId = appRepo.findUserIdByAppId(appId,KeyConf.Status.ACTIVE);
+        String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
         System.out.println(ownerId);
         return ownerId;
     }
@@ -80,22 +77,27 @@ public class AppService {
 
    
     public Boolean disableApplication(String appId ) {
-        Application application = getActiveAppDetail(appId);
+        AppEntity application = getActiveAppDetail(appId);
         if(application == null ){
             return false;
         }
-        application.setStatus(KeyConf.Status.DISABLED);
+        application.setStatus(KeyConfEnum.Status.DISABLED);
         appRepo.save(application);
         return true;
     }
 
     public Boolean updateApplication(String appId, String name) throws Exception {
-        Application application = getActiveAppDetail(appId);
+        AppEntity application = getActiveAppDetail(appId);
         if(application == null ){
             return false;
         }
         application.setName(name);
         appRepo.save(application);
         return true;
+    }
+
+    public AppEntity getAppByNameAndUserId(String name) {
+        String userId = GlobalMethod.getUserCredential().getId();
+        return appRepo.findByUserIdAndNameAndStatus(userId,name, KeyConfEnum.Status.ACTIVE);
     }
 }

@@ -1,19 +1,14 @@
 package com.kosign.push.publics;
 
-import com.kosign.push.devices.Device;
+import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.topics.TopicService;
-import com.kosign.push.utils.KeyConf;
-import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.Response;
+import com.kosign.push.utils.enums.ResponseEnum;
+
 import io.swagger.annotations.ApiOperation;
-import lombok.AllArgsConstructor;
-import org.postgresql.util.PSQLException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
-import java.util.List;
 
 //@AllArgsConstructor
 ////@PreAuthorize("#oauth2.hasScope('READ')")
@@ -27,7 +22,7 @@ public class TopicPushController {
     @ApiOperation(value = "Getting available Topic From Application #2cf57d2b-ebe4-4539-af0a-98d252f6b8e2")
     @GetMapping("/topics")
     public Object myTopic (String appId){
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.getActiveTopicsByAppId(appId),true);
+        return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.getActiveTopicsByAppId(appId),true);
     }
 
     @ApiOperation(value = "Register Topic")
@@ -35,28 +30,28 @@ public class TopicPushController {
     public Object registerTopic (String appId, String topicName){
         try {
 
-            return Response.getResponseBody(KeyConf.Message.SUCCESS, topicService.registerTopic(appId,topicName) ,true);
+            return Response.getResponseBody( ResponseEnum.Message.SUCCESS, topicService.registerTopic(appId,topicName) ,true);
         }catch (Exception e){
             System.out.println(e.getMessage());
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+            return Response.getResponseBody( ResponseEnum.Message.FAIL,  e.getMessage(), false);
         }
 
     }
     @ApiOperation(value = "Getting All Device From Specific Application Topic #onDeveloping")
     @GetMapping("/topics/devices")
     public Object myClient (String appId,String topicName){
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.getTopicDetailByAppIdAndTopicName(appId,topicName),true);
+        return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.getTopicDetailByAppIdAndTopicName(appId,topicName),true);
     }
 
     @ApiOperation(value = "Unsubscribe Device from Topic ")
     @PostMapping("/topics/remove")
-    public Object registerTopic (String appId, String topicName, ArrayList<Device> devices){
+    public Object registerTopic (String appId, String topicName, ArrayList<DeviceEntity> devices){
         try {
 
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,  topicService.unsubscribeUserFromTopic(appId,topicName,devices) ,true);
+            return Response.getResponseBody( ResponseEnum.Message.SUCCESS,  topicService.unsubscribeUserFromTopic(appId,topicName,devices) ,true);
         }catch (Exception e){
             System.out.println(e.getMessage());
-            return Response.getResponseBody(KeyConf.Message.FAIL,  e.getMessage(), false);
+            return Response.getResponseBody( ResponseEnum.Message.FAIL,  e.getMessage(), false);
         }
 
     }
@@ -64,16 +59,16 @@ public class TopicPushController {
 //    @PostMapping("/topics/subscribe/allToTopics")
     public Object subscribe(String appId,String topicName) throws  Exception{
 //        return topicService.subscribe("",topicName,null);createByTopicNameAndAppId
-        return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.createByTopicNameAndAppId(topicName,appId),true);
+        return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.createByTopicNameAndAppId(topicName,appId),true);
     }
 
     @ApiOperation(value = "Send to All FCM device subscribed to Topic ")
     @PostMapping("/topics/send")
     public Object sendToTopic(String appId,String title,String message,String topicName) {
         try{
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.sendTo(appId,topicName,title,message),true);
+            return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.sendTo(appId,topicName,title,message),true);
         }catch (Exception ex){
-            return Response.getResponseBody(KeyConf.Message.FAIL,ex.getMessage(),false);
+            return Response.getResponseBody( ResponseEnum.Message.FAIL,ex.getMessage(),false);
         }
 
 
@@ -86,7 +81,7 @@ public class TopicPushController {
      * */
     @ApiOperation(value = "Add Many Device to FCM")
     @PostMapping("/topics/devices/insert")
-    public Object addDeviceToTopic (String appId, String topicName, @RequestBody ArrayList<Device> devices){
+    public Object addDeviceToTopic (String appId, String topicName, @RequestBody ArrayList<DeviceEntity> devices){
 
 
         /**
@@ -94,9 +89,9 @@ public class TopicPushController {
          *
          * */
         try {
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.subscribeUserToTopic(appId,topicName,devices),true);
+            return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.subscribeUserToTopic(appId,topicName,devices),true);
         } catch (Exception ex){
-            return Response.getResponseBody(KeyConf.Message.FAIL,ex.getMessage(),false);
+            return Response.getResponseBody( ResponseEnum.Message.FAIL,ex.getMessage(),false);
         }
 
 
@@ -113,9 +108,9 @@ public class TopicPushController {
 //         *
 //         * */
 //        try {
-//            return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.subscribeUserToTopic(appId,topicName,devices),true);
+//            return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.subscribeUserToTopic(appId,topicName,devices),true);
 //        } catch (Exception ex){
-//            return Response.getResponseBody(KeyConf.Message.FAIL,ex.getMessage(),false);
+//            return Response.getResponseBody( ResponseEnum.Message.FAIL,ex.getMessage(),false);
 //        }
 //
 //
@@ -124,11 +119,11 @@ public class TopicPushController {
 
     @ApiOperation(value = "Unsubscribe Device from Topic")
     @PostMapping("/topics/devices/remove")
-    public Object unsubscribeDeviceFromTopic(String appId, String topicName, @RequestBody ArrayList<Device> devices){
+    public Object unsubscribeDeviceFromTopic(String appId, String topicName, @RequestBody ArrayList<DeviceEntity> devices){
         try {
-            return Response.getResponseBody(KeyConf.Message.SUCCESS,topicService.unsubscribeUserFromTopic(appId, topicName, devices),true);
+            return Response.getResponseBody( ResponseEnum.Message.SUCCESS,topicService.unsubscribeUserFromTopic(appId, topicName, devices),true);
         } catch (Exception ex){
-            return Response.getResponseBody(KeyConf.Message.FAIL,ex.getMessage(),false);
+            return Response.getResponseBody( ResponseEnum.Message.FAIL,ex.getMessage(),false);
         }
     }
 }

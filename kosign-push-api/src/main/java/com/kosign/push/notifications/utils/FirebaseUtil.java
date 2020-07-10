@@ -2,14 +2,10 @@ package com.kosign.push.notifications.utils;
 
 
 import com.kosign.push.utils.HttpClient;
-import com.kosign.push.utils.KeyConf;
 // import com.wegarden.notification.model.FirebaseResponse;
 // import com.wegarden.notification.services.HeaderRequestInterceptor;
 
 import org.json.JSONObject;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import java.util.ArrayList;
-import java.util.HashMap;
 
 
 public class FirebaseUtil {
@@ -19,25 +15,25 @@ public class FirebaseUtil {
 
 
 
-    public static JSONObject getNotificationJsonForm(HashMap<String, Object> requestBody) throws Exception{
+//     public static JSONObject getNotificationJsonForm(HashMap<String, Object> requestBody) throws Exception{
 
-        JSONObject notification = new JSONObject();
-        notification.put("title", requestBody.get(KeyConf.Notification.TITILE));
-        notification.put("body",  requestBody.get(KeyConf.Notification.MESSAGE));
-        notification.put("badge", 1);
-        notification.put("sound", "default");
-//        notification.put("content-available",1);
-        return notification;
-    }
+//         JSONObject notification = new JSONObject();
+//         notification.put("title", requestBody.get(KeyConf.Notification.TITILE));
+//         notification.put("body",  requestBody.get(KeyConf.Notification.MESSAGE));
+//         notification.put("badge", 1);
+//         notification.put("sound", "default");
+// //        notification.put("content-available",1);
+//         return notification;
+//     }
 
-    public static JSONObject getNotificationBody(String token, HashMap<String, Object> requestBody) throws Exception {
-        JSONObject body = new JSONObject();
-        body.put("to", token);
-        body.put("priority", "high");
-        body.put("notification", getNotificationJsonForm(requestBody));
-        body.put("data", getNotificationJsonForm(requestBody));
-        return body;
-    }
+    // public static JSONObject getNotificationBody(String token, HashMap<String, Object> requestBody) throws Exception {
+    //     JSONObject body = new JSONObject();
+    //     body.put("to", token);
+    //     body.put("priority", "high");
+    //     body.put("notification", getNotificationJsonForm(requestBody));
+    //     body.put("data", getNotificationJsonForm(requestBody));
+    //     return body;
+    // }
 
     public static JSONObject getNotificationBody(String token, JSONObject jsonBody) throws Exception {
         JSONObject body = new JSONObject();

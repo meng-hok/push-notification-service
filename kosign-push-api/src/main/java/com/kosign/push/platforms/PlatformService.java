@@ -1,13 +1,11 @@
 package com.kosign.push.platforms;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import com.kosign.push.platformSetting.PlatformSettingRepository;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,36 +21,36 @@ public class PlatformService {
     @Autowired
     PlatformRepository platformRepository;
     
-    private Platform getActivePlatformById(String id) { 
-        Platform platform = platformRepository.getOne(id);
+    private PlatformEntity getActivePlatformById(String id) { 
+        PlatformEntity platform = platformRepository.getOne(id);
        
-        return KeyConf.Status.DISABLED.equals(platform.getStatus())? 
+        return KeyConfEnum.Status.DISABLED.equals(platform.getStatus())?
               null : platform;
     }
    
-    public List<Platform> getActivePlatform() {
+    public List<PlatformEntity> getActivePlatform() {
         return platformRepository.findAll().stream()
-                .filter(platform -> ! KeyConf.Status.DISABLED.equals(platform.getStatus()))
+                .filter(platform -> ! KeyConfEnum.Status.DISABLED.equals(platform.getStatus()))
                 .collect(Collectors.toList()); 
 	}
    
-    public Platform insert(Platform platform){
+    public PlatformEntity insert(PlatformEntity platform){
 
        return platformRepository.save(platform);
     }
     @Transactional
-    public Platform update(Platform platform) { 
+    public PlatformEntity update(PlatformEntity platform) { 
 
-        Platform prePlatform = this.getActivePlatformById(platform.getId());
+        PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
         prePlatform.setToNewPlatform(platform);
 
         return platformRepository.save(prePlatform);
     }
    
-    public Boolean remove(Platform platform) { 
-        Platform prePlatform = this.getActivePlatformById(platform.getId());
+    public Boolean remove(PlatformEntity platform) { 
+        PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
      
-        prePlatform.setStatus(KeyConf.Status.DISABLED);
+        prePlatform.setStatus(KeyConfEnum.Status.DISABLED);
         platformRepository.save(platform);
         return true;
     }

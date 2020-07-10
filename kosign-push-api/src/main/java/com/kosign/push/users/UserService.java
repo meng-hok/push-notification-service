@@ -1,11 +1,8 @@
 package com.kosign.push.users;
 
-import java.util.Arrays;
-
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -21,26 +18,26 @@ public class UserService implements UserDetailsService {
     @Autowired
     PasswordEncoder encoder;
 
-    public User saveUserToRequestStatus(String username,String password){
-        User user = new User();
+    public UserEntity saveUserToRequestStatus(String username,String password){
+        UserEntity user = new UserEntity();
         user.setUsername(username);
         user.setPassword(encoder.encode(password)); 
         user.setRole("USER");
-        user.setStatus(KeyConf.Status.REQUESTING);
+        user.setStatus(KeyConfEnum.Status.REQUESTING);
         return userRepo.save(user);
     }
    
-    public User approveUser(String userId){
-        User user = userRepo.getOne(userId);
+    public UserEntity approveUser(String userId){
+        UserEntity user = userRepo.getOne(userId);
      
-        user.setStatus(KeyConf.Status.ACTIVE);
+        user.setStatus(KeyConfEnum.Status.ACTIVE);
         return userRepo.save(user);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) 
     {
-        User user = userRepo.findByUsernameAndStatus(username, KeyConf.Status.ACTIVE);
+        UserEntity user = userRepo.findByUsernameAndStatus(username, KeyConfEnum.Status.ACTIVE);
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }else{

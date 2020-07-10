@@ -10,11 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceRepository extends JpaRepository<Device,String> {
+public interface DeviceRepository extends JpaRepository<DeviceEntity,String> {
 
-	List<Device> findByAppIdAndStatus(@Param("appId")String appId,@Param("status")Character status);
+	List<DeviceEntity> findByAppIdAndStatus(@Param("appId")String appId,@Param("status")Character status);
 
-	List<Device> findByAppIdAndPlatformIdAndStatus(@Param("appId")String appId,@Param("platFormId") String platFormId,@Param("status") Character status);
+	List<DeviceEntity> findByAppIdAndPlatformIdAndStatus(@Param("appId")String appId,@Param("platFormId") String platFormId,@Param("status") Character status);
 
     // @Query(nativeQuery = true, value = "SELECT * FROM ps_device_client WHERE device_id=:deviceId AND  app_id=:appId ")
 	// Device findCByDeviceIdAndAppId(@Param("deviceId") String deviceId,@Param("appId") Character appId);

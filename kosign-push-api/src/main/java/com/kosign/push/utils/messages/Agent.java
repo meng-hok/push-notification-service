@@ -9,12 +9,10 @@ import javax.persistence.Id;
 @Data
 @ToString
 //@Entity
-public class Agent {
-    @Id
-    public String id;
-    public String app_id;
-    public String platform_id;
-    public String device_id;
+public class Agent extends AgentBody {
+
+    // public String id;
+   
 
     public String authorized_key;
   
@@ -23,10 +21,10 @@ public class Agent {
     public String file_key;
     public String bundle_id;
 
-    public String token;
+
+
    
-    public String title;
-    public String message;
+  
 
     public Agent(){}
 }
