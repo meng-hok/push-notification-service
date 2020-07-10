@@ -1,3 +1,16 @@
+/**
+ * File Name        	: AppBatisRepository.java
+ * File Path        	: /kosign-push-api/src/main/java/com/kosign/push/apps/AppBatisRepository.java
+ * File Description 	: 
+ * 
+ * File Author	  		: Neng Channa
+ * Created Date	  	    : 10-July-2020 18:52
+ * Developed By	  	    : Sok Menghok
+ * Modified Date	  	: 10-July-2020 18:52
+ * Modified By          : Sok Menghok
+ *
+ **/
+
 package com.kosign.push.apps;
 
 import java.util.List;

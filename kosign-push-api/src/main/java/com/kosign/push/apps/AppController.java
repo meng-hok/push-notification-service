@@ -1,3 +1,16 @@
+/**
+ * File Name        	: AppController.java
+ * File Path        	: /kosign-push-api/src/main/java/com/kosign/push/apps/AppController.java
+ * File Description 	: 
+ * 
+ * File Author	  		: Neng Channa
+ * Created Date	  	    : 10-July-2020 18:52
+ * Developed By	  	    : Sok Menghok
+ * Modified Date	  	: 10-July-2020 18:52
+ * Modified By          : Sok Menghok
+ *
+ **/
+
 package com.kosign.push.apps;
 
 import com.kosign.push.publics.SuperController;
@@ -23,8 +36,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class AppController extends SuperController 
 {
-    @PostMapping("/applications")
-    public Object findAllApplications(@RequestBody RequestAppList request) 
+    @GetMapping("/applications")
+    public Object findAllApplications
+    (
+    	@RequestParam(value = "name", defaultValue = "") String name
+    ) 
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
@@ -33,6 +49,9 @@ public class AppController extends SuperController
         }
         else
         { 
+        	RequestAppList request = new RequestAppList();
+        	request.setName(name);
+        	
             List<ResponseListApp> applications = appService.findAllApplications(userDetail.getId(),request);
             return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
@@ -53,23 +72,24 @@ public class AppController extends SuperController
         }
     }
 
-    @PostMapping("/applications/{id}")
-    public Object create(@RequestBody RequestCreateApp applicationCreateRequest, @PathVariable("id") String id)
+    @PostMapping("/applications")
+    public Object createApplication(@RequestBody RequestCreateApp request)
     {
         try 
         {
-            if(appService.getAppByNameAndUserId(applicationCreateRequest.getName()) != null)
+            if(appService.getAppByNameAndUserId(request.getName()) != null)
             {
-                throw new Exception("Application is Being Registered");
+                throw new Exception("This application already existed");
             }
 
             AppEntity app = new AppEntity();
-            app.setName(applicationCreateRequest.getName());
+            app.setName(request.getName());
+            
             AppEntity responseApp =  appService.save(app);
             
             if(responseApp==null )
             { 
-                throw new Exception("Create Fail");
+                throw new Exception("Failed to create application");
             }
             
             return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
@@ -77,24 +97,24 @@ public class AppController extends SuperController
         catch (Exception e) 
         {
             System.out.println(e.getLocalizedMessage());
-            return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+            return  Response.getFailResponseNonDataBody(e.getLocalizedMessage());
         }
       
     }
 
-    @PutMapping("/applications")
-    public Object updateName(@RequestBody RequestAppIdentifier application) throws Exception
+    @PutMapping("/applications/{id}")
+    public Object updateName(@RequestBody RequestAppIdentifier request, @PathVariable("id") String id) throws Exception
     {
-        Boolean update = appService.updateApplication(application.getId(),application.getName());
+        Boolean update = appService.updateApplication(id, request.getName());
         return update ?
         		Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
         		Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
     }
 
-    @DeleteMapping("/applications")
-    public Object disabled(@RequestBody RequestRemoveApp object)
+    @DeleteMapping("/applications/{id}")
+    public Object disabled(@RequestBody RequestRemoveApp request, @PathVariable("id") String id)
     {
-    	Boolean update = appService.disableApplication(object.getAppId());
+    	Boolean update = appService.disableApplication(request.getAppId());
         return update ?
         		Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
         		Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
