@@ -2,6 +2,7 @@ package com.kosign.push.apps;
 
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.apps.dto.RequestAppIdentifier;
+import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.RequestCreateApp;
 import com.kosign.push.apps.dto.RequestRemoveApp;
 import com.kosign.push.apps.dto.ResponseListAppById;
@@ -22,8 +23,8 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1")
 public class AppController extends SuperController 
 {
-    @GetMapping("/applications")
-    public Object getYourApplication(@RequestParam(required = false,defaultValue = "") String appName) 
+    @PostMapping("/applications")
+    public Object findAllApplications(@RequestBody RequestAppList request) 
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
@@ -32,13 +33,13 @@ public class AppController extends SuperController
         }
         else
         { 
-            List<ResponseListApp> applications = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
+            List<ResponseListApp> applications = appService.findAllApplications(userDetail.getId(),request);
             return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
     }
     
     @GetMapping("/applications/{id}")
-    public Object getYourApplicationByID(@PathVariable("id") String id)
+    public Object findAllApplicationById(@PathVariable("id") String id)
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
@@ -52,8 +53,8 @@ public class AppController extends SuperController
         }
     }
 
-    @PostMapping("/applications")
-    public Object create(@RequestBody RequestCreateApp applicationCreateRequest)
+    @PostMapping("/applications/{id}")
+    public Object create(@RequestBody RequestCreateApp applicationCreateRequest, @PathVariable("id") String id)
     {
         try 
         {

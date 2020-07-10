@@ -6,6 +6,7 @@ import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.enums.KeyConfEnum;
 import com.kosign.push.apps.dto.ResponseListAppById;
+import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.platformSetting.dto.ResponsePlatformSetting;
 import lombok.AllArgsConstructor;
@@ -16,9 +17,23 @@ import org.springframework.stereotype.Service;
 public class AppService 
 {
     private AppRepository appRepo;
-    private AppBatisRepository appMybatisRepo;
+    private AppBatisRepository appBatisRepo;
     private PlatformSettingService platformSettingService;
 
+    public List<ResponseListApp> findAllApplications(String userId, RequestAppList request)
+    {
+        List<ResponseListApp> applicationResponses =  appBatisRepo.findAllApplications(userId, request);
+
+        applicationResponses = applicationResponses.stream().map(application -> {
+            application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
+            application.setApns( application.getIos() ); 
+            application.setFcm(application.getAndroid()  + application.getFcm());
+            return application;
+        }).collect(Collectors.toList());
+        
+        return applicationResponses;
+    }
+    
     public AppEntity save(AppEntity app)
     {
         return appRepo.save(app);
@@ -39,24 +54,10 @@ public class AppService
         return appRepo.findByUserIdAndStatus(userId, KeyConfEnum.Status.ACTIVE);
     }
     
-    public List<ResponseListApp> getActiveAppsByUserIdAndName(String userId,String appName)
-    {
-        List<ResponseListApp> applicationResponses =  appMybatisRepo.findActiveByUserIdAndName(userId,appName);
-
-        applicationResponses = applicationResponses.stream().map(application -> {
-            application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
-            application.setApns( application.getIos() ); 
-            application.setFcm(application.getAndroid()  + application.getFcm());
-            return application;
-        }).collect(Collectors.toList());
-        
-        return applicationResponses;
-    }
-
     public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId)
     {
-        List<ResponseListAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
-        List<ResponsePlatformSetting> responsePlatformSettings = appMybatisRepo.findPlatformrByAppId(appId);
+        List<ResponseListAppById> applicationResponses =  appBatisRepo.findActiveByAppId(userId,appId);
+        List<ResponsePlatformSetting> responsePlatformSettings = appBatisRepo.findPlatformrByAppId(appId);
 
         applicationResponses = applicationResponses.stream().map(application -> {
             application.setPlatform(application.getAndroid() + application.getIos() + application.getFcm());
