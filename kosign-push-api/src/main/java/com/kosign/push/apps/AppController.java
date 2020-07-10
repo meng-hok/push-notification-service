@@ -8,110 +8,94 @@ import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RestController;
-
 import io.swagger.annotations.Api;
-
-import java.util.ArrayList;
 import java.util.List;
-
-
 import com.kosign.push.users.UserDetail;
-import com.kosign.push.users.UserEntity;
-import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
-import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.utils.enums.ResponseEnum;
-
 import org.springframework.web.bind.annotation.*;
 
 @Api(tags = "Applications")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")
-public class AppController extends SuperController {
+public class AppController extends SuperController 
+{
     @GetMapping("/applications")
-    public Object getYourApplication(@RequestParam(required = false,defaultValue = "") String appName) {
+    public Object getYourApplication(@RequestParam(required = false,defaultValue = "") String appName) 
+    {
         UserDetail userDetail = GlobalMethod.getUserCredential();
-       
-        if(userDetail == null ){
+        if(userDetail == null)
+        {
             return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
-        }else{ 
-            List<ResponseListApp> applications;
-            
-                applications  = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
-          
+        }
+        else
+        { 
+            List<ResponseListApp> applications = appService.getActiveAppsByUserIdAndName(userDetail.getId(),appName);
             return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
-        
     }
+    
     @GetMapping("/applications/{id}")
-    public Object getYourApplicationByID(@PathVariable("id") String id ) {
+    public Object getYourApplicationByID(@PathVariable("id") String id)
+    {
         UserDetail userDetail = GlobalMethod.getUserCredential();
-       
-        if(userDetail == null ){
+        if(userDetail == null)
+        {
             return Response.getResponseBody(ResponseEnum.Message.FAIL, "User Id Not Found", false);
-        }else{ 
+        }
+        else
+        { 
             List<ResponseListAppById> applications = appService.getActiveAppsByAppId(userDetail.getId(),id);
             return Response.getResponseBody(ResponseEnum.Message.SUCCESS, applications, true);
         }
-        
     }
-    
 
     @PostMapping("/applications")
-    public Object create(@RequestBody RequestCreateApp applicationCreateRequest){
-        try {
-            if(appService.getAppByNameAndUserId(applicationCreateRequest.getName()) != null) {
-
+    public Object create(@RequestBody RequestCreateApp applicationCreateRequest)
+    {
+        try 
+        {
+            if(appService.getAppByNameAndUserId(applicationCreateRequest.getName()) != null)
+            {
                 throw new Exception("Application is Being Registered");
             }
 
             AppEntity app = new AppEntity();
             app.setName(applicationCreateRequest.getName());
             AppEntity responseApp =  appService.save(app);
-            if(responseApp==null ){ 
+            
+            if(responseApp==null )
+            { 
                 throw new Exception("Create Fail");
             }
-            //  ResponseCommonApp responseCommonApp =  new ResponseCommonApp(responseApp);
-             return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
-        } catch (Exception e) {
+            
+            return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
+        } 
+        catch (Exception e) 
+        {
             System.out.println(e.getLocalizedMessage());
             return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         }
       
     }
 
-
     @PutMapping("/applications")
-    public Object updateName(@RequestBody RequestAppIdentifier application) throws Exception{
-
-
+    public Object updateName(@RequestBody RequestAppIdentifier application) throws Exception
+    {
         Boolean update = appService.updateApplication(application.getId(),application.getName());
-
-
         return update ?
-
-                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
-
-                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
-
-
+        		Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+        		Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
     }
 
     @DeleteMapping("/applications")
-    public Object disabled(@RequestBody RequestRemoveApp object){
-
-
-            Boolean update = appService.disableApplication(object.getAppId());
-
-
+    public Object disabled(@RequestBody RequestRemoveApp object)
+    {
+    	Boolean update = appService.disableApplication(object.getAppId());
         return update ?
-
-                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
-
-                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
-
-
+        		Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
+        		Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
     }
 }

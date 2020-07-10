@@ -2,43 +2,45 @@ package com.kosign.push.apps;
 
 import java.util.List;
 import java.util.stream.Collectors;
-
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.enums.KeyConfEnum;
-
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.platformSetting.dto.ResponsePlatformSetting;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+
 @AllArgsConstructor
 @Service
-public class AppService {
-
+public class AppService 
+{
     private AppRepository appRepo;
     private AppBatisRepository appMybatisRepo;
     private PlatformSettingService platformSettingService;
 
-    public AppEntity save(AppEntity app){
+    public AppEntity save(AppEntity app)
+    {
         return appRepo.save(app);
     }
    
-    public AppEntity getActiveAppDetail(String appId) {
-
+    public AppEntity getActiveAppDetail(String appId) 
+    {
         return appRepo.findByIdAndStatus(appId, KeyConfEnum.Status.ACTIVE);
+    }
  
-     }
- 
-    public List<AppEntity> getAllApps(){
+    public List<AppEntity> getAllApps()
+    {
         return appRepo.findByStatus(KeyConfEnum.Status.ACTIVE);
     }
 
-    public List<AppEntity> getActiveAppsByUserId(String userId){
+    public List<AppEntity> getActiveAppsByUserId(String userId)
+    {
         return appRepo.findByUserIdAndStatus(userId, KeyConfEnum.Status.ACTIVE);
     }
     
-    public List<ResponseListApp> getActiveAppsByUserIdAndName(String userId,String appName){
+    public List<ResponseListApp> getActiveAppsByUserIdAndName(String userId,String appName)
+    {
         List<ResponseListApp> applicationResponses =  appMybatisRepo.findActiveByUserIdAndName(userId,appName);
 
         applicationResponses = applicationResponses.stream().map(application -> {
@@ -47,10 +49,12 @@ public class AppService {
             application.setFcm(application.getAndroid()  + application.getFcm());
             return application;
         }).collect(Collectors.toList());
+        
         return applicationResponses;
     }
 
-    public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId){
+    public List<ResponseListAppById> getActiveAppsByAppId(String userId, String appId)
+    {
         List<ResponseListAppById> applicationResponses =  appMybatisRepo.findActiveByAppId(userId,appId);
         List<ResponsePlatformSetting> responsePlatformSettings = appMybatisRepo.findPlatformrByAppId(appId);
 
@@ -59,44 +63,54 @@ public class AppService {
             application.setPlatRec(responsePlatformSettings);
             return application;
         }).collect(Collectors.toList());
+        
         return applicationResponses;
     }
 
-    public String getOwnerIdByAppId(String appId){
-        
+    public String getOwnerIdByAppId(String appId)
+    {
         String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
         System.out.println(ownerId);
+        
         return ownerId;
     }
 
-    public String getAuthorizedKeyByAppId(String appId){
-
+    public String getAuthorizedKeyByAppId(String appId)
+    {
         String authorizedKey = platformSettingService.getFcmAuthorizedKeyByAppId(appId);
+        
         return authorizedKey;
     }
 
    
-    public Boolean disableApplication(String appId ) {
+    public Boolean disableApplication(String appId ) 
+    {
         AppEntity application = getActiveAppDetail(appId);
-        if(application == null ){
+        if(application == null )
+        {
             return false;
         }
         application.setStatus(KeyConfEnum.Status.DISABLED);
         appRepo.save(application);
+        
         return true;
     }
 
-    public Boolean updateApplication(String appId, String name) throws Exception {
+    public Boolean updateApplication(String appId, String name) throws Exception 
+    {
         AppEntity application = getActiveAppDetail(appId);
-        if(application == null ){
+        if(application == null )
+        {
             return false;
         }
         application.setName(name);
         appRepo.save(application);
+        
         return true;
     }
 
-    public AppEntity getAppByNameAndUserId(String name) {
+    public AppEntity getAppByNameAndUserId(String name) 
+    {
         String userId = GlobalMethod.getUserCredential().getId();
         return appRepo.findByUserIdAndNameAndStatus(userId,name, KeyConfEnum.Status.ACTIVE);
     }

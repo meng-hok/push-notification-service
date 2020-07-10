@@ -1,6 +1,5 @@
 package com.kosign.push.apps;
 
-
 import org.apache.commons.lang3.StringUtils;
 
 public class AppBatisDynamicSql 
