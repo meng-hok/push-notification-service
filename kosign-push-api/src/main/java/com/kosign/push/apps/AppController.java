@@ -14,11 +14,9 @@
 package com.kosign.push.apps;
 
 import com.kosign.push.publics.SuperController;
-import com.kosign.push.apps.dto.RequestAppIdentifier;
 import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.RequestAppUpdate;
 import com.kosign.push.apps.dto.RequestCreateApp;
-import com.kosign.push.apps.dto.RequestRemoveApp;
 import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.ResponseListApp;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -104,7 +102,7 @@ public class AppController extends SuperController
     }
 
     @PutMapping("/applications/{id}")
-    public Object updateName(@RequestBody RequestAppUpdate request, @PathVariable("id") String id) throws Exception
+    public Object updateApplicationById(@RequestBody RequestAppUpdate request, @PathVariable("id") String id) throws Exception
     {
         Boolean update = appService.updateApplication(id, request.getName());
         return update ?
@@ -113,7 +111,7 @@ public class AppController extends SuperController
     }
 
     @DeleteMapping("/applications/{id}")
-    public Object disabled(@PathVariable("id") String id)
+    public Object deleteApplicationById(@PathVariable("id") String id)
     {
     	Boolean update = appService.disableApplication(id);
         return update ?
