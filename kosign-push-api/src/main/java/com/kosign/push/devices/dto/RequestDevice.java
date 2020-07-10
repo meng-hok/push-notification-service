@@ -2,22 +2,17 @@ package com.kosign.push.devices.dto;
 
 import lombok.Data;
 
-import java.util.ArrayList;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.kosign.push.utils.messages.AgentBody;
-import com.kosign.push.utils.messages.AgentIdentifier;
-import com.kosign.push.utils.messages.AgentRequest;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Data
-public class RequestDevice extends AgentRequest{
+public class RequestDevice {
+   
+  
+    public String push_id; 
+    public String modelName; 
+    public String plat_code; 
+    public String os_version;
 
-    public ArrayList<String> deviceIdList;
-
-    @JsonIgnore
-    @Override
-    public String getDevice_id() {
-        // TODO Auto-generated method stub
-        return super.getDevice_id();
-    }
 }

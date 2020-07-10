@@ -13,4 +13,5 @@ public class PlatformSettingValidation {
     public static Boolean validateFcm(PlatformSettingEntity platformSetting){
         return (!StringUtils.isAnyEmpty( platformSetting.getAuthorizedKey()) );
     }
+
 }

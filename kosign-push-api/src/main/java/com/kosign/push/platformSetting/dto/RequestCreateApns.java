@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 public class RequestCreateApns {
-    public MultipartFile p8file;
+
     public String teamId;
     public String fileKey;
 

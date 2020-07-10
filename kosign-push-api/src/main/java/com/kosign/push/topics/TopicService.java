@@ -12,8 +12,11 @@ import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.HttpClient;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 import com.kosign.push.utils.RabbitSender;
+import com.kosign.push.utils.enums.AgentEnum;
+import com.kosign.push.utils.enums.PlatformEnum;
+
 import org.json.JSONObject;
 import org.postgresql.util.PSQLException;
 import org.slf4j.Logger;
@@ -55,10 +58,10 @@ public class TopicService {
 //
 
     public TopicEntity  getTopicDetailByAppIdAndTopicName(String appId, String topicName) {
-        return topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+        return topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName, KeyConfEnum.Status.ACTIVE);
     }
     public List<TopicEntity> getActiveTopicsByAppId(String AppId){
-       return topicRepository.findAllByApplicationIdAndStatus(AppId,KeyConf.Status.ACTIVE);
+       return topicRepository.findAllByApplicationIdAndStatus(AppId, KeyConfEnum.Status.ACTIVE);
     }
 
 
@@ -71,7 +74,7 @@ public class TopicService {
 
     @Transactional(rollbackOn = Exception.class)
     public TopicEntity subscribeUserToTopic(String appId,String topicName,List<DeviceEntity> devices){
-        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName, KeyConfEnum.Status.ACTIVE);
         if(topic == null ){
             return null;
         }
@@ -84,7 +87,7 @@ public class TopicService {
 
     @Transactional(rollbackOn = Exception.class)
     public Object unsubscribeUserFromTopic(String appId, String topicName, ArrayList<DeviceEntity> devices) {
-        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName,KeyConf.Status.ACTIVE);
+        TopicEntity topic = topicRepository.findAllByApplicationIdAndNameAndStatus(appId,topicName, KeyConfEnum.Status.ACTIVE);
 //        List<TopicDevice> topicDevices = getTopicDetailByAppIdAndTopicName();
         return null;
     }
@@ -115,8 +118,8 @@ public class TopicService {
 
             List<TopicEntity> topicList = new ArrayList<>();
 
-            List<DeviceEntity> androidDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.ANDROID);
-            List<DeviceEntity> iosDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, KeyConf.PlatForm.IOS);
+            List<DeviceEntity> androidDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, PlatformEnum.Platform.ANDROID);
+            List<DeviceEntity> iosDevices = deviceService.getActiveDeviceByAppIdAndPlatformId(appId, PlatformEnum.Platform.IOS);
 
             logger.info("Android size : " + androidDevices.size());
             logger.info("IOS size : " + iosDevices.size());
@@ -187,13 +190,13 @@ public class TopicService {
     }
 
     public Object sentToApns(String appId, String topicName, String title, String message){
-        PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,KeyConf.PlatForm.IOS);
+        PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.IOS);
         /* Android including **/
-       TopicEntity topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,KeyConf.Agent.APNS,KeyConf.Status.ACTIVE);
+       TopicEntity topic = topicRepository.findByNameAndApplicationIdAndAgentAndStatus(topicName,appId,AgentEnum.Agent.APNS, KeyConfEnum.Status.ACTIVE);
        List<DeviceEntity> devices =  topic.getDevice();
 
        devices.forEach(device -> {
-           //otificationService.sendNotificationToIOS(KeyConf.PlatForm.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+           //otificationService.sendNotificationToIOS(PlatformEnum.Platform.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
             //(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
            rabbitSender.sendToApns(new APNS(FileStorage.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
        });

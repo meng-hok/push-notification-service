@@ -21,8 +21,9 @@ import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.notifications.utils.APNsUtil;
 import com.kosign.push.notifications.utils.FirebaseUtil;
 import com.kosign.push.utils.HttpClient;
-import com.kosign.push.utils.KeyConf;
+
 import com.kosign.push.utils.RabbitSender;
+import com.kosign.push.utils.enums.PlatformEnum;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -107,7 +108,7 @@ public class NotificationService {
 
             logger.info(strResult.toString());
 
-            NotificationHistoryEntity history = new NotificationHistoryEntity(appId, userToken, title, message,KeyConf.PlatForm.ANDROID,result.toString(),strResult.toString());
+            NotificationHistoryEntity history = new NotificationHistoryEntity(appId, userToken, title, message,PlatformEnum.Platform.ANDROID,result.toString(),strResult.toString());
 
 
             historyService.insertHistory(history);
@@ -117,7 +118,7 @@ public class NotificationService {
 
             logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
-             NotificationHistoryEntity historyException = new NotificationHistoryEntity(appAuthorizedKey, userToken, title, message,KeyConf.PlatForm.ANDROID,"0",e.getMessage());
+             NotificationHistoryEntity historyException = new NotificationHistoryEntity(appAuthorizedKey, userToken, title, message,PlatformEnum.Platform.ANDROID,"0",e.getMessage());
              historyService.insertHistory(historyException);
 
 
@@ -167,12 +168,12 @@ public class NotificationService {
                 responseMsg = sendNotificationFuture.get().getRejectionReason();
             }
 
-            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,responseStatus,responseMsg);
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,responseStatus,responseMsg);
             historyService.insertHistory(history);
             return history.toString();
 
         }catch (Exception e ) {
-            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,KeyConf.PlatForm.IOS,"0",e.getLocalizedMessage());
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,"0",e.getLocalizedMessage());
             historyService.insertHistory(history);
             return history.toString();
         }

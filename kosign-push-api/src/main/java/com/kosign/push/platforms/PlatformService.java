@@ -1,13 +1,11 @@
 package com.kosign.push.platforms;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import com.kosign.push.platformSetting.PlatformSettingRepository;
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,13 +24,13 @@ public class PlatformService {
     private PlatformEntity getActivePlatformById(String id) { 
         PlatformEntity platform = platformRepository.getOne(id);
        
-        return KeyConf.Status.DISABLED.equals(platform.getStatus())? 
+        return KeyConfEnum.Status.DISABLED.equals(platform.getStatus())?
               null : platform;
     }
    
     public List<PlatformEntity> getActivePlatform() {
         return platformRepository.findAll().stream()
-                .filter(platform -> ! KeyConf.Status.DISABLED.equals(platform.getStatus()))
+                .filter(platform -> ! KeyConfEnum.Status.DISABLED.equals(platform.getStatus()))
                 .collect(Collectors.toList()); 
 	}
    
@@ -52,7 +50,7 @@ public class PlatformService {
     public Boolean remove(PlatformEntity platform) { 
         PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
      
-        prePlatform.setStatus(KeyConf.Status.DISABLED);
+        prePlatform.setStatus(KeyConfEnum.Status.DISABLED);
         platformRepository.save(platform);
         return true;
     }

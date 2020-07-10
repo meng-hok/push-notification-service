@@ -5,7 +5,6 @@ import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
@@ -14,7 +13,7 @@ import javax.persistence.Table;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.platforms.PlatformEntity;
 
-import com.kosign.push.utils.KeyConf;
+import com.kosign.push.utils.enums.KeyConfEnum;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -39,7 +38,7 @@ public class PlatformSettingEntity {
     private String teamId;
     private String bundleId;
     private String pushUrl;//p8file file path directory
-    private Character status= KeyConf.Status.ACTIVE;
+    private Character status= KeyConfEnum.Status.ACTIVE;
     @CreationTimestamp
     private Timestamp registeredAt;
     @UpdateTimestamp
