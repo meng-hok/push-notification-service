@@ -14,7 +14,7 @@ import java.util.ArrayList;
 ////@PreAuthorize("#oauth2.hasScope('READ')")
 //@RestController
 //@RequestMapping("/api/public")
-public class TopicPushController {
+public class TopicController {
 
     private TopicService topicService;
 

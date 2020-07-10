@@ -13,6 +13,7 @@ import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.AuthorizationScope;
+import springfox.documentation.service.Contact;
 import springfox.documentation.service.GrantType;
 import springfox.documentation.service.OAuth;
 import springfox.documentation.service.ResourceOwnerPasswordCredentialsGrant;
@@ -53,15 +54,15 @@ public class SpringFoxConfig {
     final GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(OAuthServerUri + "/oauth/token");
     return new OAuth(securitySchemaOAuth2, Arrays.asList(authorizationScope), Arrays.asList(grantType));
   }
-  // private ApiInfo apiInfo() {
-  // return new ApiInfo(
-  // "Api Documentation",
-  // "Some custom description of API.",
-  // "API TOS",
-  // "Terms of service",
-  // new Contact("John Doe", "www.example.com", "myeaddress@company.com"),
-  // "License of API", "API license URL", Collections.emptyList());
-  // }
+  private ApiInfo apiInfo() {
+  return new ApiInfo(
+    "KOSIGN Push APIs",
+    "API Documentation",
+    "",
+    "",
+      new Contact("", "", ""),
+      "", "", Collections.emptyList());
+  }
 
   private SecurityContext securityContext() {
     return SecurityContext.builder().securityReferences(this.defaultAuth()).forPaths(SWAGGER_PATHS).build();
@@ -72,6 +73,7 @@ public class SpringFoxConfig {
     return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
         .paths(PathSelectors.ant("/api/**"))
         .build()
+        .apiInfo(this.apiInfo())
         .securitySchemes(Collections.singletonList(securitySchema()))
 //            .paths(PathSelectors.any()).build().securitySchemes(Collections.singletonList(securitySchema()))
         .securityContexts(Collections.singletonList(securityContext()));
