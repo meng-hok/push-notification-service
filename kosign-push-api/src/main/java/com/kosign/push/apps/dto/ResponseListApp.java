@@ -1,17 +1,13 @@
 package com.kosign.push.apps.dto;
-/*
-
- for response message
-*/
 
 import lombok.Data;
-
+import lombok.EqualsAndHashCode;
 import java.sql.Timestamp;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.kosign.push.utils.enums.KeyConfEnum;
 
+@EqualsAndHashCode(callSuper=false)
 @Data
 public class ResponseListApp extends RequestAppIdentifier
 {
@@ -32,8 +28,10 @@ public class ResponseListApp extends RequestAppIdentifier
   
     @JsonIgnore
     private Integer ios=0;
+    
     @JsonIgnore
     private Integer android=0;
+    
     @JsonIgnore
     private Integer web=0;
     
