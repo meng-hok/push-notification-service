@@ -2,11 +2,16 @@ package com.kosign.push.configs;
 
 import com.kosign.push.apps.AppRepository;
 import com.kosign.push.notificationHistory.NotificationHistoryRepository;
+import com.kosign.push.publics.Upper;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
+import com.kosign.push.utils.aspects.ApplicationAspect;
 import com.kosign.push.utils.enums.KeyConfEnum;
+import com.kosign.push.utils.enums.ResponseEnum;
+import com.kosign.push.utils.messages.Response;
 
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,35 +28,7 @@ public class SpelAddition  {
     Logger logger = LoggerFactory.getLogger(SpelAddition.class);
     @Autowired
     private NotificationHistoryRepository notificationHistoryRepository;
-
-
-    @Pointcut("!execution(* com.kosign.push.*.*.getHistory(..)) && !execution(* com.kosign.push.*.*.approval(..)) && !execution(* com.kosign.push.*.*.create(..)) && !execution(* com.kosign.push.*.*.getYourApplication(..)) ")
-    public void notToExcute(){}
-    // // @Pointcut("!execution(* com.kosign.push.publics.BackendController.getHistory(..))")
-    // // public void notToExcuteApproval(){}
-    // @Before("execution(* com.kosign.push.publics.BackendController.*(..))  && notToExcute()  and args(appId,..) ")
-    // public void beforeAdvice(JoinPoint joinPoint, String appId) throws Exception {
-        
-    //     logger.info("AOP Before method:" + joinPoint.getSignature());
-    //     System.out.println(appId);
-    //     // System.out.println(authKey);
-    //     try {
-    //             UserDetail userDetail = GlobalMethod.getUserCredential();
-            
-    //             // String ownerId = appService.getOwnerIdByAppId(appId);
-    //             String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
-    //             if(userDetail.getId().equals(ownerId) ){
-    //                 logger.info("User "+userDetail.getId()+" is valid");
-    //             }else{
-    //                 throw ownerId == null ? new NullPointerException(" Application not available") : new Exception("Permisson Denied");
-    //             }
-    //     } catch (Exception e) {
-    //         logger.info("{Error Occur}");
-    //         throw e;
-    //     }
-	// }
-
-
+  
     @Before("execution(* com.kosign.push.*.*.*(..)) ")
     public void beforeAllMethod (JoinPoint joinPoint){
         final Logger logger = LoggerFactory.getLogger(joinPoint.getTarget().getClass().getName());
@@ -59,37 +36,98 @@ public class SpelAddition  {
 
     }
 
-//    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
-//            returning = "result")
-//    public void afterFcmReturning(JoinPoint joinPoint, NotificationHistory result) {
-//        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " starts :  }" );
-//        System.out.println(result);
-//        NotificationHistory notificationHistory = result ;
-//
-//        notificationHistoryRepository.save(notificationHistory);
-//
-//       logger.info(" [Save Success] ");
-//    }
-//
-//    @AfterThrowing(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToFCM(..) )",
-//            throwing =  "exception")
-//    public void afterFcmReturningError(JoinPoint joinPoint, Throwable exception) {
-//        logger.info( "{ Aspect "+joinPoint.getSignature().getName()+ " Error Occur :  }" );
-//        System.out.println(exception);
-//
-//
-//        logger.info(" [Save Fail] ");
-//    }
-//
-//    @AfterReturning(value = "execution(* com.kosign.push.notifications.NotificationService.sendNotificationToIOS(..) )",
-//            returning = "result")
-//    public void afterApnsReturning(JoinPoint joinPoint, Object result) {
-//        logger.info("{} returned with value {}", joinPoint, result);
-//        NotificationHistory notificationHistory = new NotificationHistory();
-//        notificationHistory.setMessage(result.toString());
-//        notificationHistoryRepository.save(notificationHistory);
-//        logger.info(" [Save Success] ");
-//    }
+    // @Pointcut("!execution(* com.kosign.push.*.*.getHistory(..)) && !execution(* com.kosign.push.*.*.approval(..)) && !execution(* com.kosign.push.*.*.create(..)) && !execution(* com.kosign.push.*.*.getYourApplication(..)) ")
+    // public void notToExecute(){}
+   
+    // @Pointcut("execution(* com.kosign.push.platformSetting.*.*(..))  ")
+    // public void toExecute(){}
+
+    // @Around(" toExecute() && notToExecute()  ")
+    // public Object aroundAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
+        
+    //     logger.info("AOP Before method:" + joinPoint.getSignature());
+ 
+      
+    //     try {
+    //             Object object = (joinPoint.getArgs().length > 0) ? joinPoint.getArgs()[0] : null;
+    //             if ( object instanceof ApplicationAspect ) { 
+
+    //                 ApplicationAspect aspect = (ApplicationAspect) object;
+                   
+    //                 validateOwner(aspect.appId);
+                  
+    //             }
+
+    //             return joinPoint.proceed();
+    //     } catch (Exception e) {
+    //         logger.info("{Error Occur}");
+    //         return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+    //     }
+	// }
+    
+    public void validateOwner(String appId) throws Exception { 
+        UserDetail userDetail = GlobalMethod.getUserCredential();
+        String ownerId = appRepo.findUserIdByAppId(appId, KeyConfEnum.Status.ACTIVE);
+                    
+        if(userDetail.getId().equals(ownerId) ){
+            logger.info("User "+userDetail.getId()+" is valid");
+      
+        }else{
+            throw ownerId == null ? new NullPointerException(ResponseEnum.Message.APPLICATION_NOT_AVAIBLE) : new Exception(ResponseEnum.Message.PERMISSION_DENIED);
+        }   
+    }
+    
+
+    // @Pointcut("!execution(* com.kosign.push.apps.AppController.*(..)) ")
+    // public void notToExecuteApp(){}
+   
+    // @Pointcut("execution(* com.kosign.push.apps.AppController.*(..)) ")
+    // public void toExecuteApp(){}
+    @Around("@within(com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID)")
+    public Object aroundApplicationObject(ProceedingJoinPoint joinPoint) throws Throwable {
+        
+        logger.info("AOP Before method:" + joinPoint.getSignature());
+ 
+      
+        try {
+                Object object = (joinPoint.getArgs().length > 0) ? joinPoint.getArgs()[0] : null;
+                if ( object instanceof ApplicationAspect ) { 
+
+                    ApplicationAspect aspect = (ApplicationAspect) object;
+                   
+                    validateOwner(aspect.appId);
+                  
+                }
+
+                return joinPoint.proceed();
+        } catch (Exception e) {
+            logger.info("{Error Occur}");
+            return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+        }
+	}
+
+    @Around("@annotation(com.kosign.push.configs.aspectAnnotation.AspectStringApplicationID)")
+    public Object aroundApplicationAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
+        
+        logger.info("AOP Before method:" + joinPoint.getSignature());
+ 
+      
+        try {
+                Object str = (joinPoint.getArgs().length > 0) ? joinPoint.getArgs()[0] : null;
+                if ( str instanceof String ) { 
+
+                    String appId = (String) str;
+                   
+                    validateOwner(appId);
+                  
+                }
+
+                return joinPoint.proceed();
+        } catch (Exception e) {
+            logger.info("{Error Occur}");
+            return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+        }
+	}
 
 
 

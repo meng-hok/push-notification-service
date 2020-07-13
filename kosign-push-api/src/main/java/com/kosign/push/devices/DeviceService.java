@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kosign.push.devices.dto.Agent;
+import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
 import com.kosign.push.utils.enums.KeyConfEnum;
 
@@ -19,7 +20,7 @@ public class DeviceService {
     @Autowired
     private DeviceRepository deviceRepo;
     @Autowired
-    private DeviceBatisRepository deviceMybatisRepository;
+    private DeviceBatisRepository deviceBatisRepo;
     
     // public List<Device> getDevicesByUserId(Integer userId){
     // //    return deviceRepo.findByUserIdAndStatus(userId, KeyConf.Status.ACTIVE);
@@ -38,17 +39,17 @@ public class DeviceService {
 
     public List<Agent> getActiveDevicesByDeviceIdListAndAppId(ArrayList<String> deviceUniqueIdList , String appId ) {
 
-        return  deviceMybatisRepository.findByDeviceIdListAndAppIdRaw(deviceUniqueIdList,appId);
+        return  deviceBatisRepo.findByDeviceIdListAndAppIdRaw(deviceUniqueIdList,appId);
 
     }
 
     public List<Agent>  getActiveDeviceByAppIdRaw(String appId){
 
-        List<Agent> agents = deviceMybatisRepository.findAllDeviceByAppIdRaw(appId);
+        List<Agent> agents = deviceBatisRepo.findAllDeviceByAppIdRaw(appId);
         return agents;
     }
     public List<ResponseDevice> getAllDevicesClient(String appId ,String startDate, String endDate, String token, String modelName, String platform, String os  ){
-        return deviceMybatisRepository.findAllDevicesClient(appId,startDate, endDate, token, modelName, platform, os);
+        return deviceBatisRepo.findAllDevicesClient(appId,startDate, endDate, token, modelName, platform, os);
     }
 
     public Agent  getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId){
@@ -61,7 +62,7 @@ public class DeviceService {
         //     return agent;
         // }
         // return null;
-        return deviceMybatisRepository.findByDeviceIdAndAppIdRaw(deviceId, appId);
+        return deviceBatisRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
     }
 
     public List<DeviceEntity> getActiveDeviceByAppId (String appId) {
@@ -79,6 +80,11 @@ public class DeviceService {
         DeviceEntity _device = deviceRepo.save(device);
         logger.info(device.toString());
         return _device;
+    }
+    
+    public List<ResponseDevice> findAllDeviceClients(RequestDeviceList request)
+    {
+        return deviceBatisRepo.findAllDeviceClients(request);
     }
 
 

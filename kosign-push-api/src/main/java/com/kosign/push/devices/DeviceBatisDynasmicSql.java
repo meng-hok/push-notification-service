@@ -2,30 +2,34 @@ package com.kosign.push.devices;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.annotations.Param;
+import com.kosign.push.devices.dto.RequestDeviceList;
 
-
-public class DeviceBatisDynasmicSql {
-    public String getSQL(@Param("app_id") String appId,@Param("start_date") String startDate, @Param("end_date") String endDate, @Param("push_id") String token, @Param("model_name") String modelName,
-    @Param("plat_code") String platform, @Param("os_version") String os){
-        String sql= "select dc.token as push_id , dc.model_name, \n" 
-		+"(select pl.code from ps_platform pl where pl.id = dc.platform_id ) as plat_code, \n"
-		+"dc.os as os_version, \n"
-		+"dc.created_at \n"
-	    +"from ps_device_client dc \n"
-	    +"where dc.app_id = #{app_id} AND  dc.status = '1' and dc.created_at >= CONCAT(#{start_date},' 00:00:00')::TIMESTAMP AND \n"
-        +"dc.created_at <= CONCAT(#{end_date},' 23:59:59'):: TIMESTAMP";
-        if(StringUtils.isNotBlank(token)){
-            sql+=" AND dc.token LIKE  '%' || #{push_id} || '%'";
-        }
-        if(StringUtils.isNotBlank(modelName)){
-            sql+=" AND LOWER(dc.model_name) LIKE '%' || LOWER(#{model_name}) || '%'";
-        }
-        if(StringUtils.isNotBlank(platform)){
-            sql+=" AND LOWER((select pl.code from ps_platform pl where pl.id = dc.platform_id ) ) LIKE '%' || LOWER(#{plat_code}) || '%'";
-        }
-        if(StringUtils.isNotBlank(os)){
-            sql+=" AND LOWER(dc.os) LIKE '%' || LOWER(#{os_version}) || '%'";
-        }
-        return sql;
-    }
+public class DeviceBatisDynasmicSql 
+{
+	public String getSQL(@Param("request") RequestDeviceList request)
+	{
+		String sql = "/*DEVICE_CLIENT_R001*/\nSELECT dc.token as push_id\n    ,  dc.model_name\n  ,  (\n      SELECT pl.code \n        FROM ps_platform pl \n     WHERE pl.id = dc.platform_id\n      ) as plat_code\n  ,  dc.os as os_version\n  ,  dc.created_at\n  FROM ps_device_client dc\n WHERE dc.app_id = #{request.appId}\n   AND dc.status = '1'\n   AND dc.created_at >= CONCAT(#{request.startDate},' 00:00:00')::TIMESTAMP\n   AND dc.created_at >= CONCAT(#{request.endDate}  ,' 23:59:59')::TIMESTAMP";
+		if(StringUtils.isNotBlank(request.getPushId()))
+		{
+			sql += " AND dc.token = #{request.pushId}";
+		}
+		
+		if(StringUtils.isNotBlank(request.getModelName()))
+		{
+			sql += " AND LOWER(dc.model_name) LIKE '%' || LOWER(#{request.modelName}) || '%'";
+		}
+		
+		if(StringUtils.isNotBlank(request.getPlatCode()))
+		{
+			sql += " AND LOWER((SELECT pl.code FROM ps_platform pl WHERE pl.id = dc.platform_id ) ) LIKE '%' || LOWER(#{request.platCode}) || '%'";
+		}
+		
+		if(StringUtils.isNotBlank(request.getOsVersion()))
+		{
+			sql += " AND LOWER(dc.os) LIKE '%' || LOWER(#{request.osVersion}) || '%'";
+		}
+		
+		return sql;
+	}
+	
 }

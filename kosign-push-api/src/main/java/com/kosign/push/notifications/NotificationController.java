@@ -26,7 +26,9 @@ import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 
+@AspectObjectApplicationID
 @Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
@@ -36,7 +38,7 @@ public class NotificationController extends SuperController{
     Logger logger = LoggerFactory.getLogger(NotificationController.class);
     
     
-    
+  
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
     @PostMapping("/devices/create")
     public Object save(@RequestBody final AgentIdentifier agentIdentifier){
@@ -45,14 +47,14 @@ public class NotificationController extends SuperController{
         try {
             final Integer platformId = new Integer(agentIdentifier.platform_id);
             if (platformId < 0 | platformId > 3 ) { 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
             }
 
-            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
+            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getAppId());
             if (agent != null ) { 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.ALREADYREGISTEREDDEVICE);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.REGISTERED_DEVICE);
             }
-            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getAppId()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
@@ -66,14 +68,14 @@ public class NotificationController extends SuperController{
         }
 
     }
-
+    
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/notifications/devices/send/single")
     public Object sendByDevice(@RequestBody final RequestAgent agentBody) {
         try {
             //   System.out.println(app_id + deviceId);
            
-            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
+            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getAppId());
            
             String response = null;
              FCM fcm;
@@ -81,7 +83,7 @@ public class NotificationController extends SuperController{
                 case "1":
 
                     final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                    apns.setAppId(agentBody.getApp_id());
+                    apns.setAppId(agentBody.getAppId());
                     rabbitSender.sendToApns(apns);
                     logger.info("[ Response Sucess : APNS ]");
 
@@ -92,7 +94,7 @@ public class NotificationController extends SuperController{
                 case "2" :
 
                     fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setAppId(agentBody.getApp_id());
+                    fcm.setAppId(agentBody.getAppId());
                     rabbitSender.sendToFcm(fcm);
                     logger.info("[ Response Sucess : FCM ]");
 
@@ -100,7 +102,7 @@ public class NotificationController extends SuperController{
                     break;
                 case "3" :
                     fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setAppId(agentBody.getApp_id());
+                    fcm.setAppId(agentBody.getAppId());
                     rabbitSender.sendToFcm(fcm);
                     logger.info("[ Response Sucess : FCM ]");
 
@@ -124,7 +126,7 @@ public class NotificationController extends SuperController{
     public Object send( @RequestBody final RequestPushDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
-        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
+        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getAppId());
 
         for (final Agent device : devices) {
             FCM fcm;
@@ -133,17 +135,17 @@ public class NotificationController extends SuperController{
                 switch (device.platform_id){
                     case "1":
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
-                        apns.setAppId(requestDevice.getApp_id());
+                        apns.setAppId(requestDevice.getAppId());
                         rabbitSender.sendToApns(apns);
                         break;
                     case "2":
                         fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setAppId(requestDevice.getApp_id());
+                        fcm.setAppId(requestDevice.getAppId());
                         rabbitSender.sendToFcm(fcm);
                         break;
                     case "3":
                         fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setAppId(requestDevice.getApp_id());
+                        fcm.setAppId(requestDevice.getAppId());
                         rabbitSender.sendToFcm(fcm);
                         break;
                     default : 
@@ -175,7 +177,7 @@ public class NotificationController extends SuperController{
         try {
             //   System.out.println(app_id + deviceId);
            
-            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
+            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getAppId());
             Integer fail = 0;
            
             for(final Agent agent : agents){
@@ -184,7 +186,7 @@ public class NotificationController extends SuperController{
                     case "1":
     
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                        apns.setAppId(agentBody.getApp_id());
+                        apns.setAppId(agentBody.getAppId());
                         rabbitSender.sendToApns(apns);
                         logger.info("[ Response Sucess : APNS ]");
     
@@ -194,14 +196,14 @@ public class NotificationController extends SuperController{
                     case "2" :
     
                         fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setAppId(agentBody.getApp_id());
+                        fcm.setAppId(agentBody.getAppId());
                         rabbitSender.sendToFcm(fcm);
                         logger.info("[ Response Sucess : FCM ]");
     
                         break;
                     case "3" :
                         fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setAppId(agentBody.getApp_id());
+                        fcm.setAppId(agentBody.getAppId());
                         rabbitSender.sendToFcm(fcm);
                         logger.info("[ Response Sucess : FCM ]");
     
