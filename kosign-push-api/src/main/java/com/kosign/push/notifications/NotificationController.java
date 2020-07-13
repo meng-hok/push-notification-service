@@ -22,7 +22,7 @@ import com.kosign.push.utils.enums.ResponseEnum;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import io.swagger.annotations.Api;
@@ -48,24 +48,24 @@ public class NotificationController extends SuperController{
         try {
             final Integer platformId = new Integer(agentIdentifier.platform_id);
             if (platformId < 0 | platformId > 3 ) { 
-                return Response.getFailResponseNonDataBody(ExceptionEnum.Message.INCORRECT_PLATFORM);
+                return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
 
             Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
             if (agent != null ) { 
-                return Response.getFailResponseNonDataBody(ExceptionEnum.Message.REGISTERED_DEVICE);
+                return  Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
             final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
             return ( device != null ) ? 
-                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
-                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+                Response.setResponseEntity(HttpStatus.OK) : 
+               Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (final Exception e) {
             
             e.printStackTrace();
-            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+            return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
     }
@@ -114,10 +114,10 @@ public class NotificationController extends SuperController{
                     throw new Exception("Device Id not found");
             }
 
-            return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
+            return Response.setResponseEntity(HttpStatus.OK);
         } catch (final Exception e) {
             logger.info(e.getMessage());
-           return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         }
       
     }
@@ -167,7 +167,7 @@ public class NotificationController extends SuperController{
         jsonObject.put("fail",fail) ;
         jsonObject.put("target_devices" , devices.size() );
 
-        return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
+        return  Response.setResponseEntity(HttpStatus.OK);
     }
 
    
@@ -221,10 +221,10 @@ public class NotificationController extends SuperController{
             logger.info("Push Done");
             System.out.println("Device found : " + agents.size());
             System.out.println("Fail : " +fail);
-            return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
+            return Response.setResponseEntity(HttpStatus.OK);
         } catch (final Exception e) {
             logger.info(e.getMessage()); 
-            return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         }
       
     }
