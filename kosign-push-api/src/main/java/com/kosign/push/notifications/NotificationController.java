@@ -16,6 +16,7 @@ import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.FileStorage;
 
 import com.kosign.push.utils.messages.Response;
+import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.ResponseEnum;
 
 import org.json.JSONObject;
@@ -47,20 +48,20 @@ public class NotificationController extends SuperController{
         try {
             final Integer platformId = new Integer(agentIdentifier.platform_id);
             if (platformId < 0 | platformId > 3 ) { 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
+                return Response.getFailResponseNonDataBody(ExceptionEnum.Message.INCORRECT_PLATFORM);
             }
 
             Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
             if (agent != null ) { 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.REGISTERED_DEVICE);
+                return Response.getFailResponseNonDataBody(ExceptionEnum.Message.REGISTERED_DEVICE);
             }
             final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
             return ( device != null ) ? 
-             Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
-             Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+                Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
+                Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
         } catch (final Exception e) {
             
             e.printStackTrace();

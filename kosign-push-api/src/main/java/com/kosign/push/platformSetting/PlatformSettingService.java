@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.utils.GlobalMethod;
+import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.KeyConfEnum;
 import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.platformSetting.dto.APNS;
@@ -54,7 +55,7 @@ public class PlatformSettingService {
         PlatformSettingEntity _platformSetting = this.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,platform) ;
 
         if(_platformSetting != null ){ 
-            throw new Exception ("Application Platform Setting already saved");
+            throw new Exception (ExceptionEnum.Message.REGISTERED_PLATFORM_SETTING);
         }
 
         if ( PlatformEnum.Platform.ANDROID.equals(platform)  ) { 
