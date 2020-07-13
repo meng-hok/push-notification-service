@@ -34,7 +34,7 @@ public class NotificationController extends SuperController
     Logger logger = LoggerFactory.getLogger(NotificationController.class);
   
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
-    @PostMapping("/devices/create")
+    @PostMapping("/devices/subscribe")
     public Object createDevice(@RequestBody final AgentIdentifier agentIdentifier)
     {
         try 
