@@ -5,15 +5,15 @@ import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.platformSetting.dto.APNS;
-import com.kosign.push.notifications.utils.FirebaseUtil;
-import com.kosign.push.notifications.utils.TopicUtil;
 import com.kosign.push.platformSetting.PlatformSettingEntity;
 import com.kosign.push.platformSetting.PlatformSettingService;
-import com.kosign.push.utils.FileStorage;
+import com.kosign.push.utils.FileStorageUtil;
+import com.kosign.push.utils.FirebaseUtil;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.HttpClient;
 import com.kosign.push.utils.enums.KeyConfEnum;
 import com.kosign.push.utils.RabbitSender;
+import com.kosign.push.utils.TopicUtil;
 import com.kosign.push.utils.enums.AgentEnum;
 import com.kosign.push.utils.enums.PlatformEnum;
 
@@ -198,7 +198,7 @@ public class TopicService {
        devices.forEach(device -> {
            //otificationService.sendNotificationToIOS(PlatformEnum.Platform.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
             //(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
-           rabbitSender.sendToApns(new APNS(FileStorage.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
+           rabbitSender.sendToApns(new APNS(FileStorageUtil.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
        });
 
        return topic;

@@ -12,7 +12,7 @@ import com.kosign.push.devices.dto.RequestPushAgentAll;
 import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.publics.SuperController;
-import com.kosign.push.utils.FileStorage;
+import com.kosign.push.utils.FileStorageUtil;
 import com.kosign.push.utils.messages.Response;
 
 import org.json.JSONObject;
@@ -78,7 +78,7 @@ public class NotificationController extends SuperController
             switch (agent.platform_id){
                 case "1":
 
-                    final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
+                    final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
                     apns.setApp_id(agentBody.getApp_id());
                     rabbitSender.sendToApns(apns);
                     logger.info("[ Response Sucess : APNS ]");
@@ -135,7 +135,7 @@ public class NotificationController extends SuperController
                 switch (device.platform_id)
                 {
                     case "1":
-                        final APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
+                        final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
                         apns.setApp_id(requestDevice.getApp_id());
                         rabbitSender.sendToApns(apns);
                         break;
@@ -188,7 +188,7 @@ public class NotificationController extends SuperController
                 {
                     case "1":
     
-                        final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
+                        final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
                         apns.setApp_id(agentBody.getApp_id());
                         rabbitSender.sendToApns(apns);
                         logger.info("[ Response Sucess : APNS ]");

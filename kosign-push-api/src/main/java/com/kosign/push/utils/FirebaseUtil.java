@@ -1,9 +1,5 @@
-package com.kosign.push.notifications.utils;
+package com.kosign.push.utils;
 
-
-import com.kosign.push.utils.HttpClient;
-// import com.wegarden.notification.model.FirebaseResponse;
-// import com.wegarden.notification.services.HeaderRequestInterceptor;
 
 import org.json.JSONObject;
 

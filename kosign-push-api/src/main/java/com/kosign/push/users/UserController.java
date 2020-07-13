@@ -11,7 +11,7 @@ import javax.transaction.Transactional;
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.users.UserEntity;
-import com.kosign.push.utils.FileStorage;
+import com.kosign.push.utils.FileStorageUtil;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
 import com.kosign.push.utils.enums.PlatformEnum;

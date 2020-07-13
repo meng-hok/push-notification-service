@@ -9,7 +9,7 @@ import javax.transaction.Transactional;
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.users.UserEntity;
-import com.kosign.push.utils.FileStorage;
+import com.kosign.push.utils.FileStorageUtil;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
 import com.kosign.push.utils.enums.ExceptionEnum;
@@ -85,7 +85,7 @@ public class PlatformSettingController extends SuperController{
                     if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getApp_id(),PlatformEnum.Platform.IOS) != null ) {
                         return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
                     }
-                    String file = FileStorage.uploadFile(p8file);
+                    String file = FileStorageUtil.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getApp_id(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
                     return Response.setResponseEntity(HttpStatus.OK);
                 
@@ -103,7 +103,7 @@ public class PlatformSettingController extends SuperController{
 
                 return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
             }
-            String file = FileStorage.uploadFile(p8file);
+            String file = FileStorageUtil.uploadFile(p8file);
             Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
             return updateStatus ?
                     Response.setResponseEntity(HttpStatus.OK) :

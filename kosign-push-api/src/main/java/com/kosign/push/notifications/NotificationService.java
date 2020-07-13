@@ -17,8 +17,8 @@ import com.kosign.push.notificationHistory.NotificationHistoryEntity;
 import com.kosign.push.notificationHistory.NotificationHistoryService;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.FCM;
-import com.kosign.push.notifications.utils.APNsUtil;
-import com.kosign.push.notifications.utils.FirebaseUtil;
+import com.kosign.push.utils.APNsUtil;
+import com.kosign.push.utils.FirebaseUtil;
 import com.kosign.push.utils.HttpClient;
 
 import com.kosign.push.utils.RabbitSender;
