@@ -56,11 +56,6 @@ public class TestController {
         return "";
     }
     
-    @PostMapping("/test/upper")
-    public Object getUpper(Upper upper) {
-
-        return upper;
-    }
 
 
     // @PostMapping("/test/sub")
