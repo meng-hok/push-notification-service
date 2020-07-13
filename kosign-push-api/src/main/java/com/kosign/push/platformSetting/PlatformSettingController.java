@@ -12,6 +12,7 @@ import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.FileStorage;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
+import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
@@ -78,10 +79,10 @@ public class PlatformSettingController extends SuperController{
 
                     if (p8file.isEmpty() ) {
 
-                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
+                        return Response.getFailResponseNonDataBody(ExceptionEnum.Message.P8_FILE_NOT_FOUND);
                     }
                     if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getApp_id(),PlatformEnum.Platform.IOS) != null ) {
-                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORM_SETTING_REGISTERED);
+                        return Response.getFailResponseNonDataBody(ExceptionEnum.Message.REGISTERED_PLATFORM_SETTING);
                     }
                     String file = FileStorage.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getApp_id(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
@@ -99,7 +100,7 @@ public class PlatformSettingController extends SuperController{
     public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = true)MultipartFile p8file ) throws Exception {
             if (p8file.isEmpty() ) {
 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
+                return Response.getFailResponseNonDataBody(ExceptionEnum.Message.P8_FILE_NOT_FOUND);
             }
             String file = FileStorage.uploadFile(p8file);
             Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
@@ -158,10 +159,10 @@ public class PlatformSettingController extends SuperController{
                 return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
             }
 
-           return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
+           return Response.getFailResponseNonDataBody(ExceptionEnum.Message.INCORRECT_PLATFORM);
         } catch (Exception e) {
           
-              return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
+              return  Response.getFailResponseNonDataBody(e.getLocalizedMessage());
         }
         
     }
@@ -177,7 +178,7 @@ public class PlatformSettingController extends SuperController{
                         Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
                         Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
             }
-            return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
+            return Response.getFailResponseNonDataBody(ExceptionEnum.Message.INCORRECT_PLATFORM);
         } catch (Exception e) {
 
             return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);

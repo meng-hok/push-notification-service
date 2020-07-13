@@ -37,17 +37,7 @@ public class TestController {
         System.out.println("#############");
     }
 
-    @PostMapping("/test/history")
-    public Object getHistory(@RequestBody DHIST_R01In input) {
-
-        // Message test = KeyConf.Message.ALREADYREGISTEREDDEVICE;
-    //    String me = Message.ALREADYREGISTEREDDEVICE;
-    // String me = Key.Message.Response;
-        return ResponseEnum.Message.REGISTERED_DEVICE;
-       
-        // return testService.getAllHistory(input);
-    }
-
+ 
     @Transactional(rollbackOn = Exception.class)
     @PostMapping( value = "/uploadtest" ,consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public Object saveApns(@RequestPart(value = "p8file" ,required = true) MultipartFile p8file ,RequestCreateApns requestCreateApns  ){
