@@ -35,7 +35,7 @@ public class NotificationController extends SuperController
   
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
     @PostMapping("/devices/create")
-    public Object save(@RequestBody final AgentIdentifier agentIdentifier)
+    public Object createDevice(@RequestBody final AgentIdentifier agentIdentifier)
     {
         try 
         {
@@ -66,7 +66,7 @@ public class NotificationController extends SuperController
     }
     
     @ApiOperation( value = "Send Notification To Single Device")
-    @PostMapping("/notifications/devices/send/single")
+    @PostMapping("/devices/notifications/send/single")
     public Object sendByDevice(@RequestBody final RequestAgent agentBody) 
     {
         try 
@@ -120,8 +120,8 @@ public class NotificationController extends SuperController
     }
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
-    @PostMapping("/notifications/devices/send/groups")
-    public Object send( @RequestBody final RequestPushDevice requestDevice) 
+    @PostMapping("/devices/notifications/send/groups")
+    public Object sendByGroup( @RequestBody final RequestPushDevice requestDevice) 
     {
         Integer success =0 ;
         Integer fail = 0;
@@ -173,8 +173,8 @@ public class NotificationController extends SuperController
     }
 
     @ApiOperation( value = "Send Notification To Single Device")
-    @PostMapping("/notifications/devices/send/all")
-    public Object sendAll(@RequestBody final RequestPushAgentAll agentBody)
+    @PostMapping("/devices/notifications/send/all")
+    public Object sendByAll(@RequestBody final RequestPushAgentAll agentBody)
     {
         try 
         {
