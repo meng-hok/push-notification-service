@@ -10,14 +10,10 @@ import com.kosign.push.devices.dto.AgentIdentifier;
 import com.kosign.push.devices.dto.RequestAgent;
 import com.kosign.push.devices.dto.RequestPushAgentAll;
 import com.kosign.push.platformSetting.dto.FCM;
-
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.FileStorage;
-
 import com.kosign.push.utils.messages.Response;
-import com.kosign.push.utils.enums.ExceptionEnum;
-import com.kosign.push.utils.enums.ResponseEnum;
 
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -33,37 +29,36 @@ import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 @Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
-public class NotificationController extends SuperController{
-   
-
+public class NotificationController extends SuperController
+{
     Logger logger = LoggerFactory.getLogger(NotificationController.class);
-    
-    
   
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
     @PostMapping("/devices/create")
-    public Object save(@RequestBody final AgentIdentifier agentIdentifier){
-      
-      
-        try {
+    public Object save(@RequestBody final AgentIdentifier agentIdentifier)
+    {
+        try 
+        {
             final Integer platformId = new Integer(agentIdentifier.platform_id);
-            if (platformId < 0 | platformId > 3 ) { 
+            if (platformId < 0 | platformId > 3 ) 
+            { 
                 return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
 
             Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
-            if (agent != null ) { 
+            if (agent != null ) 
+            { 
                 return  Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
             final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
-            // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
             return ( device != null ) ? 
                 Response.setResponseEntity(HttpStatus.OK) : 
-               Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-        } catch (final Exception e) {
-            
+                Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        } 
+        catch (final Exception e) 
+        {
             e.printStackTrace();
             return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -72,10 +67,10 @@ public class NotificationController extends SuperController{
     
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/notifications/devices/send/single")
-    public Object sendByDevice(@RequestBody final RequestAgent agentBody) {
-        try {
-            //   System.out.println(app_id + deviceId);
-           
+    public Object sendByDevice(@RequestBody final RequestAgent agentBody) 
+    {
+        try 
+        {
             final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
            
             String response = null;
@@ -115,7 +110,9 @@ public class NotificationController extends SuperController{
             }
 
             return Response.setResponseEntity(HttpStatus.OK);
-        } catch (final Exception e) {
+        } 
+        catch (final Exception e) 
+        {
             logger.info(e.getMessage());
             return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         }
@@ -124,16 +121,19 @@ public class NotificationController extends SuperController{
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
     @PostMapping("/notifications/devices/send/groups")
-    public Object send( @RequestBody final RequestPushDevice requestDevice) {
+    public Object send( @RequestBody final RequestPushDevice requestDevice) 
+    {
         Integer success =0 ;
         Integer fail = 0;
         final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
 
-        for (final Agent device : devices) {
+        for (final Agent device : devices) 
+        {
             FCM fcm;
             ++success;
             try{
-                switch (device.platform_id){
+                switch (device.platform_id)
+                {
                     case "1":
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
                         apns.setApp_id(requestDevice.getApp_id());
@@ -156,7 +156,9 @@ public class NotificationController extends SuperController{
                         break;    
                 }
                
-            }catch(final Exception e){
+            }
+            catch(final Exception e)
+            {
                 logger.info("Error Message");
                 System.out.println(e.getMessage());
                 ++fail;
@@ -170,28 +172,27 @@ public class NotificationController extends SuperController{
         return  Response.setResponseEntity(HttpStatus.OK);
     }
 
-   
-
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/notifications/devices/send/all")
-    public Object sendAll(@RequestBody final RequestPushAgentAll agentBody){
-        try {
-            //   System.out.println(app_id + deviceId);
-           
+    public Object sendAll(@RequestBody final RequestPushAgentAll agentBody)
+    {
+        try 
+        {
             final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
             Integer fail = 0;
            
-            for(final Agent agent : agents){
+            for(final Agent agent : agents)
+            {
                 FCM fcm;
-                switch (agent.platform_id){
+                switch (agent.platform_id)
+                {
                     case "1":
     
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
                         apns.setApp_id(agentBody.getApp_id());
                         rabbitSender.sendToApns(apns);
                         logger.info("[ Response Sucess : APNS ]");
-    
-    
+
                         break;
                 
                     case "2" :
@@ -214,7 +215,6 @@ public class NotificationController extends SuperController{
                         logger.info("Out of Platform");
                         fail ++;
                         break;
-                        // throw new Exception("Device Id not found");
                 }
 
             };
@@ -222,10 +222,11 @@ public class NotificationController extends SuperController{
             System.out.println("Device found : " + agents.size());
             System.out.println("Fail : " +fail);
             return Response.setResponseEntity(HttpStatus.OK);
-        } catch (final Exception e) {
+        } 
+        catch (final Exception e) 
+        {
             logger.info(e.getMessage()); 
             return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         }
-      
     }
 }
