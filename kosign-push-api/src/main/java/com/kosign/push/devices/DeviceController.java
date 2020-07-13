@@ -1,16 +1,28 @@
+/**
+ * File Name        	: DeviceController.java
+ * File Path        	: /kosign-push-api/src/main/java/com/kosign/push/devices/DeviceController.java
+ * File Description 	: 
+ * 
+ * File Author	  		: Neng Channa
+ * Created Date	  	    : 13-July-2020 08:45
+ * Developed By	  	    : Sok Menghok
+ * Modified Date	  	: 13-July-2020 08:45
+ * Modified By          : Sok Menghok
+ *
+ **/
+
 package com.kosign.push.devices;
 
 
 import java.util.List;
 
-import com.kosign.push.devices.dto.RequestDevice;
+import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
-import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.messages.Response;
-import com.kosign.push.utils.enums.ResponseEnum;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,19 +30,34 @@ import org.springframework.web.bind.annotation.*;
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")
-public class DeviceController extends SuperController {
-     // @Transactional(rollbackOn = Exception.class)
-    // @GetMapping("/devices")
-    // public Object getDevice(String appId){
-    //         List<Device> devices = deviceService.getActiveDeviceByAppId(appId);
-    //         return Response.getResponseBody(ResponseEnum.Message.SUCCESS,devices,true);
-    // }
-    @ApiOperation("Get Device detail")
+public class DeviceController
+{
+	@Autowired
+    public DeviceService deviceService;
+	
+    @ApiOperation("Find All Devices")
     @GetMapping("/devices")
-    public Object getDeviceDetail(  @RequestParam(required = true) String appId,@RequestParam(required = true)String startDate, @RequestParam(required = true) String endDate, RequestDevice requestDevice) {
-
-        List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, requestDevice.push_id,requestDevice.modelName, requestDevice.plat_code, requestDevice.os_version);
-        
-        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listDeviceClients , true);
+    public Object findAllDevices
+    (
+    	@RequestParam(value = "app_id"    ) String appId    ,
+    	@RequestParam(value = "start_date") String startDate,
+    	@RequestParam(value = "end_date"  ) String endDate  ,
+    	@RequestParam(value = "model_name", defaultValue = "") String modelName,
+    	@RequestParam(value = "os_version", defaultValue = "") String osVersion,
+    	@RequestParam(value = "plat_code" , defaultValue = "") String platCode ,
+    	@RequestParam(value = "push_id"   , defaultValue = "") String pushId
+    ) 
+    {
+    	RequestDeviceList request = new RequestDeviceList();
+    	request.setAppId(appId);
+    	request.setStartDate(startDate);
+    	request.setEndDate(endDate);
+    	request.setModelName(modelName);
+    	request.setOsVersion(osVersion);
+    	request.setPlatCode(platCode);
+    	request.setPushId(pushId);
+    	
+    	List<ResponseDevice> response = deviceService.findAllDeviceClients(request);
+    	return Response.setResponseEntity(HttpStatus.OK, response);
     }
 }

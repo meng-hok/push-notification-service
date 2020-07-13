@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.kosign.push.devices.dto.Agent;
+import com.kosign.push.devices.dto.RequestDeviceList;
+import com.kosign.push.devices.dto.ResponseDevice;
 
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
-import com.kosign.push.devices.dto.*;
+
 @Repository
 public interface DeviceBatisRepository {
     
@@ -36,4 +38,9 @@ public interface DeviceBatisRepository {
     @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DeviceBatisDynasmicSql.class)
     List<ResponseDevice> findAllDevicesClient(@org.apache.ibatis.annotations.Param("app_id") String appId,@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
     @org.apache.ibatis.annotations.Param("plat_code") String platform, @org.apache.ibatis.annotations.Param("os_version") String os);
+    
+    
+    @SelectProvider(method = "getSQL",type = DeviceBatisDynasmicSql.class)
+    List<ResponseDevice> findAllDeviceClients(@Param("request") RequestDeviceList request);
+    
 }
