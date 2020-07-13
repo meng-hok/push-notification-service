@@ -17,6 +17,7 @@ import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.RequestAppUpdate;
 import com.kosign.push.apps.dto.RequestCreateApp;
 import com.kosign.push.apps.dto.ResponseListAppById;
+import com.kosign.push.configs.aspectAnnotation.*;
 import com.kosign.push.apps.dto.ResponseListApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -104,8 +105,9 @@ public class AppController
       
     }
 
+    @AspectStringApplicationID
     @PutMapping("/applications/{id}")
-    public Object updateApplicationById(@RequestBody RequestAppUpdate reqData, @PathVariable("id") String id) throws Exception
+    public Object updateApplicationById( @PathVariable("id") String id,@RequestBody RequestAppUpdate reqData) throws Exception
     {
         Boolean update = appService.updateApplication(id, reqData.getName());
         return update ?
@@ -113,6 +115,7 @@ public class AppController
         		Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @AspectStringApplicationID
     @DeleteMapping("/applications/{id}")
     public Object deleteApplicationById(@PathVariable("id") String id)
     {

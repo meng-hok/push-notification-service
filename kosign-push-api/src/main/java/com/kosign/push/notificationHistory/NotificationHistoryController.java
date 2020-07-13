@@ -24,12 +24,13 @@ public class NotificationHistoryController
     @GetMapping("/push/history")
     public Object findAllNotificationHistories
     (
-		@RequestParam(value="startDate", required=true) String startDate,
-		@RequestParam(value="endDate"  , required=true) String endDate  ,
-		@RequestParam(value="title"    , required=false) String title    
+      @RequestParam(value="appId"    , required=true) String appId,
+      @RequestParam(value="startDate", required=true) String startDate,
+      @RequestParam(value="endDate"  , required=true) String endDate  ,
+      @RequestParam(value="title"    , required=false) String title    
     ) 
     {
-        List<ResponseHistoryDto> respData = historyService.getAllHistory(startDate, endDate, title);
+        List<ResponseHistoryDto> respData = historyService.getAllHistory(appId, startDate, endDate, title);
         
         return Response.setResponseEntity(HttpStatus.OK, respData);
     }

@@ -1,5 +1,7 @@
 package com.kosign.push.platformSetting.dto;
 
+import com.kosign.push.utils.aspects.ApplicationAspect;
+
 import lombok.Data;
 
 /**
@@ -7,7 +9,7 @@ import lombok.Data;
  */
 
  @Data
-public class RequestRemoveApns {
+public class RequestRemoveApns extends ApplicationAspect {
 
-    public String appId;
+    // public String appId;
 }

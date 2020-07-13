@@ -37,8 +37,8 @@ public class NotificationHistoryService {
         return historyBatisRepo.findAllHistoryById(id);
     }
 
-    public List<ResponseHistoryDto> getAllHistory(String startDate,String endDate,String msgTitle)
+    public List<ResponseHistoryDto> getAllHistory(String appId ,String startDate,String endDate,String msgTitle)
     {
-        return historyBatisRepo.findAllHistory(startDate, endDate, msgTitle);
+        return historyBatisRepo.findAllHistory(appId,startDate, endDate, msgTitle);
     }
 }
