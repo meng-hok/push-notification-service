@@ -24,9 +24,9 @@ public class NotificationHistoryController
     @GetMapping("/push/history")
     public Object findAllNotificationHistories
     (
-      @RequestParam(value="appId"    , required=true) String appId,
-      @RequestParam(value="startDate", required=true) String startDate,
-      @RequestParam(value="endDate"  , required=true) String endDate  ,
+      @RequestParam(value="app_id"    , required=true) String appId,
+      @RequestParam(value="start_date", required=true) String startDate,
+      @RequestParam(value="end_date"  , required=true) String endDate  ,
       @RequestParam(value="title"    , required=false) String title    
     ) 
     {

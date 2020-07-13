@@ -51,21 +51,21 @@ public class NotificationService {
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCM(FCM fcm){
         System.out.println("Response Message from " + fcm);
-         this.sendNotificationToFCM(fcm.getAppId(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+         this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
 //        return  historyService.saveHistory(new NotificationHistory());
     }
 
     @RabbitListener(queues = "pusher.queue.fcm")
     public void sendNotificationByFCMSupport(FCM fcm){
         System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.getAppId(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+        this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
     }
 
     @RabbitListener(queues = "pusher.queue.apns")
     public void sendNotificationByAPNS(APNS apns) {
         System.out.println("Response Message from  " + apns);
         try {
-            this.sendNotificationToIOS(apns.getAppId(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getApp_id(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
         } catch (Exception e) {
             logger.info(e.getMessage());
         }
@@ -75,7 +75,7 @@ public class NotificationService {
         System.out.println("Response Message from " + apns);
         // System.out.println("Message read from myQueue APNS: " + apns);
         try {
-            this.sendNotificationToIOS(apns.getAppId(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getApp_id(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
         } catch (Exception e) {
             logger.info(e.getMessage());
         }

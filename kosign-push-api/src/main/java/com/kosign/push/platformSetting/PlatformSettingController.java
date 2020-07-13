@@ -72,7 +72,7 @@ public class PlatformSettingController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @PostMapping( value = "/platforms/setting/apns")
-    public Object saveApns( RequestCreateApns requestCreateApns ,@RequestPart(required = true)MultipartFile p8file ) throws Exception{
+    public Object saveApns( RequestCreateApns requestCreateApns ,@RequestPart(value = "p8_file", required = true)MultipartFile p8file ) throws Exception{
             
             try {
 
@@ -80,11 +80,11 @@ public class PlatformSettingController extends SuperController{
 
                         return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
                     }
-                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,PlatformEnum.Platform.IOS) != null ) {
+                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getApp_id(),PlatformEnum.Platform.IOS) != null ) {
                         return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORM_SETTING_REGISTERED);
                     }
                     String file = FileStorage.uploadFile(p8file);
-                    PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.appId, file, requestCreateApns.fileKey, requestCreateApns.teamId, requestCreateApns.bundleId);
+                    PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getApp_id(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
                     return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
                 
                
@@ -96,13 +96,13 @@ public class PlatformSettingController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns")
-    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(required = true)MultipartFile p8file ) throws Exception {
+    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = true)MultipartFile p8file ) throws Exception {
             if (p8file.isEmpty() ) {
 
                 return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
             }
             String file = FileStorage.uploadFile(p8file);
-            Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.appId, new APNS(file,requestCreateApns.teamId,requestCreateApns.fileKey,requestCreateApns.bundleId));
+            Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
             return updateStatus ?
                   Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
                   Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
@@ -112,7 +112,7 @@ public class PlatformSettingController extends SuperController{
     @DeleteMapping("/platforms/setting/apns")
     public Object deleteApnsConfiguration (@RequestBody RequestRemoveApns requestRemoveApns) {
         try {
-            return platformSettingService.removeApnsConfiguration(requestRemoveApns.appId) ? 
+            return platformSettingService.removeApnsConfiguration(requestRemoveApns.getApp_id()) ? 
                     Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
                     Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 
@@ -154,7 +154,7 @@ public class PlatformSettingController extends SuperController{
     public Object saveFcm(@RequestBody RequestCreateFcm requestFcm){
         try {
             if(PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
-                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
+                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getApp_id(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
                 return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
             }
 
@@ -172,7 +172,7 @@ public class PlatformSettingController extends SuperController{
         try {
             if( PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
 
-                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.appId, requestFcm.platformId ,requestFcm.authorizedKey);
+                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.getApp_id(), requestFcm.platformId ,requestFcm.authorizedKey);
                 return updateStatus ?
                         Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
                         Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
@@ -189,7 +189,7 @@ public class PlatformSettingController extends SuperController{
     @DeleteMapping("/platforms/setting/fcm")
     public Object deleteFcmConfiguration (@RequestBody RequestRemoveFcm requestFcm) {
         try {
-            return platformSettingService.removeFcmConfiguration(requestFcm.appId,requestFcm.platformId) ? 
+            return platformSettingService.removeFcmConfiguration(requestFcm.getApp_id(),requestFcm.platformId) ? 
                     Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) : 
                     Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
 

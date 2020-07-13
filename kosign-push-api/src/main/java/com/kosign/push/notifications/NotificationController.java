@@ -50,11 +50,11 @@ public class NotificationController extends SuperController{
                 return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
             }
 
-            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getAppId());
+            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
             if (agent != null ) { 
                 return Response.getFailResponseNonDataBody(ResponseEnum.Message.REGISTERED_DEVICE);
             }
-            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getAppId()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             // return Response.getResponseBody(ResponseEnum.Message.SUCCESS,device  , true);
@@ -75,7 +75,7 @@ public class NotificationController extends SuperController{
         try {
             //   System.out.println(app_id + deviceId);
            
-            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getAppId());
+            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
            
             String response = null;
              FCM fcm;
@@ -83,7 +83,7 @@ public class NotificationController extends SuperController{
                 case "1":
 
                     final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                    apns.setAppId(agentBody.getAppId());
+                    apns.setApp_id(agentBody.getApp_id());
                     rabbitSender.sendToApns(apns);
                     logger.info("[ Response Sucess : APNS ]");
 
@@ -94,7 +94,7 @@ public class NotificationController extends SuperController{
                 case "2" :
 
                     fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setAppId(agentBody.getAppId());
+                    fcm.setApp_id(agentBody.getApp_id());
                     rabbitSender.sendToFcm(fcm);
                     logger.info("[ Response Sucess : FCM ]");
 
@@ -102,7 +102,7 @@ public class NotificationController extends SuperController{
                     break;
                 case "3" :
                     fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setAppId(agentBody.getAppId());
+                    fcm.setApp_id(agentBody.getApp_id());
                     rabbitSender.sendToFcm(fcm);
                     logger.info("[ Response Sucess : FCM ]");
 
@@ -126,7 +126,7 @@ public class NotificationController extends SuperController{
     public Object send( @RequestBody final RequestPushDevice requestDevice) {
         Integer success =0 ;
         Integer fail = 0;
-        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getAppId());
+        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
 
         for (final Agent device : devices) {
             FCM fcm;
@@ -135,17 +135,17 @@ public class NotificationController extends SuperController{
                 switch (device.platform_id){
                     case "1":
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
-                        apns.setAppId(requestDevice.getAppId());
+                        apns.setApp_id(requestDevice.getApp_id());
                         rabbitSender.sendToApns(apns);
                         break;
                     case "2":
                         fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setAppId(requestDevice.getAppId());
+                        fcm.setApp_id(requestDevice.getApp_id());
                         rabbitSender.sendToFcm(fcm);
                         break;
                     case "3":
                         fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setAppId(requestDevice.getAppId());
+                        fcm.setApp_id(requestDevice.getApp_id());
                         rabbitSender.sendToFcm(fcm);
                         break;
                     default : 
@@ -177,7 +177,7 @@ public class NotificationController extends SuperController{
         try {
             //   System.out.println(app_id + deviceId);
            
-            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getAppId());
+            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
             Integer fail = 0;
            
             for(final Agent agent : agents){
@@ -186,7 +186,7 @@ public class NotificationController extends SuperController{
                     case "1":
     
                         final APNS apns = new APNS(FileStorage.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                        apns.setAppId(agentBody.getAppId());
+                        apns.setApp_id(agentBody.getApp_id());
                         rabbitSender.sendToApns(apns);
                         logger.info("[ Response Sucess : APNS ]");
     
@@ -196,14 +196,14 @@ public class NotificationController extends SuperController{
                     case "2" :
     
                         fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setAppId(agentBody.getAppId());
+                        fcm.setApp_id(agentBody.getApp_id());
                         rabbitSender.sendToFcm(fcm);
                         logger.info("[ Response Sucess : FCM ]");
     
                         break;
                     case "3" :
                         fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setAppId(agentBody.getAppId());
+                        fcm.setApp_id(agentBody.getApp_id());
                         rabbitSender.sendToFcm(fcm);
                         logger.info("[ Response Sucess : FCM ]");
     

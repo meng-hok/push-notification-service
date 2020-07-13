@@ -94,7 +94,7 @@ public class SpelAddition  {
 
                     ApplicationAspect aspect = (ApplicationAspect) object;
                    
-                    validateOwner(aspect.appId);
+                    validateOwner(aspect.getApp_id());
                   
                 }
 
