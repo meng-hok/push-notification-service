@@ -50,7 +50,7 @@ public class SpringFoxConfig {
 
   private OAuth securitySchema() {
     // 这里设置 client 的 scope
-    final AuthorizationScope authorizationScope = new AuthorizationScope("openid", "允许测试阶段访问的所有接口");
+    final AuthorizationScope authorizationScope = new AuthorizationScope("openid", "");
     final GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(OAuthServerUri + "/oauth/token");
     return new OAuth(securitySchemaOAuth2, Arrays.asList(authorizationScope), Arrays.asList(grantType));
   }

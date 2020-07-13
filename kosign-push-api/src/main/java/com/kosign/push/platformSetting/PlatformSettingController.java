@@ -14,6 +14,7 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
 import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.utils.enums.ResponseEnum;
+import com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.RequestCreateApns;
 import com.kosign.push.platformSetting.dto.RequestCreateFcm;
@@ -29,6 +30,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+@AspectObjectApplicationID
 @Api(tags = "Platforms Setting ")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
@@ -68,19 +70,18 @@ public class PlatformSettingController extends SuperController{
         }
     }
 
-    @CrossOrigin
     @Transactional(rollbackOn = Exception.class)
     @PostMapping( value = "/platforms/setting/apns")
-    public Object saveApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns  ) throws Exception{
+    public Object saveApns( RequestCreateApns requestCreateApns ,@RequestPart(required = true)MultipartFile p8file ) throws Exception{
             
             try {
 
                     if (p8file.isEmpty() ) {
 
-                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
                     }
                     if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.appId,PlatformEnum.Platform.IOS) != null ) {
-                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORMSETTINGREGISTERED);
+                        return Response.getFailResponseNonDataBody(ResponseEnum.Message.PLATFORM_SETTING_REGISTERED);
                     }
                     String file = FileStorage.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.appId, file, requestCreateApns.fileKey, requestCreateApns.teamId, requestCreateApns.bundleId);
@@ -95,10 +96,10 @@ public class PlatformSettingController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns")
-    public Object updateApns(@RequestPart(required = true)MultipartFile p8file , RequestCreateApns requestCreateApns   ) throws Exception {
+    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(required = true)MultipartFile p8file ) throws Exception {
             if (p8file.isEmpty() ) {
 
-                return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8FILENOTFOUND);
+                return Response.getFailResponseNonDataBody(ResponseEnum.Message.P8_FILE_NOT_FOUND);
             }
             String file = FileStorage.uploadFile(p8file);
             Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.appId, new APNS(file,requestCreateApns.teamId,requestCreateApns.fileKey,requestCreateApns.bundleId));
@@ -147,7 +148,6 @@ public class PlatformSettingController extends SuperController{
         }
     }
 
-    // @PreAuthorize("@appService.isOwner( authentication.getId(), #appId )")
     @ApiOperation(value = "To register platform setting",notes = "Code = 2 (Fcm android ) & 3 (Fcm Web) ")
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/setting/fcm")
@@ -158,7 +158,7 @@ public class PlatformSettingController extends SuperController{
                 return Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS);
             }
 
-           return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
+           return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
         } catch (Exception e) {
           
               return  Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
@@ -177,7 +177,7 @@ public class PlatformSettingController extends SuperController{
                         Response.getSuccessResponseNonDataBody(ResponseEnum.Message.SUCCESS) :
                         Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);
             }
-            return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECTPLATFORM);
+            return Response.getFailResponseNonDataBody(ResponseEnum.Message.INCORRECT_PLATFORM);
         } catch (Exception e) {
 
             return Response.getFailResponseNonDataBody(ResponseEnum.Message.FAIL);

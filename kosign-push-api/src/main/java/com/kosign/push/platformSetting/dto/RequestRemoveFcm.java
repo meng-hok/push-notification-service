@@ -1,6 +1,8 @@
 package com.kosign.push.platformSetting.dto;
 
-public class RequestRemoveFcm{
-    public String appId;
+import com.kosign.push.utils.aspects.ApplicationAspect;
+
+public class RequestRemoveFcm extends ApplicationAspect{
+    
     public String platformId;
 }
