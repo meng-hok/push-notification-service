@@ -2,7 +2,6 @@ package com.kosign.push.configs;
 
 import com.kosign.push.apps.AppRepository;
 import com.kosign.push.notificationHistory.NotificationHistoryRepository;
-import com.kosign.push.publics.Upper;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.aspects.ApplicationAspect;
