@@ -18,7 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.transaction.Transactional;
 
 @Api(tags = "Test APIs")
-// @RestController
+@RestController
 @RequestMapping("/api/publics")
 public class TestController {
     @Autowired
@@ -55,4 +55,31 @@ public class TestController {
         System.out.println(requestCreateApns);
         return "";
     }
+    
+    @PostMapping("/test/upper")
+    public Object getUpper(Upper upper) {
+
+        return upper;
+    }
+
+
+    @PostMapping("/test/sub")
+    public Object getSub(SubClass sub) {
+
+        return sub;
+    }
+
+    @PostMapping("/test/subson")
+    public Object getSub(ThirdsClass sub) {
+
+        return sub;
+    }
+}
+
+class ThirdsClass{ 
+    String me;
+}
+
+class SubClass extends Upper { 
+    public  String name;
 }
