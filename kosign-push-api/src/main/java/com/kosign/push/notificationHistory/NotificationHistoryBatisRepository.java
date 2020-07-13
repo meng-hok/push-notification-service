@@ -2,7 +2,8 @@ package com.kosign.push.notificationHistory;
 
 import java.util.List;
 
-import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
+import com.kosign.push.notificationHistory.dto.RequestHistoryList;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryList;
 
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Param;
@@ -14,16 +15,16 @@ import org.springframework.stereotype.Repository;
 public interface NotificationHistoryBatisRepository
 {
     @SelectProvider(method = "getSQL", type = NotificationHistoryBatisDynamicSql.class)
-    public List<ResponseHistoryDto> findAllHistory(@Param("appId") String appId,@Param("startDate") String startDate ,@Param("endDate") String endDate,@Param("msgTitle") String msgTitle);
+    public List<ResponseHistoryList> findAllHistories(@Param("request") RequestHistoryList request);
 
     @Select("SELECT  ph.id,ph.reciever_id,ph.title,ph.message,ph.to_platform,ph.status,ph.response_msg,ph.created_at,ph.count FROM  ps_history ph \n"+
     "WHERE ph.id=#{id}")
-    public ResponseHistoryDto findAllHistoryById(@Param("id") Integer id);
+    public ResponseHistoryList findNotificationHistoryById(@Param("id") Integer id);
   
     @Insert("INSERT INTO public.ps_history \n" +
         "(message, reciever_id, title, app_id, status, to_platform, response_msg,count) VALUES  \n"+
         "(#{history.message},#{history.recieverId},#{history.title},#{history.appId},#{history.status},#{history.toPlatform},#{history.responseMsg},#{history.count})")
-    Integer insertHistory(@org.apache.ibatis.annotations.Param("history")  NotificationHistoryEntity history);
+    Integer insertHistory(@Param("history") NotificationHistoryEntity history);
 
 }
 

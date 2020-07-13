@@ -7,7 +7,7 @@ import com.fasterxml.jackson.annotation.JsonRawValue;
 import lombok.Data;
 
 @Data
-public class ResponseHistoryDto 
+public class ResponseHistoryList 
 {
     private Integer id;
     private String reciever_id;

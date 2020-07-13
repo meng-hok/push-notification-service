@@ -2,43 +2,47 @@ package com.kosign.push.notificationHistory;
 
 import java.util.List;
 
-import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
-
+import com.kosign.push.notificationHistory.dto.RequestHistoryList;
+import com.kosign.push.notificationHistory.dto.ResponseHistoryList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class NotificationHistoryService {
-    
+public class NotificationHistoryService 
+{
     @Autowired
     NotificationHistoryRepository historyRepo; 
+    
     @Autowired
     NotificationHistoryBatisRepository historyBatisRepo; 
 
     private Logger logger = LoggerFactory.getLogger(NotificationHistoryService.class);
 
-    public void saveHistory (NotificationHistoryEntity history){
-
+    public void saveHistory (NotificationHistoryEntity history)
+    {
         historyRepo.save(history);
     }
-    public void insertHistory(NotificationHistoryEntity history) { 
+    public void insertHistory(NotificationHistoryEntity history) 
+    { 
         historyBatisRepo.insertHistory(history);
     }
 
 
-    public void saveHistoryWithRabbit(NotificationHistoryEntity history){
+    public void saveHistoryWithRabbit(NotificationHistoryEntity history)
+    {
         logger.info("{ Response from History Queue  }");
         historyRepo.save(history);
     }
 
-    public ResponseHistoryDto  getPushNotificationHistoryById(Integer id){
-        return historyBatisRepo.findAllHistoryById(id);
+    public ResponseHistoryList  findNotificationHistoryById(Integer id)
+    {
+        return historyBatisRepo.findNotificationHistoryById(id);
     }
 
-    public List<ResponseHistoryDto> getAllHistory(String appId ,String startDate,String endDate,String msgTitle)
+    public List<ResponseHistoryList> findAllHistories(RequestHistoryList request)
     {
-        return historyBatisRepo.findAllHistory(appId,startDate, endDate, msgTitle);
+        return historyBatisRepo.findAllHistories(request);
     }
 }
