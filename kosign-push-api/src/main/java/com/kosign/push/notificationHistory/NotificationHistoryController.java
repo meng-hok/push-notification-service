@@ -1,25 +1,14 @@
 package com.kosign.push.notificationHistory;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import javax.transaction.Transactional;
-
-
-import com.kosign.push.publics.SuperController;
-
 import com.kosign.push.utils.messages.Response;
-import com.kosign.push.utils.enums.PlatformEnum;
-import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.notificationHistory.dto.ResponseHistoryDto;
-
-
-
 import io.swagger.annotations.Api;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @Api(tags = "Notifications History")
@@ -27,18 +16,28 @@ import org.springframework.web.multipart.MultipartFile;
 // @PreAuthorize("hasRole('ROLE_OPERATOR')")
 @RestController
 @RequestMapping("/api/v1")
-public class NotificationHistoryController extends SuperController{
+public class NotificationHistoryController
+{
+	@Autowired
+    public NotificationHistoryService historyService;
+	
     @GetMapping("/push/history")
-    public Object getHistory(@RequestParam(required = true) String startDate,@RequestParam(required = true) String endDate,String msgTitle) {
-
-        List<ResponseHistoryDto> listHis = historyService.getAllHistory(startDate, endDate, msgTitle);
+    public Object findAllNotificationHistories
+    (
+		@RequestParam(value="startDate", required=true) String startDate,
+		@RequestParam(value="endDate"  , required=true) String endDate  ,
+		@RequestParam(value="title"    , required=false) String title    
+    ) 
+    {
+        List<ResponseHistoryDto> respData = historyService.getAllHistory(startDate, endDate, title);
         
-        return Response.getResponseBody(ResponseEnum.Message.SUCCESS,listHis , true);
+        return Response.setResponseEntity(HttpStatus.OK, respData);
     }
     
     @GetMapping("/push/history/{id}")
-    public Object displayHistory(@PathVariable("id")Integer id){
-     ResponseHistoryDto notiHisto= historyService.getPushNotificationHistoryById(id);
-     return Response.getResponseBody(ResponseEnum.Message.SUCCESS,notiHisto, true);
+    public Object findNotificationHistoryById(@PathVariable("id")Integer id)
+    {
+    	ResponseHistoryDto respData= historyService.getPushNotificationHistoryById(id);
+    	return Response.setResponseEntity(HttpStatus.OK, respData);
     }
 }
