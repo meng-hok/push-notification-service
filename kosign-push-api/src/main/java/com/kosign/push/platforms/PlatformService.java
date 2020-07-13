@@ -39,20 +39,26 @@ public class PlatformService {
        return platformRepository.save(platform);
     }
     @Transactional
-    public PlatformEntity update(PlatformEntity platform) { 
+    public Boolean update(PlatformEntity platform) { 
 
         PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
         prePlatform.setToNewPlatform(platform);
 
-        return platformRepository.save(prePlatform);
+        if( platformRepository.save(prePlatform) != null)  { 
+            return true;
+        } 
+
+        return false;
     }
    
     public Boolean remove(PlatformEntity platform) { 
         PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
      
         prePlatform.setStatus(KeyConfEnum.Status.DISABLED);
-        platformRepository.save(platform);
-        return true;
+        if( platformRepository.save(prePlatform) != null)  {  
+            return true;
+        } 
+        return false;
     }
 
 	
