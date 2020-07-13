@@ -1,8 +1,6 @@
-package com.kosign.push.publics;
+package com.kosign.push.testModule;
 
 import com.kosign.push.platformSetting.dto.RequestCreateApns;
-import com.kosign.push.testModule.TestEntity;
-import com.kosign.push.testModule.TestService;
 import com.kosign.push.testModule.dto.DHIST_R01In;
 import com.kosign.push.testModule.dto.DTEST_C01In;
 import com.kosign.push.testModule.dto.DTEST_R01In;
