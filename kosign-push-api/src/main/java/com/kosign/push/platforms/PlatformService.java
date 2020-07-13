@@ -51,9 +51,9 @@ public class PlatformService
         return platformRepository.save(prePlatform);
     }
    
-    public PlatformEntity remove(PlatformEntity platform) 
+    public PlatformEntity remove(String id) 
     { 
-        PlatformEntity prePlatform = this.getActivePlatformById(platform.getId());
+        PlatformEntity prePlatform = this.getActivePlatformById(id);
         prePlatform.setStatus(KeyConfEnum.Status.DISABLED);
         return platformRepository.save(prePlatform); 
             

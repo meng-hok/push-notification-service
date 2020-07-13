@@ -13,6 +13,7 @@
 
 package com.kosign.push.platforms;
 
+import com.kosign.push.platforms.dto.RequestPlatformUpdate;
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.messages.Response;
 import org.springframework.http.HttpStatus;
@@ -45,10 +46,15 @@ public class PlatformController extends SuperController
     public Object updatePlatformById
     (
     	@PathVariable("id")String id, 
-    	@RequestBody PlatformEntity platform
+    	@RequestBody RequestPlatformUpdate request
     )
     { 
+    	PlatformEntity platform = new PlatformEntity();
     	platform.setId(id);
+    	platform.setName(request.getName());
+    	platform.setCode(request.getCode());
+    	platform.setName(request.getIcon());
+    	
     	PlatformEntity response = platformService.update(platform);
     	
         return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
@@ -56,14 +62,9 @@ public class PlatformController extends SuperController
     }
     
     @DeleteMapping("/platforms/{id}")
-    public Object deletePlatformById
-    (
-    	@PathVariable("id")String id,
-    	@RequestBody PlatformEntity platform
-    )
+    public Object deletePlatformById(@PathVariable("id")String id)
     { 
-    	platform.setId(id);
-        PlatformEntity response = platformService.remove(platform);
+        PlatformEntity response = platformService.remove(id);
         
         return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
                  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
