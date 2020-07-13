@@ -26,7 +26,7 @@ public class DeviceController extends SuperController {
     //         return Response.getResponseBody(ResponseEnum.Message.SUCCESS,devices,true);
     // }
     @ApiOperation("Get Device detail")
-    @GetMapping("/devices")
+    @GetMapping("/devices/client")
     public Object getDeviceDetail(  @RequestParam(required = true) String appId,@RequestParam(required = true)String startDate, @RequestParam(required = true) String endDate, RequestDevice requestDevice) {
 
         List<ResponseDevice> listDeviceClients = deviceService.getAllDevicesClient(appId,startDate, endDate, requestDevice.push_id,requestDevice.modelName, requestDevice.plat_code, requestDevice.os_version);
