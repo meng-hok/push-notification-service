@@ -110,6 +110,10 @@ public class AppController
     public Object updateApplicationById( @PathVariable("id") String id,@RequestBody RequestAppUpdate reqData) throws Exception
     {
         try {
+            if(appService.getAppByNameAndUserId(reqData.getName()) != null)
+            {
+            	return Response.setResponseEntity(HttpStatus.CONFLICT);
+            }
             Boolean update = appService.updateApplication(id, reqData.getName());
             return update ?
                     Response.setResponseEntity(HttpStatus.OK):

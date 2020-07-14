@@ -14,8 +14,9 @@
 package com.kosign.push.platforms;
 
 import com.kosign.push.platforms.dto.RequestPlatformUpdate;
-import com.kosign.push.publics.SuperController;
 import com.kosign.push.utils.messages.Response;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,8 +27,11 @@ import io.swagger.annotations.Api;
 @PreAuthorize("hasRole('ROLE_OPERATOR')")
 @RestController
 @RequestMapping("/api/v1")
-public class PlatformController extends SuperController 
+public class PlatformController
 {
+
+    @Autowired
+    PlatformService platformService;
     @GetMapping("/platforms")
     public Object findAllPlatforms()
     {

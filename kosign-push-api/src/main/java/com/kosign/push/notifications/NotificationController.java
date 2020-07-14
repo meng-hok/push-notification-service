@@ -1,26 +1,22 @@
 package com.kosign.push.notifications;
-import java.util.List;
 
+import java.util.List;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
+import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.dto.RequestPushDevice;
-import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.devices.dto.AgentIdentifier;
 import com.kosign.push.devices.dto.RequestAgent;
 import com.kosign.push.devices.dto.RequestPushAgentAll;
-import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.platforms.PlatformEntity;
-import com.kosign.push.publics.SuperController;
-import com.kosign.push.utils.FileStorageUtil;
+import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.messages.Response;
-
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
@@ -29,8 +25,14 @@ import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 @Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
-public class NotificationController extends SuperController
+public class NotificationController 
 {
+	@Autowired
+    public DeviceService deviceService;
+	
+	@Autowired 
+    public RabbitSender rabbitSender;
+	
     Logger logger = LoggerFactory.getLogger(NotificationController.class);
   
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
@@ -72,7 +74,8 @@ public class NotificationController extends SuperController
         try 
         {
             final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
-            if(agent == null) {  
+            if(agent == null) 
+            {  
                 return Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
             rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
@@ -96,8 +99,8 @@ public class NotificationController extends SuperController
         for (final Agent device : devices) 
         {
             
-            try{
-                
+            try
+            {
                 rabbitSender.sendNotifcationByAgent(device, requestDevice.getApp_id(), requestDevice.title, requestDevice.message);
             }
             catch(final Exception e)
@@ -107,7 +110,6 @@ public class NotificationController extends SuperController
               
             }
         }
-     
   
         return  Response.setResponseEntity(HttpStatus.OK);
     }
@@ -120,7 +122,6 @@ public class NotificationController extends SuperController
         {
             final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
         
-           
             for(final Agent agent : agents)
             {
                 rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);

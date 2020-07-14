@@ -198,7 +198,7 @@ public class TopicService {
        devices.forEach(device -> {
            //otificationService.sendNotificationToIOS(PlatformEnum.Platform.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
             //(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
-           rabbitSender.sendToApns(new APNS(FileStorageUtil.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
+        //    rabbitSender.sendToApns(new APNS(FileStorageUtil.GETP8FILEPATH+platformSetting.getPushUrl(),platformSetting.getTeamId(), platformSetting.getKeyId(), platformSetting.getBundleId(), device.getToken(), title, message));
        });
 
        return topic;
