@@ -41,6 +41,7 @@ public class PlatformController
     @PostMapping("/platforms")
     public Object createPlatform(@RequestBody PlatformEntity request) 
     { 
+        request.setId(null);
         PlatformEntity response = platformService.insert(request);
         return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
 		       Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
