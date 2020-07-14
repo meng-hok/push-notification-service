@@ -15,7 +15,10 @@ package com.kosign.push.apps;
 
 import java.sql.Timestamp;
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.firebase.database.annotations.NotNull;
 import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.enums.KeyConfEnum;
@@ -38,6 +41,8 @@ public class AppEntity
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     public String id;
     
+    @NotEmpty
+    @NotNull
     public String name;
     
     @JsonProperty("created_by")
