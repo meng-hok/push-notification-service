@@ -30,9 +30,10 @@ import lombok.Data;
 
 @AllArgsConstructor
 @Data
-@Table(name ="ps_application",uniqueConstraints={
-		@UniqueConstraint(columnNames = {"user_id", "name"})
-})
+// @Table(name ="ps_application",uniqueConstraints={
+// 		@UniqueConstraint(columnNames = {"user_id", "name"})
+// })
+@Table(name ="ps_application")
 @Entity
 public class AppEntity 
 {
