@@ -1,5 +1,6 @@
 package com.kosign.push.utils;
 
+import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.notificationHistory.NotificationHistoryEntity;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.FCM;
@@ -66,5 +67,40 @@ public class RabbitSender {
 		logger.info("{ Request Message to "+historyKey+" }");
 		System.out.println(history);
 		amqpTemplate.convertAndSend(historyKey,history);
+	}
+
+	public void sendNotifcationByAgent (Agent agent,String appId,String title,String message) { 
+		FCM fcm;
+		switch (agent.platform_id)
+		{
+			case "1":
+
+				final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+				apns.setApp_id(appId);
+				sendToApns(apns);
+				logger.info("[ Response Sucess : APNS ]");
+
+				break;
+		
+			case "2" :
+
+				fcm = new FCM( agent.authorized_key, agent.token,title, message);
+				fcm.setApp_id(appId);
+				sendToFcm(fcm);
+				logger.info("[ Response Sucess : FCM ]");
+
+				break;
+			case "3" :
+				fcm = new FCM( agent.authorized_key, agent.token,title, message);
+				fcm.setApp_id(appId);
+				sendToFcm(fcm);
+				logger.info("[ Response Sucess : FCM ]");
+
+				break;
+			
+			default : 
+				logger.info("[ Platform Out of Range ]");
+				break;
+		}
 	}
 }

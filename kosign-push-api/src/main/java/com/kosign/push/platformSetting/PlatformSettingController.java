@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
-
+import javax.validation.Valid;
 
 import com.kosign.push.publics.SuperController;
 import com.kosign.push.users.UserDetail;
@@ -153,7 +153,7 @@ public class PlatformSettingController extends SuperController{
     @ApiOperation(value = "To register platform setting",notes = "Code = 2 (Fcm android ) & 3 (Fcm Web) ")
     @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/setting/fcm")
-    public Object saveFcm(@RequestBody RequestCreateFcm requestFcm){
+    public Object saveFcm(@Valid @RequestBody RequestCreateFcm requestFcm){
         try {
             if(PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
                 PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getApp_id(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
@@ -171,7 +171,7 @@ public class PlatformSettingController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("platforms/setting/fcm")
-    public Object updateFcm(@RequestBody RequestUpdateFcm requestFcm){
+    public Object updateFcm(@Valid @RequestBody RequestUpdateFcm requestFcm){
         try {
             if( PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
 
@@ -190,7 +190,7 @@ public class PlatformSettingController extends SuperController{
 
     @Transactional(rollbackOn = Exception.class)
     @DeleteMapping("/platforms/setting/fcm")
-    public Object deleteFcmConfiguration (@RequestBody RequestRemoveFcm requestFcm) {
+    public Object deleteFcmConfiguration ( @Valid @RequestBody RequestRemoveFcm requestFcm) {
         try {
             return platformSettingService.removeFcmConfiguration(requestFcm.getApp_id(),requestFcm.platformId) ? 
                     Response.setResponseEntity(HttpStatus.OK) :
