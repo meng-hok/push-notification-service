@@ -5,6 +5,7 @@ import com.kosign.push.notificationHistory.NotificationHistoryRepository;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.aspects.ApplicationAspect;
+import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.KeyConfEnum;
 import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.utils.messages.Response;
@@ -72,17 +73,18 @@ public class SpelAddition  {
             logger.info("User "+userDetail.getId()+" is valid");
       
         }else{
-            throw ownerId == null ? new NullPointerException(ResponseEnum.Message.APPLICATION_NOT_AVAIBLE) : new Exception(ResponseEnum.Message.PERMISSION_DENIED);
+            throw ownerId == null ? new NullPointerException(ExceptionEnum.Message.APPLICATION_NOT_AVAIBLE) : new Exception(ExceptionEnum.Message.PERMISSION_DENIED);
         }   
     }
     
 
-    // @Pointcut("!execution(* com.kosign.push.apps.AppController.*(..)) ")
-    // public void notToExecuteApp(){}
+    @Pointcut("@annotation(com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID) ")
+    public void annotatedMethod(){}
    
-    // @Pointcut("execution(* com.kosign.push.apps.AppController.*(..)) ")
-    // public void toExecuteApp(){}
-    @Around("@within(com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID)")
+    @Pointcut("@within(com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID) ")
+    public void annotatedClass(){}
+    
+    @Around("annotatedMethod() || annotatedClass()")
     public Object aroundApplicationObject(ProceedingJoinPoint joinPoint) throws Throwable {
         
         logger.info("AOP Before method:" + joinPoint.getSignature());
@@ -94,7 +96,7 @@ public class SpelAddition  {
 
                     ApplicationAspect aspect = (ApplicationAspect) object;
                    
-                    validateOwner(aspect.appId);
+                    validateOwner(aspect.getApp_id());
                   
                 }
 

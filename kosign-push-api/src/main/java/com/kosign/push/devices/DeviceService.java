@@ -82,6 +82,10 @@ public class DeviceService {
         return _device;
     }
     
+    
+    /* Get All data of device clients
+     * Neng Channa
+     */
     public List<ResponseDevice> findAllDeviceClients(RequestDeviceList request)
     {
         return deviceBatisRepo.findAllDeviceClients(request);

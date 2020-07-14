@@ -1,6 +1,5 @@
-package com.kosign.push.notifications.utils;
+package com.kosign.push.utils;
 
-import com.kosign.push.utils.HttpClient;
 import org.json.JSONObject;
 
 import java.util.List;

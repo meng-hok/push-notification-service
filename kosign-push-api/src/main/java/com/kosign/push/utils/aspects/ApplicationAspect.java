@@ -1,5 +1,7 @@
 package com.kosign.push.utils.aspects;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class ApplicationAspect {
     
-    public String appId;
+    private String app_id;
 
     
 }

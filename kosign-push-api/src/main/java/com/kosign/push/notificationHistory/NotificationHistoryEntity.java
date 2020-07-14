@@ -1,6 +1,5 @@
 
 package com.kosign.push.notificationHistory;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Column;
@@ -8,25 +7,16 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
-
-import com.kosign.push.apps.AppEntity;
-import com.kosign.push.users.UserEntity;
-
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import lombok.Data;
 
-/**
- * Notification
- */
 @Data
 @Table(name ="ps_history")
 @Entity
-public class NotificationHistoryEntity {
+public class NotificationHistoryEntity 
+{
     @GeneratedValue(strategy = GenerationType.IDENTITY )
     @Id
     private Integer id;
@@ -45,7 +35,8 @@ public class NotificationHistoryEntity {
     @CreationTimestamp
     private Timestamp createdAt;
 
-    public NotificationHistoryEntity(String appId, String recieverId, String title, String message) {
+    public NotificationHistoryEntity(String appId, String recieverId, String title, String message) 
+    {
         this.appId = appId;
         this.recieverId = recieverId;
         this.title = title;
@@ -55,7 +46,8 @@ public class NotificationHistoryEntity {
     public NotificationHistoryEntity(){}
 
     public NotificationHistoryEntity(String appId, String recieverId, String title, String message, String toPlatform,
-            String status,String responseMsg) {
+            String status,String responseMsg) 
+    {
         this.appId = appId;
         this.recieverId = recieverId;
         this.title = title;
@@ -64,5 +56,4 @@ public class NotificationHistoryEntity {
         this.status = status;
         this.responseMsg = responseMsg;
     }
-
 }
