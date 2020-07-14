@@ -109,19 +109,31 @@ public class AppController
     @PutMapping("/applications/{id}")
     public Object updateApplicationById( @PathVariable("id") String id,@RequestBody RequestAppUpdate reqData) throws Exception
     {
-        Boolean update = appService.updateApplication(id, reqData.getName());
-        return update ?
-        		Response.setResponseEntity(HttpStatus.OK):
-        		Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            Boolean update = appService.updateApplication(id, reqData.getName());
+            return update ?
+                    Response.setResponseEntity(HttpStatus.OK):
+                    Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return
+                 Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+       
     }
 
     @AspectStringApplicationID
     @DeleteMapping("/applications/{id}")
     public Object deleteApplicationById(@PathVariable("id") String id)
     {
-    	Boolean update = appService.disableApplication(id);
-        return update ?
-        		Response.setResponseEntity(HttpStatus.OK):
-            	Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            Boolean update = appService.disableApplication(id);
+            return update ?
+                    Response.setResponseEntity(HttpStatus.OK):
+                    Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            } catch (Exception e) {
+                return
+                     Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            }
+                   
     }
 }
