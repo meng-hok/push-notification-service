@@ -72,43 +72,10 @@ public class NotificationController extends SuperController
         try 
         {
             final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
-           
-            String response = null;
-             FCM fcm;
-            switch (agent.platform_id){
-                case "1":
-
-                    final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                    apns.setApp_id(agentBody.getApp_id());
-                    rabbitSender.sendToApns(apns);
-                    logger.info("[ Response Sucess : APNS ]");
-
-                    response = agent.toString();
-
-                    break;
-            
-                case "2" :
-
-                    fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setApp_id(agentBody.getApp_id());
-                    rabbitSender.sendToFcm(fcm);
-                    logger.info("[ Response Sucess : FCM ]");
-
-                    response=agent.toString();
-                    break;
-                case "3" :
-                    fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                    fcm.setApp_id(agentBody.getApp_id());
-                    rabbitSender.sendToFcm(fcm);
-                    logger.info("[ Response Sucess : FCM ]");
-
-                    response=agent.toString();
-                    break;
-                
-                default : 
-                    throw new Exception("Device Id not found");
+            if(agent == null) {  
+                return Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
-
+            rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
             return Response.setResponseEntity(HttpStatus.OK);
         } 
         catch (final Exception e) 
@@ -123,52 +90,25 @@ public class NotificationController extends SuperController
     @PostMapping("/devices/notifications/send/groups")
     public Object sendByGroup( @RequestBody final RequestPushDevice requestDevice) 
     {
-        Integer success =0 ;
-        Integer fail = 0;
+  
         final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
 
         for (final Agent device : devices) 
         {
-            FCM fcm;
-            ++success;
+            
             try{
-                switch (device.platform_id)
-                {
-                    case "1":
-                        final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+device.getPfilename(),device.getTeam_id(),device.getFile_key(), device.getBundle_id(), device.getToken(), requestDevice.getTitle(), requestDevice.getMessage());
-                        apns.setApp_id(requestDevice.getApp_id());
-                        rabbitSender.sendToApns(apns);
-                        break;
-                    case "2":
-                        fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setApp_id(requestDevice.getApp_id());
-                        rabbitSender.sendToFcm(fcm);
-                        break;
-                    case "3":
-                        fcm = new FCM(device.getAuthorized_key(), device.getToken(),requestDevice.getTitle(), requestDevice.getMessage());
-                        fcm.setApp_id(requestDevice.getApp_id());
-                        rabbitSender.sendToFcm(fcm);
-                        break;
-                    default : 
-                        logger.info("Out of Platform");
-                        --success;
-                        ++fail ;
-                        break;    
-                }
-               
+                
+                rabbitSender.sendNotifcationByAgent(device, requestDevice.getApp_id(), requestDevice.title, requestDevice.message);
             }
             catch(final Exception e)
             {
                 logger.info("Error Message");
                 System.out.println(e.getMessage());
-                ++fail;
+              
             }
         }
-        final JSONObject jsonObject = new JSONObject();
-        jsonObject.put("success",success) ;
-        jsonObject.put("fail",fail) ;
-        jsonObject.put("target_devices" , devices.size() );
-
+     
+  
         return  Response.setResponseEntity(HttpStatus.OK);
     }
 
@@ -179,48 +119,14 @@ public class NotificationController extends SuperController
         try 
         {
             final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
-            Integer fail = 0;
+        
            
             for(final Agent agent : agents)
             {
-                FCM fcm;
-                switch (agent.platform_id)
-                {
-                    case "1":
-    
-                        final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, agentBody.getTitle(), agentBody.getMessage());
-                        apns.setApp_id(agentBody.getApp_id());
-                        rabbitSender.sendToApns(apns);
-                        logger.info("[ Response Sucess : APNS ]");
-
-                        break;
-                
-                    case "2" :
-    
-                        fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setApp_id(agentBody.getApp_id());
-                        rabbitSender.sendToFcm(fcm);
-                        logger.info("[ Response Sucess : FCM ]");
-    
-                        break;
-                    case "3" :
-                        fcm = new FCM( agent.authorized_key, agent.token,agentBody.getTitle(), agentBody.getMessage());
-                        fcm.setApp_id(agentBody.getApp_id());
-                        rabbitSender.sendToFcm(fcm);
-                        logger.info("[ Response Sucess : FCM ]");
-    
-                        break;
-                    
-                    default : 
-                        logger.info("Out of Platform");
-                        fail ++;
-                        break;
-                }
-
+                rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
             };
             logger.info("Push Done");
-            System.out.println("Device found : " + agents.size());
-            System.out.println("Fail : " +fail);
+          
             return Response.setResponseEntity(HttpStatus.OK);
         } 
         catch (final Exception e) 
