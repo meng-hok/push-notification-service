@@ -1,14 +1,10 @@
 package com.kosign.push.users;
 
-import com.kosign.push.publics.SuperController;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-
-import com.kosign.push.publics.SuperController;
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.FileStorageUtil;
@@ -27,6 +23,7 @@ import com.kosign.push.platformSetting.dto.RequestUpdateFcm;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -36,7 +33,10 @@ import org.springframework.web.multipart.MultipartFile;
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")
-public class UserController extends SuperController {
+public class UserController {
+    @Autowired
+    public UserService userService;
+
     @Transactional(rollbackOn = Exception.class)
     @ResponseBody
     @PostMapping("/create/request")
