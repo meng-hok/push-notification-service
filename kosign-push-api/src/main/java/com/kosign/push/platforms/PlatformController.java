@@ -41,10 +41,14 @@ public class PlatformController
     @PostMapping("/platforms")
     public Object createPlatform(@RequestBody PlatformEntity request) 
     { 
-        request.setId(null);
-        PlatformEntity response = platformService.insert(request);
-        return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
-		       Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        try {
+            request.setId(null);
+            PlatformEntity response = platformService.insert(request);
+            return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
+    		       Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (Exception e) {
+            return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
     
     @PutMapping("/platforms/{id}")
@@ -58,7 +62,7 @@ public class PlatformController
     	platform.setId(id);
     	platform.setName(request.getName());
     	platform.setCode(request.getCode());
-    	platform.setName(request.getIcon());
+    	platform.setIcon(request.getIcon());
     	
     	PlatformEntity response = platformService.update(platform);
     	

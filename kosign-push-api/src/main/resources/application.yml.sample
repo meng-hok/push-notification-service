@@ -60,7 +60,8 @@ pusher:
 admin:
   name: admin
   password: adminhtl123!@#
-
+base:
+  url: http://localhost:8080
 
 # 운영 환경
 ---
