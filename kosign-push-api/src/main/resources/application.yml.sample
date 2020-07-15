@@ -62,7 +62,9 @@ admin:
   password: adminhtl123!@#
 base:
   url: http://localhost:8080
-
+  file:
+      client: /myfiles
+      server: /home/lms/push-file
 # 운영 환경
 ---
 # spring.profiles: set1
