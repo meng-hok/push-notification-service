@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @Api(tags = "Users")
-@PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
 @RequestMapping("/api/v1")
 public class UserController {

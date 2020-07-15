@@ -40,7 +40,7 @@ public class DeviceController
     public DeviceService deviceService;
 	
     @ApiOperation("Find All Devices")
-    @GetMapping("/devices")
+    @GetMapping("/devices/client")
     public Object findAllDevices
     (
     	@RequestParam(value = "app_id"    ) String appId,

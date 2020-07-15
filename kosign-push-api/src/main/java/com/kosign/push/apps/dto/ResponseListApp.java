@@ -35,11 +35,12 @@ public class ResponseListApp extends RequestAppIdentifier
     @JsonIgnore
     private Integer web=0;
     
-    @JsonProperty("created_at")
+    @JsonProperty("create_at")
     private Timestamp createdAt;
   
-    @JsonProperty("created_by")
+    @JsonProperty("create_by")
     private String createdBy;
-
+    
+    @JsonProperty("sts")
     private Character status = KeyConfEnum.Status.ACTIVE;
 }
