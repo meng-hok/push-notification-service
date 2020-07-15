@@ -114,7 +114,7 @@ public class NotificationController
         return  Response.setResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation( value = "Send Notification To Single Device")
+    @ApiOperation( value = "Send Notification To All Device")
     @PostMapping("/devices/notifications/send/all")
     public Object sendByAll(@RequestBody final RequestPushAgentAll agentBody)
     {
