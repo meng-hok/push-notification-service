@@ -40,7 +40,7 @@ public class RabbitSender {
 				final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.push_id, title, message);
 				apns.setApp_id(appId);
 				// sendToApns(apns);
-				amqpTemplate.convertAndSend(fcmKey, apns);
+				amqpTemplate.convertAndSend(apnsKey, apns);
 				logger.info("[ Response Sucess : APNS ]");
 
 				break;

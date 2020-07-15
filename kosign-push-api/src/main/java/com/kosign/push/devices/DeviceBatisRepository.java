@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeviceBatisRepository 
 {
-    @Select({"<script>","SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
+    @Select({"<script>","SELECT  d.device_id , d.token as push_id,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
         "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
         "ON d.platform_id = p_s.platform_id AND d.app_id = p_s.application_id AND d.status = p_s.status \n" +
         "WHERE d.device_id IN \n"+
@@ -23,7 +23,7 @@ public interface DeviceBatisRepository
         "AND app_id = #{appId} AND d.status = '1'","</script>"})
     List<Agent> findByDeviceIdListAndAppIdRaw(@Param("deviceIdList") ArrayList<String> deviceIdList, @Param("appId") String appId);
     
-    @Select({"<script>","SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
+    @Select({"<script>","SELECT  d.device_id , d.token as push_id,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
         "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
         "ON d.platform_id = p_s.platform_id AND d.app_id = p_s.application_id AND d.status = p_s.status \n" +
         "WHERE app_id = #{appId} AND d.status = '1'","</script>"})
