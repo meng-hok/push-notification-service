@@ -37,7 +37,7 @@ public class RabbitSender {
 		{
 			case "1":
 
-				final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+				final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.push_id, title, message);
 				apns.setApp_id(appId);
 				// sendToApns(apns);
 				amqpTemplate.convertAndSend(fcmKey, apns);
@@ -47,14 +47,14 @@ public class RabbitSender {
 		
 			case "2" :
 
-				fcm = new FCM( agent.authorized_key, agent.token,title, message);
+				fcm = new FCM( agent.authorized_key, agent.push_id,title, message);
 				fcm.setApp_id(appId);
 				// sendToFcm(fcm);
 				logger.info("[ Response Sucess : FCM ]");
 				amqpTemplate.convertAndSend(fcmKey, fcm);
 				break;
 			case "3" :
-				fcm = new FCM( agent.authorized_key, agent.token,title, message);
+				fcm = new FCM( agent.authorized_key, agent.push_id,title, message);
 				fcm.setApp_id(appId);
 				// sendToFcm(fcm);
 				logger.info("[ Response Sucess : FCM ]");

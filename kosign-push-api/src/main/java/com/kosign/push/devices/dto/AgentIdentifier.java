@@ -5,12 +5,9 @@ import com.kosign.push.utils.aspects.ApplicationAspect;
 import lombok.Data;
 
 @Data
-public class AgentIdentifier extends ApplicationAspect{
-   
+public class AgentIdentifier extends ApplicationAspect
+{
     public String device_id;
-
-
     public String platform_id;
-
-    public String token;
+    public String push_id;
 }
