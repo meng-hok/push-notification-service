@@ -13,8 +13,8 @@ import org.apache.ibatis.annotations.SelectProvider;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface DeviceBatisRepository {
-    
+public interface DeviceBatisRepository 
+{
     @Select({"<script>","SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
         "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
         "ON d.platform_id = p_s.platform_id AND d.app_id = p_s.application_id AND d.status = p_s.status \n" +
@@ -29,10 +29,7 @@ public interface DeviceBatisRepository {
         "WHERE app_id = #{appId} AND d.status = '1'","</script>"})
     List<Agent> findAllDeviceByAppIdRaw( @Param("appId") String appId);
     
-@Select("SELECT  d.device_id , d.token,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n"+
-            "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n"+
-            "ON d.platform_id = p_s.platform_id AND d.app_id = p_s.application_id AND d.status = p_s.status \n"+
-            "WHERE d.device_id = #{deviceId} AND app_id = #{appId}  AND d.status = '1' LIMIT 1")
+    @Select("/*DEVICE_CLIENT_R002*/\nSELECT dc.device_id\n    ,  dc.token as push_id\n    ,  dc.app_id\n    ,  dc.platform_id\n    ,  ps.authorized_key\n	,  ps.bundle_id\n	,  ps.key_id as file_key\n	,  ps.team_id\n	,  ps.push_url as pFileName\n  FROM ps_device_client    dc\n  JOIN ps_platform_setting ps ON dc.app_id = ps.application_id AND dc.platform_id = ps.platform_id AND ps.status = '1'\n WHERE dc.device_id = #{deviceId}\n   AND dc.app_id    = #{appId}\n   AND dc.status    = '1'")
     Agent findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId);
     
     @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DeviceBatisDynasmicSql.class)
