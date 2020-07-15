@@ -52,7 +52,7 @@ public class NotificationController
             { 
                 return  Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
-            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getToken(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getPush_id(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
             System.out.println(device);
            
             return ( device != null ) ? 
@@ -114,7 +114,7 @@ public class NotificationController
         return  Response.setResponseEntity(HttpStatus.OK);
     }
 
-    @ApiOperation( value = "Send Notification To Single Device")
+    @ApiOperation( value = "Send Notification To All Device")
     @PostMapping("/devices/notifications/send/all")
     public Object sendByAll(@RequestBody final RequestPushAgentAll agentBody)
     {

@@ -1,5 +1,4 @@
 package com.kosign.push.devices;
-import java.sql.Date;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -8,15 +7,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
-
-import com.fasterxml.jackson.annotation.JsonAutoDetect;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.platforms.PlatformEntity;
-import com.kosign.push.users.UserEntity;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
