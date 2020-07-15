@@ -24,7 +24,10 @@ public class RabbitSender {
    
 	@Value("${pusher.rabbitmq.routingKey.apns}")
 	private String apnsKey;	
-
+	
+	
+	@Value("${base.file.server}")
+	private String pfileAlias;
 	
 	Logger logger = org.slf4j.LoggerFactory.getLogger(RabbitSender.class);
 	
@@ -37,10 +40,10 @@ public class RabbitSender {
 		{
 			case "1":
 
-				final APNS apns = new APNS(FileStorageUtil.GETP8FILEPATH+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
+				final APNS apns = new APNS(pfileAlias+"/"+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.token, title, message);
 				apns.setApp_id(appId);
 				// sendToApns(apns);
-				amqpTemplate.convertAndSend(fcmKey, apns);
+				amqpTemplate.convertAndSend(apnsKey, apns);
 				logger.info("[ Response Sucess : APNS ]");
 
 				break;
