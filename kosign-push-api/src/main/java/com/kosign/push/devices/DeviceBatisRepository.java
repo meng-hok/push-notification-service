@@ -23,10 +23,7 @@ public interface DeviceBatisRepository
         "AND app_id = #{appId} AND d.status = '1'","</script>"})
     List<Agent> findByDeviceIdListAndAppIdRaw(@Param("deviceIdList") ArrayList<String> deviceIdList, @Param("appId") String appId);
     
-    @Select({"<script>","SELECT  d.device_id , d.token as push_id,d.app_id,d.platform_id, p_s.authorized_key , p_s.bundle_id , p_s.key_id as file_key, p_s.team_id ,p_s.push_url as pFileName \n" +
-        "FROM ps_device_client d INNER JOIN ps_platform_setting p_s \n" +
-        "ON d.platform_id = p_s.platform_id AND d.app_id = p_s.application_id AND d.status = p_s.status \n" +
-        "WHERE app_id = #{appId} AND d.status = '1'","</script>"})
+    @Select("/*DEVICE_CLIENT_R003*/\nSELECT dc.device_id \n    ,  dc.token as push_id\n	,  dc.app_id\n	,  dc.platform_id\n	,  ps.authorized_key\n	,  ps.bundle_id\n	,  ps.key_id as file_key\n	,  ps.team_id\n	,  ps.push_url as pFileName\n  FROM ps_device_client dc \n  JOIN ps_platform_setting ps\n    ON dc.platform_id = ps.platform_id AND dc.app_id = ps.application_id AND ps.status = '1'\n WHERE app_id = #{appId} AND dc.status = '1'")
     List<Agent> findAllDeviceByAppIdRaw( @Param("appId") String appId);
     
     @SelectProvider(method = "getAgent",type = DeviceBatisDynasmicSql.class)
