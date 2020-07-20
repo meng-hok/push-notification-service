@@ -8,6 +8,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
+
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.platforms.PlatformEntity;
 
@@ -18,7 +20,13 @@ import lombok.Data;
 
 // @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
 @Data
-@Table(name ="ps_device_client")
+// @Table(name ="ps_application",uniqueConstraints={
+// 		@UniqueConstraint(columnNames = {"user_id", "name"})
+// })
+@Table(name ="ps_device_client",
+uniqueConstraints={
+    		@UniqueConstraint(columnNames = {"app_id", "deviceId","token","status"})
+    })
 @Entity
 public class DeviceEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY )

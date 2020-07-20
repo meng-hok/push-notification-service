@@ -1,6 +1,9 @@
 package com.kosign.push.notifications;
 
 import java.util.List;
+
+import javax.servlet.http.HttpServletRequest;
+
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
@@ -10,6 +13,7 @@ import com.kosign.push.devices.dto.AgentIdentifier;
 import com.kosign.push.devices.dto.RequestAgent;
 import com.kosign.push.devices.dto.RequestPushAgentAll;
 import com.kosign.push.platforms.PlatformEntity;
+import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.messages.Response;
 import org.slf4j.Logger;
@@ -20,8 +24,15 @@ import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
+import com.kosign.push.configs.aspectAnnotation.AspectPushHeader;
 
-@AspectObjectApplicationID
+// @AspectObjectApplicationID
+@AspectPushHeader
+/***
+ * 
+ * Validated By Interceptor
+ * com.kosign.push.configs.InterceptorConfiguration
+ */
 @Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
@@ -32,6 +43,9 @@ public class NotificationController
 	
 	@Autowired 
     public RabbitSender rabbitSender;
+   
+    @Autowired
+    private HttpServletRequest request;
 	
     Logger logger = LoggerFactory.getLogger(NotificationController.class);
   
@@ -41,14 +55,17 @@ public class NotificationController
     {
         try 
         {
+            String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
+            agentIdentifier.setApp_id(appId);
+        
             final Integer platformId = new Integer(agentIdentifier.platform_id);
             if (platformId < 0 | platformId > 3 ) 
             { 
                 return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
-
-            Agent agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id());
-            if (agent != null ) 
+            //validattion
+            List<Agent>  agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id(),agentIdentifier.getPush_id());
+            if (agent.size() > 0 ) 
             { 
                 return  Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
@@ -71,17 +88,25 @@ public class NotificationController
     @PostMapping("/devices/notifications/send/single")
     public Object sendByDevice(@RequestBody final RequestAgent agentBody) 
     {
+      
         try 
         {
-            final Agent agent = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
-            if(agent == null) 
+            String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
+            agentBody.setApp_id(appId);
+            
+            final List<Agent>  agents = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
+            if (agents.isEmpty()) 
             {  
                 return Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
-            rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
+            
+            agents.forEach(agent -> {
+                rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
+            });
+
             return Response.setResponseEntity(HttpStatus.OK);
-        } 
-        catch (final Exception e) 
+      
+        }  catch (final Exception e) 
         {
             logger.info(e.getMessage());
             return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
@@ -93,25 +118,34 @@ public class NotificationController
     @PostMapping("/devices/notifications/send/groups")
     public Object sendByGroup( @RequestBody final RequestPushDevice requestDevice) 
     {
-  
-        final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
-
-        for (final Agent device : devices) 
+        try 
         {
-            
-            try
+            String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
+            requestDevice.setApp_id(appId);
+
+            final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
+
+            for (final Agent device : devices) 
             {
-                rabbitSender.sendNotifcationByAgent(device, requestDevice.getApp_id(), requestDevice.title, requestDevice.message);
+                
+                try
+                {
+                    rabbitSender.sendNotifcationByAgent(device, requestDevice.getApp_id(), requestDevice.title, requestDevice.message);
+                }
+                catch(final Exception e)
+                {
+                    logger.info("Error Message");
+                    System.out.println(e.getMessage());
+                
+                }
             }
-            catch(final Exception e)
-            {
-                logger.info("Error Message");
-                System.out.println(e.getMessage());
-              
-            }
+    
+            return  Response.setResponseEntity(HttpStatus.OK);
+        } catch (final Exception e) 
+        {
+            logger.info(e.getMessage());
+            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         }
-  
-        return  Response.setResponseEntity(HttpStatus.OK);
     }
 
     @ApiOperation( value = "Send Notification To All Device")
@@ -120,6 +154,9 @@ public class NotificationController
     {
         try 
         {
+            String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
+            agentBody.setApp_id(appId);
+
             final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
         
             for(final Agent agent : agents)
@@ -129,8 +166,8 @@ public class NotificationController
             logger.info("Push Done");
           
             return Response.setResponseEntity(HttpStatus.OK);
-        } 
-        catch (final Exception e) 
+     
+        } catch (final Exception e) 
         {
             logger.info(e.getMessage()); 
             return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);

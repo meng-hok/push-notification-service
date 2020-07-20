@@ -17,10 +17,7 @@ public class EnableInterceptorConfigure implements WebMvcConfigurer{
     // @Autowired
     // private InterceptorConfiguration interceptorConfiguration;
 
-    // @Override
-    // public void addInterceptors(InterceptorRegistry registry) {
-    //     registry.addInterceptor(interceptorConfiguration).addPathPatterns("/api/v1/**");
-    // }
+   
     @Value("${base.file.client}")
     public String clientPath;
     @Value("${base.file.server}")
@@ -35,5 +32,8 @@ public class EnableInterceptorConfigure implements WebMvcConfigurer{
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
     }
-    
+    // @Override
+    // public void addInterceptors(InterceptorRegistry registry) {
+    //     registry.addInterceptor(interceptorConfiguration).addPathPatterns("/api/public/**");
+    // }
 }

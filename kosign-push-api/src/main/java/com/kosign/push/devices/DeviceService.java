@@ -6,6 +6,7 @@ import java.util.List;
 import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
+import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.slf4j.Logger;
@@ -52,19 +53,23 @@ public class DeviceService {
         return deviceBatisRepo.findAllDevicesClient(appId,startDate, endDate, token, modelName, platform, os);
     }
 
-    public Agent  getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId){
-
-        // List<Map<String,String>> maps = deviceRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
-        // if(maps.size() > 0 ){
-        //      // Agent  agent =  gson.from (jsonElement, MyPojo.class);
-        //     ObjectMapper mapper = new ObjectMapper();
-        //     Agent agent = mapper.convertValue(maps.get(0), Agent.class);
-        //     return agent;
-        // }
-        // return null;
-        return deviceBatisRepo.findByDeviceIdAndAppIdRaw(deviceId, appId);
+    public Integer countActiveDeviceByAppAndDeviceIdAndToken(String appId,String deviceId,String token){
+        // long countByDept(String deptName);
+        Integer deviceCount = deviceRepo.countByAppIdAndDeviceIdAndTokenAndStatus(appId, deviceId, token, KeyConfEnum.Status.ACTIVE);
+        return deviceCount;
     }
 
+    public List<Agent>   getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId){
+
+    
+        return deviceBatisRepo.findByDeviceIdAndAppIdRaw(deviceId, appId,"");
+    }
+
+
+    public List<Agent>  getActiveDeviceByDeviceIdAndAppIdRaw(String deviceId,String appId,String token){
+
+        return deviceBatisRepo.findByDeviceIdAndAppIdRaw(deviceId, appId,token);
+    }
     public List<DeviceEntity> getActiveDeviceByAppId (String appId) {
         List<DeviceEntity> devices= deviceRepo.findByAppIdAndStatus(appId, KeyConfEnum.Status.ACTIVE);
         return devices;
@@ -76,7 +81,7 @@ public class DeviceService {
     }
 
     public DeviceEntity saveDevice(DeviceEntity device){
-        
+     
         DeviceEntity _device = deviceRepo.save(device);
         logger.info(device.toString());
         return _device;

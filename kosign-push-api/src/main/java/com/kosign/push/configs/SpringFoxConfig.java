@@ -1,5 +1,6 @@
 package com.kosign.push.configs;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -7,11 +8,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import springfox.documentation.service.Parameter;
+
 import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.schema.ModelRef;
 import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.AuthorizationScope;
 import springfox.documentation.service.Contact;
@@ -23,7 +28,7 @@ import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import springfox.documentation.builders.ApiInfoBuilder;
-
+import springfox.documentation.builders.ParameterBuilder;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spi.service.contexts.SecurityContext;
 
@@ -51,7 +56,6 @@ public class SpringFoxConfig {
   Predicate<String> SWAGGER_PATHS = PathSelectors.regex("^(?!.*error$).*");
 
   private OAuth securitySchema() {
-    // 这里设置 client 的 scope
     final AuthorizationScope authorizationScope = new AuthorizationScope("openid", "");
     final GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(OAuthServerUri + "/oauth/token");
     return new OAuth(securitySchemaOAuth2, Arrays.asList(authorizationScope), Arrays.asList(grantType));
@@ -72,9 +76,23 @@ public class SpringFoxConfig {
 
   @Bean
   public Docket api() {
-    return new Docket(DocumentationType.SWAGGER_2).select().apis(RequestHandlerSelectors.any())
+    ParameterBuilder aParameterBuilder = new ParameterBuilder();
+    aParameterBuilder.name("Authorization")                 // name of header
+                      .modelRef(new ModelRef("string"))
+                      .parameterType("header")               // type - header
+                      .defaultValue("Optional<Basic em9uZTpteXBhc3N3b3Jk>")        // based64 of - zone:mypassword
+                      .required(false)                // for compulsory
+                      .build();
+    List<Parameter> aParameters = new ArrayList<>();
+                  aParameters.add(aParameterBuilder.build());    
+
+    return new Docket(DocumentationType.SWAGGER_2)
+    
+        .select().apis(RequestHandlerSelectors.any())
         .paths(PathSelectors.ant("/api/**"))
         .build()
+        // .pathMapping("/api/public/**")
+        // .globalOperationParameters(aParameters)
         .apiInfo(this.apiInfo())
         .securitySchemes(Collections.singletonList(securitySchema()))
 //            .paths(PathSelectors.any()).build().securitySchemes(Collections.singletonList(securitySchema()))

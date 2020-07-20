@@ -31,5 +31,17 @@ public class DeviceBatisDynasmicSql
 		
 		return sql;
 	}
+
+	public String getAgent(@Param("deviceId")String deviceId, @Param("appId") String appId , @Param("token") String token ) {
+
+		String sql = "/*DEVICE_CLIENT_R002*/\nSELECT dc.device_id\n    ,  dc.token as push_id\n    ,  dc.app_id\n    ,  dc.platform_id\n    ,  ps.authorized_key\n	,  ps.bundle_id\n	,  ps.key_id as file_key\n	,  ps.team_id\n	,  ps.push_url as pFileName\n  FROM ps_device_client    dc\n  JOIN ps_platform_setting ps ON dc.app_id = ps.application_id AND dc.platform_id = ps.platform_id AND ps.status = '1'\n WHERE dc.device_id = #{deviceId}\n   AND dc.app_id    = #{appId}\n   AND dc.status    = '1'" ;
+		if(StringUtils.isNotBlank(token) ) 
+		{
+			sql += " AND dc.token = #{token}";
+		}
+		
+
+		return sql;
+	}
 	
 }

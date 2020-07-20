@@ -1,9 +1,15 @@
 package com.kosign.push.configs;
 
+import java.io.PrintWriter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.kosign.push.utils.messages.Response;
+
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 
@@ -12,13 +18,16 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class InterceptorConfiguration implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        // if((User)request.getSession().getAttribute("user")==null){
-        //     response.sendRedirect("/");
-
-        //     return false;
-        // }else{
-
-        // }
+       
+        if(StringUtils.isEmpty(request.getHeader("Authorization"))) {
+            PrintWriter out = response.getWriter();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            out.print(Response.setResponseEntity(HttpStatus.UNAUTHORIZED));
+            out.flush();
+            return false;
+        }
 
         return true;
     }

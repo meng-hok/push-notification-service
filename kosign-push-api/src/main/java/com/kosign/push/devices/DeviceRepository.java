@@ -16,6 +16,7 @@ public interface DeviceRepository extends JpaRepository<DeviceEntity,String> {
 
 	List<DeviceEntity> findByAppIdAndPlatformIdAndStatus(@Param("appId")String appId,@Param("platFormId") String platFormId,@Param("status") Character status);
 
+    Integer countByAppIdAndDeviceIdAndTokenAndStatus(@Param("appId")String appId,@Param("deviceId") String deviceId,@Param("token") String token,@Param("status") Character status);
     // @Query(nativeQuery = true, value = "SELECT * FROM ps_device_client WHERE device_id=:deviceId AND  app_id=:appId ")
 	// Device findCByDeviceIdAndAppId(@Param("deviceId") String deviceId,@Param("appId") Character appId);
     
