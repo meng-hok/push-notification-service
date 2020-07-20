@@ -26,6 +26,15 @@ public class UserService implements UserDetailsService {
         user.setStatus(KeyConfEnum.Status.REQUESTING);
         return userRepo.save(user);
     }
+
+    public UserEntity saveUser(String username,String password){
+        UserEntity user = new UserEntity();
+        user.setUsername(username);
+        user.setPassword(encoder.encode(password)); 
+        user.setRole("USER");
+        user.setStatus(KeyConfEnum.Status.ACTIVE);
+        return userRepo.save(user);
+    }
    
     public UserEntity approveUser(String userId){
         UserEntity user = userRepo.getOne(userId);
