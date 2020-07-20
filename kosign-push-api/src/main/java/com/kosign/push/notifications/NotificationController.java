@@ -85,7 +85,7 @@ public class NotificationController
     }
     
     @ApiOperation( value = "Send Notification To Single Device")
-    @PostMapping("/devices/notifications/send/single")
+    @PostMapping("/devices/notifications/single")
     public Object sendByDevice(@RequestBody final RequestAgent agentBody) 
     {
       
@@ -115,7 +115,7 @@ public class NotificationController
     }
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
-    @PostMapping("/devices/notifications/send/groups")
+    @PostMapping("/devices/notifications/groups")
     public Object sendByGroup( @RequestBody final RequestPushDevice requestDevice) 
     {
         try 
@@ -149,7 +149,7 @@ public class NotificationController
     }
 
     @ApiOperation( value = "Send Notification To All Device")
-    @PostMapping("/devices/notifications/send/all")
+    @PostMapping("/devices/notifications")
     public Object sendByAll(@RequestBody final RequestPushAgentAll agentBody)
     {
         try 
