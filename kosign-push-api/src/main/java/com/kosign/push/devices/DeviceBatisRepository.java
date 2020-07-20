@@ -29,9 +29,12 @@ public interface DeviceBatisRepository
         "WHERE app_id = #{appId} AND d.status = '1'","</script>"})
     List<Agent> findAllDeviceByAppIdRaw( @Param("appId") String appId);
     
-    @Select("/*DEVICE_CLIENT_R002*/\nSELECT dc.device_id\n    ,  dc.token as push_id\n    ,  dc.app_id\n    ,  dc.platform_id\n    ,  ps.authorized_key\n	,  ps.bundle_id\n	,  ps.key_id as file_key\n	,  ps.team_id\n	,  ps.push_url as pFileName\n  FROM ps_device_client    dc\n  JOIN ps_platform_setting ps ON dc.app_id = ps.application_id AND dc.platform_id = ps.platform_id AND ps.status = '1'\n WHERE dc.device_id = #{deviceId}\n   AND dc.app_id    = #{appId}\n   AND dc.status    = '1'")
-    Agent findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId);
+    @SelectProvider(method = "getAgent",type = DeviceBatisDynasmicSql.class)
+    List<Agent> findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId , @Param("token") String token );
     
+    // @Select("/*DEVICE_CLIENT_R002*/\nSELECT dc.device_id\n    ,  dc.token as push_id\n    ,  dc.app_id\n    ,  dc.platform_id\n    ,  ps.authorized_key\n	,  ps.bundle_id\n	,  ps.key_id as file_key\n	,  ps.team_id\n	,  ps.push_url as pFileName\n  FROM ps_device_client    dc\n  JOIN ps_platform_setting ps ON dc.app_id = ps.application_id AND dc.platform_id = ps.platform_id AND ps.status = '1'\n WHERE dc.device_id = #{deviceId}\n   AND dc.app_id    = #{appId}\n  AND   AND dc.status    = '1'")
+    // Agent findByDeviceIdAndAppIdRaw(@Param("deviceId")String deviceId, @Param("appId") String appId,@Param("token") String token);
+
     @SelectProvider(method = "getSQL",type = com.kosign.push.devices.DeviceBatisDynasmicSql.class)
     List<ResponseDevice> findAllDevicesClient(@org.apache.ibatis.annotations.Param("app_id") String appId,@org.apache.ibatis.annotations.Param("start_date") String startDate, @org.apache.ibatis.annotations.Param("end_date") String endDate, @org.apache.ibatis.annotations.Param("push_id") String token, @org.apache.ibatis.annotations.Param("model_name") String modelName,
     @org.apache.ibatis.annotations.Param("plat_code") String platform, @org.apache.ibatis.annotations.Param("os_version") String os);
