@@ -14,8 +14,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class EnableInterceptorConfigure implements WebMvcConfigurer{
     
-    // @Autowired
-    // private InterceptorConfiguration interceptorConfiguration;
+    @Autowired
+    private InterceptorConfiguration interceptorConfiguration;
 
    
     @Value("${base.file.client}")
@@ -31,9 +31,10 @@ public class EnableInterceptorConfigure implements WebMvcConfigurer{
         registry.addResourceHandler(clientPath+"/**").addResourceLocations("file:"+serverPath+"/");
         registry.addResourceHandler("swagger-ui.html").addResourceLocations("classpath:/META-INF/resources/");
         registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+        registry.addResourceHandler("/**").addResourceLocations("classpath:/static/");
     }
-    // @Override
-    // public void addInterceptors(InterceptorRegistry registry) {
-    //     registry.addInterceptor(interceptorConfiguration).addPathPatterns("/api/public/**");
-    // }
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(interceptorConfiguration).addPathPatterns("/swagger-ui.html");
+    }
 }

@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.*;
 @Api(tags = "Devices")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
-@RequestMapping("/api/public")
+@RequestMapping("/api/v1")
 public class DeviceController
 {
 	@Autowired

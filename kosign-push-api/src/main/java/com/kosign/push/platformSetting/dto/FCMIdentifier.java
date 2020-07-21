@@ -2,7 +2,6 @@ package com.kosign.push.platformSetting.dto;
 
 import javax.validation.constraints.NotEmpty;
 
-import com.google.firebase.database.annotations.NotNull;
 import com.kosign.push.utils.aspects.ApplicationAspect;
 
 import lombok.Data;
@@ -14,7 +13,6 @@ import lombok.Data;
 public class FCMIdentifier extends ApplicationAspect {
         
    // public String appId;
-   @NotNull
    @NotEmpty
    public String authorizedKey;
 }

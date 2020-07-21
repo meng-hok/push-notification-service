@@ -9,6 +9,7 @@ import com.kosign.push.utils.messages.Response;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -18,17 +19,10 @@ import org.springframework.web.servlet.HandlerInterceptor;
 public class InterceptorConfiguration implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-       
-        if(StringUtils.isEmpty(request.getHeader("Authorization"))) {
-            PrintWriter out = response.getWriter();
-            response.setContentType("application/json");
-            response.setCharacterEncoding("UTF-8");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            out.print(Response.setResponseEntity(HttpStatus.UNAUTHORIZED));
-            out.flush();
-            return false;
+       Object user = request.getSession().getAttribute("user") ;
+        if(ObjectUtils.isEmpty(user)) {
+            response.sendRedirect("signin");
         }
-
         return true;
     }
 

@@ -55,6 +55,10 @@ public class UserDetail implements UserDetails {
         return true;
     }
 
+    public String getRole() {
+       return  "ROLE_"+ user.getRole();
+    }
+
     @Override
     public boolean isAccountNonLocked() {
         
