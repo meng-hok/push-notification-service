@@ -18,6 +18,7 @@ public class FileStorageUtil {
     // public static final String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
     // run Gradle
     // @Value("${pfile.path}")
+    // public static String PUTP8FILEPATH = "/home/lms/push-file";
     // public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
  
     
