@@ -5,11 +5,15 @@ import com.kosign.push.utils.FileStorageUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+// @Order(Ordered.HIGHEST_PRECEDENCE)
 @EnableWebMvc
 @Configuration
 public class EnableInterceptorConfigure implements WebMvcConfigurer{
@@ -37,4 +41,13 @@ public class EnableInterceptorConfigure implements WebMvcConfigurer{
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(interceptorConfiguration).addPathPatterns("/swagger-ui.html");
     }
+
+    // @Override
+    // public void addCorsMappings(CorsRegistry registry) {
+    //     registry.addMapping("/**")
+    //             .allowedOrigins("*")
+    //             .allowedMethods("POST, GET, OPTIONS, DELETE")
+    //             .maxAge(0)
+    //             .allowedHeaders("Access-Control-Allow-Methods","Access-Control-Allow-Origin","Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept,authorization,Authorization, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+    // }
 }

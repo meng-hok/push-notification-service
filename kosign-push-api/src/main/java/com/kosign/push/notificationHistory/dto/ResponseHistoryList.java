@@ -14,7 +14,7 @@ public class ResponseHistoryList
     private String title;
     private String message;
     private String to_platform;
-    @JsonRawValue
+    // @JsonRawValue
     private String response_msg;
     private Integer count;
     private Timestamp created_at;
