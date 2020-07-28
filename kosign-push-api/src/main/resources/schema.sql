@@ -55,7 +55,7 @@ CREATE VIEW vw_application_detail AS
 ----------------------------------------------------
 -- create view to read flatform by application id --
 ----------------------------------------------------
-CREATE OR REPLACE VIEW public.vw_platform_detail AS
+CREATE OR REPLACE VIEW vw_platform_detail AS
  SELECT ( SELECT pf.id
            FROM ps_platform pf
           WHERE pf.id::text = pt.platform_id::text) AS plat_id,
