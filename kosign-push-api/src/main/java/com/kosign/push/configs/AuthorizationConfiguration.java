@@ -27,7 +27,8 @@ public class AuthorizationConfiguration extends AuthorizationServerConfigurerAda
     private AuthenticationManager authenticationManager;
     @Autowired 
     private PasswordEncoder password;
-  
+    // @Autowired
+    // private UserDetailsService userDetailsService;
     /**
      |---------------------------------------------------------------------------------------- 
      |  Method Name              => 
@@ -48,8 +49,8 @@ public class AuthorizationConfiguration extends AuthorizationServerConfigurerAda
                 .scopes("READ")
                 .authorizedGrantTypes("password","refresh_token")
                 .authorities("USER")
-                .accessTokenValiditySeconds(1000)
-                .refreshTokenValiditySeconds(1200)
+                .accessTokenValiditySeconds(10000)
+                .refreshTokenValiditySeconds(12000)
                 .and()
                 .withClient("test")
                 .secret(password.encode("test"))

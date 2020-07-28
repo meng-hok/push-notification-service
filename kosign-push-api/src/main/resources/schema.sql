@@ -43,11 +43,13 @@ CREATE VIEW vw_application_detail AS
 		his.to_android,
 		his.to_web,
 		pf.platform,
-		sc.subscriber
+		sc.subscriber,
+		 u.username
 	FROM ps_application p
 		LEFT JOIN vw_history_count his ON p.id::text = his.app_id::text
 		LEFT JOIN vw_platform_count pf ON p.id::text = pf.app_id::text
 		LEFT JOIN vw_subscriber_count sc ON p.id::text = sc.app_id::text
+		LEFT JOIN ps_user u ON p.user_id::text = u.id::text
 	WHERE p.status = '1'::bpchar;
 
 ----------------------------------------------------

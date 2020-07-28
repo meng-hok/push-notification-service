@@ -44,10 +44,14 @@ public interface AppBatisRepository
     @Results({
             @Result(property = "id"       , column = "application"),
             @Result(property = "totalPush", column = "count"      ),
-            @Result(property = "createdAt", column = "created_at" )
+            @Result(property = "createdAt", column = "created_at" ),
+            @Result(property = "createdBy", column = "username"    )
     })
     List<ResponseListAppById> findActiveByAppId(@Param("userId")String userId, @Param("appId") String appId);
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
+    @Results({
+        @Result(property = "auth_key", column = "authorized_key")
+    })
     List<ResponsePlatformSetting> findPlatformrByAppId(@Param("appId") String appId);
 }

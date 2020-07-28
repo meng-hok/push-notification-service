@@ -16,11 +16,10 @@ public class FileStorageUtil {
     // run java
     // public static final String PUTP8FILEPATH = "kosign-push-api/src/main/resources/static/files";
     // public static final String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
-    // public static final String PUTP8FILEPATH = "src/main/resources/static/files";
-    //do
-    //public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
-    //241
-    public static String PUTP8FILEPATH = "/home/lms/push-file";
+    // run Gradle
+    // @Value("${pfile.path}")
+    // public static String PUTP8FILEPATH = "/home/lms/push-file";
+    public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
  
     
     public static String uploadImage(final MultipartFile files) throws Exception {
