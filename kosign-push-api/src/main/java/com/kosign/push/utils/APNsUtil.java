@@ -40,7 +40,7 @@ public class APNsUtil {
     public static ApnsClient getApnsCredentials(String pFileDirectory, String teamId, String keyString)
             throws InvalidKeyException, SSLException, NoSuchAlgorithmException, IOException {
          ApnsClient apnsClient = new ApnsClientBuilder()
-        .setApnsServer(ApnsClientBuilder.DEVELOPMENT_APNS_HOST)
+        .setApnsServer(ApnsClientBuilder.PRODUCTION_APNS_HOST)
         .setSigningKey(ApnsSigningKey.loadFromPkcs8File(new File(pFileDirectory),teamId,keyString))
         .build();
         return apnsClient;

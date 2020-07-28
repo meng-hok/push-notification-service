@@ -30,6 +30,11 @@ public class UserEntity {
     @Column(unique = true)
     private String username;
 
+    private String name;
+
+    private String company;
+
+
     private String password;
 
     private String role;
@@ -39,7 +44,7 @@ public class UserEntity {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    private Character status = '0';
+    private Character status = '1';
 
     public UserEntity(String id) {
         this.id = id;
