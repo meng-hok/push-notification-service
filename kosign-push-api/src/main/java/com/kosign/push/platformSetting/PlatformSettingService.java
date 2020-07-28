@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class PlatformSettingService {
@@ -85,6 +86,9 @@ public class PlatformSettingService {
         if(platformSetting == null ){
             return false;
 
+        }
+        if(StringUtils.isEmpty(apns.p8file)){
+            apns.p8file = platformSetting.getPushUrl();
         }
         platformSetting.setApnsConfiguration(apns.fileKey,apns.teamId,apns.bundleId,apns.p8file);
         settingRepo.save(platformSetting);
