@@ -102,16 +102,18 @@ public class PlatformSettingController {
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns")
-    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = true)MultipartFile p8file ) throws Exception {
-            if (p8file.isEmpty() ) {
+    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = false)MultipartFile p8file ) throws Exception {
+        String file = "";
 
-                return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
-            }
-            String file = FileStorageUtil.uploadFile(p8file);
-            Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
-            return updateStatus ?
-                    Response.setResponseEntity(HttpStatus.OK) :
-                     Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+        if (p8file != null) {
+
+            file= FileStorageUtil.uploadFile(p8file);
+        }
+
+        Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
+        return updateStatus ?
+                Response.setResponseEntity(HttpStatus.OK) :
+                Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
 
     }
 
