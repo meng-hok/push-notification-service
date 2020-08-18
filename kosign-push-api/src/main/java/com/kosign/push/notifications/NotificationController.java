@@ -1,21 +1,24 @@
 package com.kosign.push.notifications;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
+import com.google.gson.Gson;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
-import com.kosign.push.devices.dto.RequestPushDevice;
-import com.kosign.push.devices.dto.Agent;
-import com.kosign.push.devices.dto.AgentIdentifier;
-import com.kosign.push.devices.dto.RequestAgent;
-import com.kosign.push.devices.dto.RequestPushAgentAll;
+import com.kosign.push.devices.dto.*;
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.messages.Response;
+
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +30,13 @@ import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 import com.kosign.push.configs.aspectAnnotation.AspectPushHeader;
 
 // @AspectObjectApplicationID
-@AspectPushHeader
+
 /***
  * 
  * Validated By Interceptor
  * com.kosign.push.configs.InterceptorConfiguration
  */
+@AspectPushHeader
 @Api(tags = "Notifications")
 @RestController
 @RequestMapping("/api/public")
@@ -51,86 +55,96 @@ public class NotificationController
   
     @ApiOperation(value="Subscribe Device To Application" ,notes = "DeviceId is required & CODE 1 : APNS & 2 : FCM & 3 : FCM WEB ")
     @PostMapping("/devices/subscribe")
-    public Object createDevice(@RequestBody final AgentIdentifier agentIdentifier)
+    public Object createDevice( @Valid @RequestBody final RequestSubscribeDevice requestSubscribeDevice)
     {
         try 
         {
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
-            agentIdentifier.setApp_id(appId);
+//            requestSubscribeDevice.setApp_id(appId);
         
-            final Integer platformId = new Integer(agentIdentifier.platform_id);
+            final Integer platformId = new Integer(requestSubscribeDevice.platform_id);
             if (platformId < 0 | platformId > 3 ) 
             { 
                 return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
             //validattion
-            List<Agent>  agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentIdentifier.getDevice_id(),agentIdentifier.getApp_id(),agentIdentifier.getPush_id());
+            List<Agent>  agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(requestSubscribeDevice.getDevice_id(),appId,requestSubscribeDevice.getPush_id());
             if (agent.size() > 0 ) 
             { 
-                return  Response.setResponseEntity(HttpStatus.NOT_FOUND);
+                return  Response.setResponseEntity(HttpStatus.CONFLICT);
             }
-            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(agentIdentifier.getDevice_id(),agentIdentifier.getPush_id(),new AppEntity(agentIdentifier.getApp_id()),new PlatformEntity( agentIdentifier.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(requestSubscribeDevice.getDevice_id(),requestSubscribeDevice.getPush_id(),new AppEntity(appId),new PlatformEntity( requestSubscribeDevice.getPlatform_id() )));
             System.out.println(device);
            
             return ( device != null ) ? 
                 Response.setResponseEntity(HttpStatus.OK) : 
-                Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         } 
         catch (final Exception e) 
         {
             e.printStackTrace();
-            return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
     }
     
     @ApiOperation( value = "Send Notification To Single Device")
     @PostMapping("/devices/notifications/single")
-    public Object sendByDevice(@RequestBody final RequestAgent agentBody) 
+    public Object sendByDevice( @Valid @RequestBody final RequestAgent agentBody)
     {
       
         try 
         {
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
-            agentBody.setApp_id(appId);
+//            agentBody.setApp_id(appId);
             
-            final List<Agent>  agents = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),agentBody.getApp_id());
+            final List<Agent>  agents = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),appId);
+
             if (agents.isEmpty()) 
             {  
                 return Response.setResponseEntity(HttpStatus.NOT_FOUND);
             }
-            
+
+            String bulkId = UUID.randomUUID().toString();
+
             agents.forEach(agent -> {
-                rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
+                rabbitSender.sendNotifcationByAgent(agent, appId, agentBody.title, agentBody.message,bulkId);
             });
 
+            Map respData = new HashMap<String,Object>();
+            respData.put("bulk_id",bulkId);
+            respData.put("device_count",agents.size());
+            
             return Response.setResponseEntity(HttpStatus.OK);
       
         }  catch (final Exception e) 
         {
             logger.info(e.getMessage());
-            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
       
     }
 
     @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
     @PostMapping("/devices/notifications/groups")
-    public Object sendByGroup( @RequestBody final RequestPushDevice requestDevice) 
+    public Object sendByGroup( @Valid @RequestBody final RequestPushDevice requestDevice)
     {
         try 
         {
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
-            requestDevice.setApp_id(appId);
+//            requestDevice.setApp_id(appId);
 
-            final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),requestDevice.getApp_id());
+            final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),appId);
+            if (devices.isEmpty())
+                return Response.setResponseEntity(HttpStatus.NOT_FOUND);
 
+            String bulkId = UUID.randomUUID().toString();
             for (final Agent device : devices) 
             {
                 
                 try
                 {
-                    rabbitSender.sendNotifcationByAgent(device, requestDevice.getApp_id(), requestDevice.title, requestDevice.message);
+                    rabbitSender.sendNotifcationByAgent(device, appId, requestDevice.title, requestDevice.message,bulkId);
                 }
                 catch(final Exception e)
                 {
@@ -139,38 +153,49 @@ public class NotificationController
                 
                 }
             }
-    
-            return  Response.setResponseEntity(HttpStatus.OK);
+
+            Map respData = new HashMap<String,Object>();
+            respData.put("bulk_id",bulkId);
+            respData.put("device_count",devices.size());
+            return  Response.setResponseEntity(HttpStatus.OK,respData);
         } catch (final Exception e) 
         {
             logger.info(e.getMessage());
-            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 
     @ApiOperation( value = "Send Notification To All Device")
     @PostMapping("/devices/notifications")
-    public Object sendByAll(@RequestBody final RequestPushAgentAll agentBody)
+    public Object sendByAll(@Valid @RequestBody final RequestPushAgentAll agentBody)
     {
         try 
         {
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
-            agentBody.setApp_id(appId);
+//            agentBody.setApp_id(appId);
 
-            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(agentBody.getApp_id());
-        
+            final List<Agent> agents = deviceService.getActiveDeviceByAppIdRaw(appId);
+
+            if ( agents.isEmpty())
+                return Response.setResponseEntity(HttpStatus.NOT_FOUND);
+
+            String bulkId = UUID.randomUUID().toString();
+
             for(final Agent agent : agents)
             {
-                rabbitSender.sendNotifcationByAgent(agent, agentBody.getApp_id(), agentBody.title, agentBody.message);
+                rabbitSender.sendNotifcationByAgent(agent, appId, agentBody.title, agentBody.message,bulkId);
             };
             logger.info("Push Done");
-          
-            return Response.setResponseEntity(HttpStatus.OK);
+
+            Map respData = new HashMap<String,Object>();
+            respData.put("bulk_id",bulkId);
+            respData.put("device_count",agents.size());
+            return Response.setResponseEntity(HttpStatus.OK,respData);
      
         } catch (final Exception e) 
         {
             logger.info(e.getMessage()); 
-            return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 }

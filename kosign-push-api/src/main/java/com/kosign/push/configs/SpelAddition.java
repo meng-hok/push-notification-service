@@ -109,30 +109,31 @@ public class SpelAddition  {
                 return joinPoint.proceed();
         } catch (Exception e) {
             logger.info("{Error Occur}");
-            return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+            System.out.println(e);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST,ExceptionEnum.Message.APPLICATION_NOT_AVAIBLE);
         }
 	}
 
     @Around("@annotation(com.kosign.push.configs.aspectAnnotation.AspectStringApplicationID)")
     public Object aroundApplicationAdvice(ProceedingJoinPoint joinPoint) throws Throwable {
-        
+
         logger.info("AOP Before method:" + joinPoint.getSignature());
- 
-      
+
+
         try {
                 Object str = (joinPoint.getArgs().length > 0) ? joinPoint.getArgs()[0] : null;
-                if ( str instanceof String ) { 
+                if ( str instanceof String ) {
 
                     String appId = (String) str;
-                   
+
                     validateOwner(appId);
-                  
+
                 }
 
                 return joinPoint.proceed();
         } catch (Exception e) {
             logger.info("{Error Occur}");
-            return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST,ExceptionEnum.Message.APPLICATION_NOT_AVAIBLE);
         }
 	}
 
@@ -143,21 +144,23 @@ public class SpelAddition  {
    
     @Pointcut("@within(com.kosign.push.configs.aspectAnnotation.AspectPushHeader) ")
     public void annotatedHeaderClass(){}
-  
+
     @Around("annotatedHeaderMethod() || annotatedHeaderClass()")
+//    @Around("@annotation(com.kosign.push.configs.aspectAnnotation.AspectPushHeader)")
     public Object aroundPushNoficationClass(ProceedingJoinPoint joinPoint) throws Throwable {
-        
+        logger.info("AOP Before method:" + joinPoint.getSignature());
+
         try {
                 HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
                 String header = request.getHeader("Authorization");
-                if(StringUtils.isEmpty(header))
+                if( ! ("basic".equalsIgnoreCase(header.split(" ")[0])))
                     return Response.setResponseEntity(HttpStatus.UNAUTHORIZED);
 
                 
                 return joinPoint.proceed();
         } catch (Exception e) {
             logger.info("{Error Occur}");
-            return Response.getFailResponseNonDataBody(e.getLocalizedMessage().toUpperCase());
+            return Response.setResponseEntity(HttpStatus.UNAUTHORIZED);
         }
     }
 }

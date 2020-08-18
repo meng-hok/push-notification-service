@@ -17,6 +17,8 @@ import java.sql.Timestamp;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.kosign.push.utils.enums.KeyConfEnum;
 import org.hibernate.annotations.CreationTimestamp;
@@ -28,8 +30,10 @@ import lombok.Data;
 @Entity
 public class PlatformEntity 
 {
+    @NotEmpty
     @Id
     private String id;
+    @NotEmpty
     private String name;
     private String icon;
     private String code;

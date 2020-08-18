@@ -22,6 +22,7 @@ import com.kosign.push.apps.dto.ResponseListApp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
 import java.util.List;
@@ -30,6 +31,12 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Pattern;
+
+@Validated
 @Api(tags = "Applications")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
@@ -48,7 +55,7 @@ public class AppController
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
         {
-            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
+            return Response.setResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         else
         { 
@@ -61,22 +68,22 @@ public class AppController
     }
     
     @GetMapping("/applications/{id}")
-    public Object findApplicationById(@PathVariable("id") String id)
+    public Object findApplicationById(@PathVariable(value= "id")  String id)
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
         if(userDetail == null)
         {
-        	return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
+        	return Response.setResponseEntity(HttpStatus.UNAUTHORIZED);
         }
         else
         { 
             List<ResponseListAppById> respData = appService.getActiveAppsByAppId(userDetail.getId(),id);
-            return Response.setResponseEntity(HttpStatus.OK, respData);
+            return respData.isEmpty() ?  Response.setResponseEntity(HttpStatus.NOT_FOUND, respData) : Response.setResponseEntity(HttpStatus.OK, respData);
         }
     }
 
     @PostMapping("/applications")
-    public Object createApplication(@RequestBody RequestCreateApp reqData)
+    public Object createApplication(@Valid @RequestBody RequestCreateApp reqData)
     {
         try 
         {
@@ -92,7 +99,7 @@ public class AppController
             
             if(respData==null )
             { 
-            	return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            	return Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
             }
             
             return Response.setResponseEntity(HttpStatus.OK);
@@ -100,14 +107,16 @@ public class AppController
         catch (Exception e) 
         {
             System.out.println(e.getLocalizedMessage());
-            return Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
       
     }
 
     @AspectStringApplicationID
     @PutMapping("/applications/{id}")
-    public Object updateApplicationById( @PathVariable("id") String id,@RequestBody RequestAppUpdate reqData) throws Exception
+    public Object updateApplicationById(
+            @PathVariable("id") String id,
+             @Valid @RequestBody RequestAppUpdate reqData) throws Exception
     {
         try {
             if(appService.getAppByNameAndUserId(reqData.getName()) != null)
@@ -117,26 +126,26 @@ public class AppController
             Boolean update = appService.updateApplication(id, reqData.getName());
             return update ?
                     Response.setResponseEntity(HttpStatus.OK):
-                    Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         } catch (Exception e) {
             return
-                 Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                 Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
        
     }
 
     @AspectStringApplicationID
     @DeleteMapping("/applications/{id}")
-    public Object deleteApplicationById(@PathVariable("id") String id)
+    public Object deleteApplicationById(@PathVariable("id") @NotEmpty String id)
     {
         try {
             Boolean update = appService.disableApplication(id);
             return update ?
                     Response.setResponseEntity(HttpStatus.OK):
-                    Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                    Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
             } catch (Exception e) {
                 return
-                     Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                     Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
                    
     }

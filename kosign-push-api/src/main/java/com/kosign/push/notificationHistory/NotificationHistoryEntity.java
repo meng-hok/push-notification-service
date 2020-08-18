@@ -31,6 +31,7 @@ public class NotificationHistoryEntity
     @Column(length = 1000)
     private String responseMsg;
     private Integer count=1;
+    private String bulkId;
     @ColumnDefault(value = "now()")
     @CreationTimestamp
     private Timestamp createdAt;

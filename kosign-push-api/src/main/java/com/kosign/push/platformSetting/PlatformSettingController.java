@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 @AspectObjectApplicationID
@@ -78,16 +79,16 @@ public class PlatformSettingController {
 
     @Transactional(rollbackOn = Exception.class)
     @PostMapping( value = "/platforms/setting/apns")
-    public Object saveApns( RequestCreateApns requestCreateApns ,@RequestPart(value = "p8_file", required = true)MultipartFile p8file ) throws Exception{
+    public Object saveApns( @Valid RequestCreateApns requestCreateApns , @RequestPart(value = "p8_file", required = false)MultipartFile p8file ) throws Exception{
             
             try {
 
                     if (p8file.isEmpty() ) {
 
-                        return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                        return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
                     }
                     if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getApp_id(),PlatformEnum.Platform.IOS) != null ) {
-                        return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                        return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
                     }
                     String file = FileStorageUtil.uploadFile(p8file);
                     PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getApp_id(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
@@ -96,13 +97,13 @@ public class PlatformSettingController {
                
             } catch (Exception e) {
                 e.printStackTrace();
-                return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
     }
 
     @Transactional(rollbackOn = Exception.class)
     @PutMapping("/platforms/setting/apns")
-    public Object updateApns(RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = false)MultipartFile p8file ) throws Exception {
+    public Object updateApns( @Valid RequestCreateApns requestCreateApns  ,@RequestPart(value = "p8_file",required = false)MultipartFile p8file ) throws Exception {
         String file = "";
 
         if (p8file != null) {
@@ -113,19 +114,19 @@ public class PlatformSettingController {
         Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
         return updateStatus ?
                 Response.setResponseEntity(HttpStatus.OK) :
-                Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
 
     }
 
     @DeleteMapping("/platforms/setting/apns")
-    public Object deleteApnsConfiguration (@RequestBody RequestRemoveApns requestRemoveApns) {
+    public Object deleteApnsConfiguration (@Valid @RequestBody RequestRemoveApns requestRemoveApns) {
         try {
             return platformSettingService.removeApnsConfiguration(requestRemoveApns.getApp_id()) ? 
                     Response.setResponseEntity(HttpStatus.OK) : 
-                     Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                     Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
 
         } catch (Exception e) {
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
 
         }
        
@@ -152,12 +153,12 @@ public class PlatformSettingController {
             return  Response.setResponseEntity(HttpStatus.OK); 
 
         } catch (Exception e) {
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
 
     @ApiOperation(value = "To register platform setting",notes = "Code = 2 (Fcm android ) & 3 (Fcm Web) ")
-    @Transactional(rollbackOn = Exception.class)
+//    @Transactional(rollbackOn = Exception.class)
     @PostMapping("platforms/setting/fcm")
     public Object saveFcm(@Valid @RequestBody RequestCreateFcm requestFcm){
         try {
@@ -167,15 +168,15 @@ public class PlatformSettingController {
             }
 
            
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
         } catch (Exception e) {
             System.out.println(e.getLocalizedMessage());
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
         
     }
 
-    @Transactional(rollbackOn = Exception.class)
+//    @Transactional(rollbackOn = Exception.class)
     @PutMapping("platforms/setting/fcm")
     public Object updateFcm(@Valid @RequestBody RequestUpdateFcm requestFcm){
         try {
@@ -184,12 +185,12 @@ public class PlatformSettingController {
                 Boolean updateStatus = platformSettingService.updateFcm(requestFcm.getApp_id(), requestFcm.platformId ,requestFcm.authorizedKey);
                 return updateStatus ?
                         Response.setResponseEntity(HttpStatus.OK) :
-                         Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                         Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
             }
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         } catch (Exception e) {
 
-            return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -200,10 +201,10 @@ public class PlatformSettingController {
         try {
             return platformSettingService.removeFcmConfiguration(requestFcm.getApp_id(),requestFcm.platformId) ? 
                     Response.setResponseEntity(HttpStatus.OK) :
-                     Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                     Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
 
         } catch (Exception e) {
-            return    Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+            return    Response.setResponseEntity(HttpStatus.BAD_REQUEST);
         }
     }
   

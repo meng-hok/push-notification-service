@@ -18,5 +18,6 @@ public class ResponseHistoryList
     private String response_msg;
     private Integer count;
     private Timestamp created_at;
+    private String status;
     
 }

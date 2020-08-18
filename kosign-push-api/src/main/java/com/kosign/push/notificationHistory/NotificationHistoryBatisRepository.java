@@ -22,9 +22,12 @@ public interface NotificationHistoryBatisRepository
     public ResponseHistoryList findNotificationHistoryById(@Param("id") Integer id);
   
     @Insert("INSERT INTO ps_history \n" +
-        "(message, reciever_id, title, app_id, status, to_platform, response_msg,count) VALUES  \n"+
-        "(#{history.message},#{history.recieverId},#{history.title},#{history.appId},#{history.status},#{history.toPlatform},#{history.responseMsg},#{history.count})")
+        "(message, reciever_id, title, app_id, status, to_platform, response_msg,count,bulk_id) VALUES  \n"+
+        "(#{history.message},#{history.recieverId},#{history.title},#{history.appId},#{history.status},#{history.toPlatform},#{history.responseMsg},#{history.count},#{history.bulkId})")
     Integer insertHistory(@Param("history") NotificationHistoryEntity history);
 
+    @Select("SELECT  ph.id,ph.reciever_id,ph.title,ph.message,ph.to_platform,ph.status,ph.response_msg,ph.created_at,ph.count FROM  ps_history ph \n"+
+            "WHERE ph.bulk_id=#{bulkId}")
+    public List<ResponseHistoryList> findNotificationHistoryByBulkId(@Param("bulkId")String bulkId);
 }
 

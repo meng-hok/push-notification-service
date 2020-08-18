@@ -12,4 +12,6 @@ public class APNSIdentifier extends ApplicationAspect {
 
     // public String appId;
     public String bundleId;
+
+    public String bulkId;
 }

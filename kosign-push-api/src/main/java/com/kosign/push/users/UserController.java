@@ -1,7 +1,9 @@
 package com.kosign.push.users;
 
 import javax.transaction.Transactional;
+import javax.validation.Valid;
 
+import com.kosign.push.users.dto.RequestLoginUser;
 import com.kosign.push.users.dto.RequestUpdateUser;
 import com.kosign.push.utils.messages.Response;
 import io.swagger.annotations.Api;
@@ -24,11 +26,10 @@ public class UserController
     @ResponseBody
     @PostMapping("/account")
     public Object createAccount(
-		@RequestParam String username,
-		@RequestParam String password
-    ) throws Exception
+          @Valid @RequestBody RequestLoginUser requestLoginUser
+            ) throws Exception
     {
-        UserEntity user = userService.saveUser(username, password);
+        UserEntity user = userService.saveUser(requestLoginUser.getUsername(), requestLoginUser.getPassword());
         return Response.setResponseEntity(HttpStatus.OK, user);
     }
    

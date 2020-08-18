@@ -12,6 +12,6 @@ public enum ExceptionEnum {
     public final String INCORRECT_PLATFORM = "Invalid Platform Id";
     
     public final String REGISTERED_DEVICE = "This Device id already exist";
-    public final String APPLICATION_NOT_AVAIBLE = " Application NOT Available";
+    public final String APPLICATION_NOT_AVAIBLE = "Application not available";
     public final String PERMISSION_DENIED = "Permisson Denied";
 }

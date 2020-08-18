@@ -22,6 +22,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotEmpty;
+
 @Api(tags = "Platforms")
 // @PreAuthorize("#oauth2.hasScope('READ')")
 @PreAuthorize("hasRole('ROLE_OPERATOR')")
@@ -39,7 +43,7 @@ public class PlatformController
     }
     
     @PostMapping("/platforms")
-    public Object createPlatform(@RequestBody PlatformEntity request) 
+    public Object createPlatform(@Valid @RequestBody PlatformEntity request)
     { 
         try {
             
@@ -54,8 +58,8 @@ public class PlatformController
     @PutMapping("/platforms/{id}")
     public Object updatePlatformById
     (
-    	@PathVariable("id")String id, 
-    	@RequestBody RequestPlatformUpdate request
+    	@PathVariable("id") @NotEmpty String id,
+        @Valid @RequestBody RequestPlatformUpdate request
     )
     { 
     	PlatformEntity platform = new PlatformEntity();
@@ -67,16 +71,16 @@ public class PlatformController
     	PlatformEntity response = platformService.update(platform);
     	
         return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
-		       Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+		       Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
     }
     
     @DeleteMapping("/platforms/{id}")
-    public Object deletePlatformById(@PathVariable("id")String id)
+    public Object deletePlatformById(@PathVariable("id") @NotEmpty String id)
     { 
         PlatformEntity response = platformService.remove(id);
         
         return response != null ?  Response.setResponseEntity(HttpStatus.OK) : 
-                 Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
+                 Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
     } 
    
 }

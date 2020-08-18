@@ -28,8 +28,12 @@ import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.format.annotation.DateTimeFormat.ISO;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Pattern;
+
+@Validated
 @Api(tags = "Devices")
 @PreAuthorize("#oauth2.hasScope('READ')")
 @RestController
@@ -43,7 +47,7 @@ public class DeviceController
     @GetMapping("/devices/client")
     public Object findAllDevices
     (
-    	@RequestParam(value = "app_id"    ) String appId,
+    	@RequestParam(value = "app_id"    )  String appId,
     	@RequestParam(value = "start_date") @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date start_date,
     	@RequestParam(value = "end_date"  ) @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date end_date  ,
     	@RequestParam(value = "model_name", defaultValue = "") String modelName,

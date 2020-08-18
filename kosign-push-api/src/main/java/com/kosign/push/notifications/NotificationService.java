@@ -49,7 +49,7 @@ public class NotificationService
     public void sendNotificationByFCM(FCM fcm)
     {
     	System.out.println("Response Message from " + fcm);
-    	this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+    	this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message,fcm.bulkId);
 //        return  historyService.saveHistory(new NotificationHistory());
     }
 
@@ -57,7 +57,7 @@ public class NotificationService
     public void sendNotificationByFCMSupport(FCM fcm)
     {
         System.out.println("Response Message from " + fcm);
-        this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message);
+        this.sendNotificationToFCM(fcm.getApp_id(),fcm.authorizedKey,fcm.token,fcm.title,fcm.message,fcm.bulkId);
     }
 
     @RabbitListener(queues = "pusher.queue.apns")
@@ -66,7 +66,7 @@ public class NotificationService
         System.out.println("Response Message from  " + apns);
         try 
         {
-            this.sendNotificationToIOS(apns.getApp_id(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getApp_id(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message,apns.bulkId);
         } 
         catch (Exception e) 
         {
@@ -80,7 +80,7 @@ public class NotificationService
         // System.out.println("Message read from myQueue APNS: " + apns);
         try 
         {
-            this.sendNotificationToIOS(apns.getApp_id(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message);
+            this.sendNotificationToIOS(apns.getApp_id(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message,apns.bulkId);
         }
         catch (Exception e) 
         {
@@ -92,7 +92,7 @@ public class NotificationService
     * return object will be saved by Aspect
     *
     * */
-    public NotificationHistoryEntity sendNotificationToFCM(String appId,String appAuthorizedKey, String userToken,String title ,String message) 
+    public NotificationHistoryEntity sendNotificationToFCM(String appId,String appAuthorizedKey, String userToken,String title ,String message,String bulkId)
     {
         HttpClient httpClient = FirebaseUtil.getHttpClientWithFirebaseHeader(appAuthorizedKey);
 
@@ -117,7 +117,7 @@ public class NotificationService
             logger.info(strResult.toString());
 
             NotificationHistoryEntity history = new NotificationHistoryEntity(appId, userToken, title, message,PlatformEnum.Platform.ANDROID,result.toString(),strResult.toString());
-
+            history.setBulkId(bulkId);
 
             historyService.insertHistory(history);
             return history;
@@ -127,6 +127,7 @@ public class NotificationService
             logger.info("ERROR FROM SERVICE");
             logger.info(e.getMessage());
             NotificationHistoryEntity historyException = new NotificationHistoryEntity(appAuthorizedKey, userToken, title, message,PlatformEnum.Platform.ANDROID,"0",e.getMessage());
+            historyException.setBulkId(bulkId);
             historyService.insertHistory(historyException);
 
             return historyException;
@@ -138,7 +139,7 @@ public class NotificationService
      * return object will be saved by Aspect
      *
      * */
-    public String sendNotificationToIOS(String appId,String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody) throws InterruptedException, ExecutionException, InvalidKeyException,
+    public String sendNotificationToIOS(String appId,String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody,String bulkId) throws InterruptedException, ExecutionException, InvalidKeyException,
             SSLException, NoSuchAlgorithmException, IOException 
     {
         try
@@ -180,6 +181,7 @@ public class NotificationService
             }
 
             NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,responseStatus,responseMsg);
+            history.setBulkId(bulkId);
             historyService.insertHistory(history);
             return history.toString();
 
@@ -187,6 +189,7 @@ public class NotificationService
         catch (Exception e) 
         {
             NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,"0",e.getLocalizedMessage());
+            history.setBulkId(bulkId);
             historyService.insertHistory(history);
             return history.toString();
         }
