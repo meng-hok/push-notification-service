@@ -4,18 +4,19 @@ import lombok.Data;
 
 import java.util.ArrayList;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 @Data
-public class RequestPushDevice extends RequestAgent{
+public class RequestPushDevice{
+
+    public String title;
+    public String message;
+    
+    @NotNull
     @JsonProperty("device_id_list")
     public ArrayList<String> deviceIdList;
-
-    @JsonIgnore
-    @Override
-    public String getDevice_id() {
-        // TODO Auto-generated method stub
-        return super.getDevice_id();
-    }
 }

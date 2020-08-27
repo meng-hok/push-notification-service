@@ -113,9 +113,9 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            respData.put("device_count",agents.size());
+            // respData.put("device_count",agents.size());
             
-            return Response.setResponseEntity(HttpStatus.OK);
+            return  Response.setResponseEntity(HttpStatus.OK,respData);
       
         }  catch (final Exception e) 
         {
@@ -156,7 +156,7 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            respData.put("device_count",devices.size());
+            // respData.put("device_count",devices.size());
             return  Response.setResponseEntity(HttpStatus.OK,respData);
         } catch (final Exception e) 
         {
@@ -189,7 +189,7 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            respData.put("device_count",agents.size());
+            // respData.put("device_count",agents.size());
             return Response.setResponseEntity(HttpStatus.OK,respData);
      
         } catch (final Exception e) 

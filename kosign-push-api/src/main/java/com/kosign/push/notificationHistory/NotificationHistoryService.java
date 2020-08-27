@@ -41,6 +41,11 @@ public class NotificationHistoryService
         return historyBatisRepo.findNotificationHistoryById(id);
     }
 
+    public List<ResponseHistoryList>  findNotificationHistoryByBulkId(String bulkId)
+    {
+        return historyBatisRepo.findNotificationHistoryByBulkId(bulkId);
+    }
+
     public List<ResponseHistoryList> findAllHistories(RequestHistoryList request)
     {
         return historyBatisRepo.findAllHistories(request);

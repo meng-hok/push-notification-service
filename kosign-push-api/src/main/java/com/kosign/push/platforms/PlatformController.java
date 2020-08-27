@@ -55,7 +55,7 @@ public class PlatformController
         }
     }
     
-    @PutMapping("/platforms/{id}")
+    @PatchMapping("/platforms/{id}")
     public Object updatePlatformById
     (
     	@PathVariable("id") @NotEmpty String id,

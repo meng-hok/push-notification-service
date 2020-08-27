@@ -16,5 +16,5 @@ public class FCMIdentifier extends ApplicationAspect {
    @NotEmpty
    public String authorizedKey;
 
-   public String bulkId;
+//   public String bulkId;
 }

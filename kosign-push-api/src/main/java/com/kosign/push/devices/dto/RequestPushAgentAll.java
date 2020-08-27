@@ -3,13 +3,13 @@ package com.kosign.push.devices.dto;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
-public class RequestPushAgentAll extends RequestAgent {
+@Getter
+@Setter
+public class RequestPushAgentAll {
+    public String title;
+    public String message;
 
-    @JsonIgnore
-    public String getDevice_id() {
-        // TODO Auto-generated method stub
-        return super.getDevice_id();
-    }
 }
