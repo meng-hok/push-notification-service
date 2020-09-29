@@ -113,7 +113,7 @@ public class AppController
     }
 
     @AspectStringApplicationID
-    @PutMapping("/applications/{id}")
+    @PatchMapping("/applications/{id}")
     public Object updateApplicationById(
             @PathVariable("id") String id,
              @Valid @RequestBody RequestAppUpdate reqData) throws Exception

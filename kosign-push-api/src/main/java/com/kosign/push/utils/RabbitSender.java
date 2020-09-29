@@ -32,7 +32,7 @@ public class RabbitSender {
 	Logger logger = org.slf4j.LoggerFactory.getLogger(RabbitSender.class);
 	
 	
-	public void sendNotifcationByAgent (Agent agent,String appId,String title,String message) { 
+	public void sendNotifcationByAgent (Agent agent,String appId,String title,String message,String bulkId) {
 		System.out.println(agent);
 
 		FCM fcm;
@@ -42,6 +42,7 @@ public class RabbitSender {
 
 				final APNS apns = new APNS(pfileAlias+"/"+agent.pfilename,agent.team_id, agent.file_key, agent.bundle_id, agent.push_id, title, message);
 				apns.setApp_id(appId);
+				apns.setBulkId(bulkId);
 				// sendToApns(apns);
 				amqpTemplate.convertAndSend(apnsKey, apns);
 				logger.info("[ Response Sucess : APNS ]");
@@ -52,6 +53,7 @@ public class RabbitSender {
 
 				fcm = new FCM( agent.authorized_key, agent.push_id,title, message);
 				fcm.setApp_id(appId);
+				fcm.setBulkId(bulkId);
 				// sendToFcm(fcm);
 				logger.info("[ Response Sucess : FCM ]");
 				amqpTemplate.convertAndSend(fcmKey, fcm);
@@ -59,6 +61,7 @@ public class RabbitSender {
 			case "3" :
 				fcm = new FCM( agent.authorized_key, agent.push_id,title, message);
 				fcm.setApp_id(appId);
+				fcm.setBulkId(bulkId);
 				// sendToFcm(fcm);
 				logger.info("[ Response Sucess : FCM ]");
 				amqpTemplate.convertAndSend(fcmKey, fcm);
