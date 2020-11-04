@@ -29,8 +29,8 @@ public class RabbitMQConfig {
 	// @Value("${pusher.rabbitmq.apns.queue}")
 	String apnsQueueName="pusher.queue.apns";
 	
-	@Value("${pusher.rabbitmq.queue.history}")
-	String historyQueueName;
+//	@Value("${pusher.rabbitmq.queue.apns-dev}")
+	String apnsDevQueueName="pusher.queue.apns-dev";
 
 	@Value("${pusher.rabbitmq.exchange}")
 	String exchange;
@@ -56,12 +56,12 @@ public class RabbitMQConfig {
 		return new Queue(apnsQueueName, false,false,false,args);
 	}
 	
-	// @Bean
-	// Queue historyQueue() {
-	// 	Map<String, Object> args = new HashMap<String, Object>();
-	// 	args.put("x-queue-mode", "lazy");
-	// 	return new Queue(historyQueueName, false,false,false,args);
-	// }
+	 @Bean
+	 Queue apnsDevQueue() {
+	 	Map<String, Object> args = new HashMap<String, Object>();
+	 	args.put("x-queue-mode", "lazy");
+	 	return new Queue(apnsDevQueueName, false,false,false,args);
+	 }
 
 	@Bean
 	DirectExchange exchange() {
@@ -96,10 +96,10 @@ public class RabbitMQConfig {
 				.bind(apnsQueue())
 				.to(exchange())
 				.with(fcmQueue().getName())
-			// ,BindingBuilder
-			// 	.bind(historyQueue())
-			// 	.to(exchange())
-			// 	.with(historyQueue().getName())	
+			,BindingBuilder
+				.bind(apnsDevQueue())
+				.to(exchange())
+				.with(apnsDevQueue().getName())	
 				
 				);
     }

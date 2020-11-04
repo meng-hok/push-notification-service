@@ -16,6 +16,7 @@ import com.kosign.push.devices.dto.*;
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.RabbitSender;
+import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.utils.messages.Response;
 
 import org.json.JSONObject;
@@ -113,7 +114,7 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            // respData.put("device_count",agents.size());
+            respData.put("count",agents.size());
             
             return  Response.setResponseEntity(HttpStatus.OK,respData);
       
@@ -156,7 +157,49 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            // respData.put("device_count",devices.size());
+            respData.put("count",devices.size());
+            return  Response.setResponseEntity(HttpStatus.OK,respData);
+        } catch (final Exception e) 
+        {
+            logger.info(e.getMessage());
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @ApiOperation( value = "Send Notification To Device List",notes = "deviceIdList : [ASDQWE,WEQSADZZXC,QWEQE]")
+    @PostMapping("/devices/notifications/groups/development")
+    public Object sendByGroupDev( @Valid @RequestBody final RequestPushDevice requestDevice)
+    {
+        try 
+        {
+            String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
+//            requestDevice.setApp_id(appId);
+
+            final List<Agent> devices = deviceService.getActiveDevicesByDeviceIdListAndAppId(requestDevice.getDeviceIdList(),appId);
+            if (devices.isEmpty())
+                return Response.setResponseEntity(HttpStatus.NOT_FOUND);
+
+            String bulkId = UUID.randomUUID().toString();
+            for (final Agent device : devices) 
+            {
+                
+                try
+                {
+                    if(PlatformEnum.Platform.IOS.equals(device.getPlatform_id()))
+                        device.setPlatform_id(PlatformEnum.Platform.IOS_DEV_MODE);
+                    rabbitSender.sendNotifcationByAgent(device, appId, requestDevice.title, requestDevice.message,bulkId);
+                }
+                catch(final Exception e)
+                {
+                    logger.info("Error Message");
+                    System.out.println(e.getMessage());
+                
+                }
+            }
+
+            Map respData = new HashMap<String,Object>();
+            respData.put("bulk_id",bulkId);
+            respData.put("count",devices.size());
             return  Response.setResponseEntity(HttpStatus.OK,respData);
         } catch (final Exception e) 
         {
@@ -189,7 +232,7 @@ public class NotificationController
 
             Map respData = new HashMap<String,Object>();
             respData.put("bulk_id",bulkId);
-            // respData.put("device_count",agents.size());
+            respData.put("count",agents.size());
             return Response.setResponseEntity(HttpStatus.OK,respData);
      
         } catch (final Exception e) 

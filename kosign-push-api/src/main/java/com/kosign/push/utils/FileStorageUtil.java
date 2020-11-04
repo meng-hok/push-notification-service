@@ -6,10 +6,11 @@ import java.nio.file.Paths;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import org.springframework.util.ResourceUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-
+@Component
 public class FileStorageUtil {
 
     private static String imagePath = "src/main/resources/static/images"; 
@@ -18,9 +19,14 @@ public class FileStorageUtil {
     // public static final String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
     // run Gradle
     // @Value("${pfile.path}")
-     public static String PUTP8FILEPATH = "/home/lms/push-file";
-    // public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
- 
+      public static String PUTP8FILEPATH ;
+//    public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
+
+    @Value("${base.file.server}")
+    public void setP8Storage(String baseUrl){
+        PUTP8FILEPATH = baseUrl;
+    }
+
     
     public static String uploadImage(final MultipartFile files) throws Exception {
         

@@ -5,6 +5,8 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.enums.KeyConfEnum;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -83,5 +85,9 @@ public class UserService implements UserDetailsService {
         if(KeyConfEnum.Status.DISABLED.equals(userEntity.get().getStatus()))
             return null;
         return userEntity.get();
+    }
+
+    public Page<UserEntity> getAllUsers(Pageable pageable) throws Exception { 
+        return userRepo.findAll(pageable);
     }
 }

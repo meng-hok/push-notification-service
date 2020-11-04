@@ -64,13 +64,13 @@ public class PlatformSettingController {
  *
  * FCM
  * */
-//    @GetMapping("/platforms/setting/apns")
-    public Object getApns(@RequestParam(required = true) String appId) throws Exception{
+    @GetMapping("/platforms/setting/apns")
+    public Object getApns(@RequestParam(required = true ,name = "app_id") String appId) throws Exception{
 
         try {
 
             PlatformSettingEntity platformSetting = platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(appId,PlatformEnum.Platform.IOS);
-            return Response.setResponseEntity(HttpStatus.OK);
+            return Response.setResponseEntity(HttpStatus.OK,platformSetting);
 
         } catch (Exception e) {
             return  Response.setResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
@@ -136,8 +136,8 @@ public class PlatformSettingController {
  * FCM
  * */
   
-//   @GetMapping("/platforms/setting/fcm")
-    public Object getFcm(String appId) throws Exception{
+   @GetMapping("/platforms/setting/fcm")
+    public Object getFcm(@RequestParam(required = true ,name = "app_id") String appId) throws Exception{
 
         try {
 
@@ -150,7 +150,7 @@ public class PlatformSettingController {
             if (platformSettingWeb != null  )
                 platformList.add(platformSettingWeb);
             
-            return  Response.setResponseEntity(HttpStatus.OK); 
+            return  Response.setResponseEntity(HttpStatus.OK,platformList);
 
         } catch (Exception e) {
             return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);

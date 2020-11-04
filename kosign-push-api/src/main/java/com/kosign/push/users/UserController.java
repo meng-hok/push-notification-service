@@ -9,6 +9,8 @@ import com.kosign.push.utils.messages.Response;
 import io.swagger.annotations.Api;
 import org.omg.CORBA.RepositoryIdHelper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +31,13 @@ public class UserController
           @Valid @RequestBody RequestLoginUser requestLoginUser
             ) throws Exception
     {
-        UserEntity user = userService.saveUser(requestLoginUser.getUsername(), requestLoginUser.getPassword());
-        return Response.setResponseEntity(HttpStatus.OK, user);
+        try{
+            UserEntity user = userService.saveUser(requestLoginUser.getUsername(), requestLoginUser.getPassword());
+            return Response.setResponseEntity(HttpStatus.OK, user);
+        }catch (Exception e){
+            return Response.setResponseEntity(HttpStatus.BAD_REQUEST,e.getMessage());
+        }
+
     }
    
     // @Transactional(rollbackOn = Exception.class)
@@ -68,4 +75,16 @@ public class UserController
         }
 
     }
+
+    @PreAuthorize("hasRole('ROLE_OPERATOR')")
+    @GetMapping("/accounts")
+    public Object getAllAccounts(@PageableDefault(size=5) Pageable pageable){
+
+      try{
+          return Response.setResponseEntity(HttpStatus.OK,userService.getAllUsers(pageable).getContent());
+      }catch (Exception ex) {
+          return Response.setResponseEntity(HttpStatus.BAD_REQUEST,ex.getMessage());
+      }
+    }
+
 }

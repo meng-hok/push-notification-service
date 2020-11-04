@@ -15,6 +15,7 @@ public class RequestLoginUser {
     @NotEmpty
     private String username;
 
-    @Min(6)
+    @NotNull
+    @NotEmpty
     private String password;
 }

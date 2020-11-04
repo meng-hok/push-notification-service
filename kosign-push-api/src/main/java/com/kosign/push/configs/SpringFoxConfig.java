@@ -57,7 +57,7 @@ public class SpringFoxConfig {
 
   private OAuth securitySchema() {
     final AuthorizationScope authorizationScope = new AuthorizationScope("openid", "");
-    final GrantType grantType = new ResourceOwnerPasswordCredentialsGrant(OAuthServerUri + "/oauth/token");
+    final GrantType grantType = new ResourceOwnerPasswordCredentialsGrant("/oauth/token");
     return new OAuth(securitySchemaOAuth2, Arrays.asList(authorizationScope), Arrays.asList(grantType));
   }
   private ApiInfo apiInfo() {

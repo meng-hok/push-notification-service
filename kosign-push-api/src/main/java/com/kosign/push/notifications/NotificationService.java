@@ -16,6 +16,7 @@ import com.eatthepath.pushy.apns.util.concurrent.PushNotificationFuture;
 import com.kosign.push.notificationHistory.NotificationHistoryEntity;
 import com.kosign.push.notificationHistory.NotificationHistoryService;
 import com.kosign.push.platformSetting.dto.APNS;
+import com.kosign.push.platformSetting.dto.APNSListener;
 import com.kosign.push.platformSetting.dto.FCM;
 import com.kosign.push.utils.APNsUtil;
 import com.kosign.push.utils.FirebaseUtil;
@@ -66,7 +67,8 @@ public class NotificationService
         System.out.println("Response Message from  " + apns);
         try 
         {
-            this.sendNotificationToIOS(apns.getApp_id(),apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message,apns.bulkId);
+            APNSListener apnsListener = new APNSListener(apns,APNsUtil.APNS_PROD_MODE);
+            this.sendNotificationToIOS(apnsListener);
         } 
         catch (Exception e) 
         {
@@ -80,8 +82,24 @@ public class NotificationService
         // System.out.println("Message read from myQueue APNS: " + apns);
         try 
         {
-            this.sendNotificationToIOS(apns.getApp_id(), apns.p8file, apns.teamId, apns.fileKey, apns.bundleId, apns.token, apns.title, apns.message,apns.bulkId);
+            APNSListener apnsListener = new APNSListener(apns,APNsUtil.APNS_PROD_MODE);
+            this.sendNotificationToIOS(apnsListener);
         }
+        catch (Exception e) 
+        {
+            logger.info(e.getMessage());
+        }
+    }
+
+    @RabbitListener(queues = "pusher.queue.apns-dev")
+    public void sendNotificationByAPNSDev(APNS apns) 
+    {
+        System.out.println("Response Message from  " + apns);
+        try 
+        {
+            APNSListener apnsListener = new APNSListener(apns,APNsUtil.APNS_DEV_MODE);
+            this.sendNotificationToIOS(apnsListener);
+        } 
         catch (Exception e) 
         {
             logger.info(e.getMessage());
@@ -139,30 +157,32 @@ public class NotificationService
      * return object will be saved by Aspect
      *
      * */
-    public String sendNotificationToIOS(String appId,String p8file,String teamId,String fileKey,String bundleId,String token,String msgTitle,String msgBody,String bulkId) throws InterruptedException, ExecutionException, InvalidKeyException,
+    public String sendNotificationToIOS(APNSListener apns) throws InterruptedException, ExecutionException, InvalidKeyException,
             SSLException, NoSuchAlgorithmException, IOException 
     {
         try
         {
-            final ApnsClient apnsClient = APNsUtil.getApnsCredentials(p8file,teamId,fileKey);
+            final ApnsClient apnsClient = APNsUtil.getApnsCredentials(apns.getP8file(),apns.getTeamId(),apns.getFileKey(),apns.getRequestMode());
 
             ApnsPayloadBuilder payloadBuilder = new SimpleApnsPayloadBuilder();
-            payloadBuilder.setAlertBody(msgBody);
-            payloadBuilder.setAlertTitle(msgTitle);
+            payloadBuilder.setAlertBody(apns.getMessage());
+            payloadBuilder.setAlertTitle(apns.getTitle());
+            payloadBuilder.setBadgeNumber(5);
             final String payload = payloadBuilder.build();
 
             logger.info("[ Request Payload From APNs]");
             logger.info(payload);
 
-            SimpleApnsPushNotification pushNotification =  APNsUtil.getSimpleApnsWithPayAsString(token,bundleId, payload);
+            SimpleApnsPushNotification pushNotification =  APNsUtil.getSimpleApnsWithPayAsString(apns.getToken(),apns.getBundleId(), payload);
 
 
             logger.info("[ Request Payload To APNs]");
+            logger.info(apns.toString());
             PushNotificationFuture<SimpleApnsPushNotification, PushNotificationResponse<SimpleApnsPushNotification>>
                     sendNotificationFuture = apnsClient.sendNotification(pushNotification);
 
             logger.info("[ Response Data From APNs]");
-
+            logger.info(sendNotificationFuture.get().toString());
             String responseStatus = "";
             String responseMsg = "";
             if(sendNotificationFuture.get().isAccepted())
@@ -180,16 +200,16 @@ public class NotificationService
                 responseMsg = sendNotificationFuture.get().getRejectionReason();
             }
 
-            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,responseStatus,responseMsg);
-            history.setBulkId(bulkId);
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(apns.getApp_id(), apns.getToken(), apns.getTitle(), apns.getMessage(),PlatformEnum.Platform.IOS,responseStatus,responseMsg);
+            history.setBulkId(apns.getBulkId());
             historyService.insertHistory(history);
             return history.toString();
 
         }
         catch (Exception e) 
         {
-            NotificationHistoryEntity history =  new NotificationHistoryEntity(appId, token, msgTitle, msgBody,PlatformEnum.Platform.IOS,"0",e.getLocalizedMessage());
-            history.setBulkId(bulkId);
+            NotificationHistoryEntity history =  new NotificationHistoryEntity(apns.getApp_id(), apns.getToken(), apns.getTitle(), apns.getMessage(),PlatformEnum.Platform.IOS,"0",e.getLocalizedMessage());
+            history.setBulkId(apns.getBulkId());
             historyService.insertHistory(history);
             return history.toString();
         }
