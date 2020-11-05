@@ -7,9 +7,7 @@ import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
 
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.*;
 import org.springframework.stereotype.Repository;
 
 @Repository

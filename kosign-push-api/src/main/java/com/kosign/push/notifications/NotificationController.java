@@ -8,18 +8,17 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
-import com.google.gson.Gson;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.devices.DeviceEntity;
 import com.kosign.push.devices.DeviceService;
 import com.kosign.push.devices.dto.*;
+import com.kosign.push.notifications.dto.NotificationSendRequest;
 import com.kosign.push.platforms.PlatformEntity;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.RabbitSender;
 import com.kosign.push.utils.enums.PlatformEnum;
 import com.kosign.push.utils.messages.Response;
 
-import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import  com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 import com.kosign.push.configs.aspectAnnotation.AspectPushHeader;
 
 // @AspectObjectApplicationID
@@ -63,18 +61,18 @@ public class NotificationController
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
 //            requestSubscribeDevice.setApp_id(appId);
         
-            final Integer platformId = new Integer(requestSubscribeDevice.platform_id);
+            final Integer platformId = new Integer(requestSubscribeDevice.platformId);
             if (platformId < 0 | platformId > 3 ) 
             { 
                 return Response.setResponseEntity(HttpStatus.BAD_REQUEST);
             }
             //validattion
-            List<Agent>  agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(requestSubscribeDevice.getDevice_id(),appId,requestSubscribeDevice.getPush_id());
+            List<Agent>  agent =  deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(requestSubscribeDevice.getDeviceId(),appId,requestSubscribeDevice.getPushId());
             if (agent.size() > 0 ) 
             { 
                 return  Response.setResponseEntity(HttpStatus.CONFLICT);
             }
-            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(requestSubscribeDevice.getDevice_id(),requestSubscribeDevice.getPush_id(),new AppEntity(appId),new PlatformEntity( requestSubscribeDevice.getPlatform_id() )));
+            final DeviceEntity device = deviceService.saveDevice(new DeviceEntity(requestSubscribeDevice.getDeviceId(),requestSubscribeDevice.getPushId(),new AppEntity(appId),new PlatformEntity( requestSubscribeDevice.getPlatformId() )));
             System.out.println(device);
            
             return ( device != null ) ? 
@@ -99,7 +97,7 @@ public class NotificationController
             String appId = GlobalMethod.convertRequestHeaderToApplicationId(this.request);
 //            agentBody.setApp_id(appId);
             
-            final List<Agent>  agents = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDevice_id(),appId);
+            final List<Agent>  agents = deviceService.getActiveDeviceByDeviceIdAndAppIdRaw(agentBody.getDeviceId(),appId);
 
             if (agents.isEmpty()) 
             {  
@@ -145,7 +143,8 @@ public class NotificationController
                 
                 try
                 {
-                    rabbitSender.sendNotifcationByAgent(device, appId, requestDevice.title, requestDevice.message,bulkId);
+                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId));
+
                 }
                 catch(final Exception e)
                 {
@@ -187,7 +186,7 @@ public class NotificationController
                 {
                     if(PlatformEnum.Platform.IOS.equals(device.getPlatform_id()))
                         device.setPlatform_id(PlatformEnum.Platform.IOS_DEV_MODE);
-                    rabbitSender.sendNotifcationByAgent(device, appId, requestDevice.title, requestDevice.message,bulkId);
+                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId));
                 }
                 catch(final Exception e)
                 {
@@ -226,7 +225,7 @@ public class NotificationController
 
             for(final Agent agent : agents)
             {
-                rabbitSender.sendNotifcationByAgent(agent, appId, agentBody.title, agentBody.message,bulkId);
+                rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(agent, appId, agentBody.getTitle(), agentBody.getMessage(),agentBody.getImage(),agentBody.getBadgeCount(),bulkId));
             };
             logger.info("Push Done");
 

@@ -14,13 +14,8 @@ import org.springframework.web.multipart.MultipartFile;
 public class FileStorageUtil {
 
     private static String imagePath = "src/main/resources/static/images"; 
-    // run java
-//    public static final String PUTP8FILEPATH = "kosign-push-api/src/main/resources/static/files";
-    // public static final String GETP8FILEPATH = "kosign-push-api/src/main/resources/static/files/";
-    // run Gradle
-    // @Value("${pfile.path}")
-      public static String PUTP8FILEPATH ;
-//    public static String PUTP8FILEPATH = "/home/kosignpush/push-file";
+
+    public static String PUTP8FILEPATH ;
 
     @Value("${base.file.server}")
     public void setP8Storage(String baseUrl){

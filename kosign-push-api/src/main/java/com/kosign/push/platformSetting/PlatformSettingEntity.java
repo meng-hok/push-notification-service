@@ -1,5 +1,6 @@
 package com.kosign.push.platformSetting;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 import javax.persistence.Entity;
@@ -11,6 +12,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.kosign.push.apps.AppEntity;
 import com.kosign.push.platforms.PlatformEntity;
 
@@ -25,12 +27,12 @@ import lombok.Data;
 @Data
 @Table(name ="ps_platform_setting")
 @Entity
-public class PlatformSettingEntity {
+public class PlatformSettingEntity implements Serializable {
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     private PlatformEntity platform;
     @ManyToOne
     private AppEntity application;

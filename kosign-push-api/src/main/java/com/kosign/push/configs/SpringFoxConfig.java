@@ -50,7 +50,7 @@ public class SpringFoxConfig {
    * |----------------------------------------------------------------------------------------
    * | | |
    */
-  @Value("${base.url}")
+//  @Value("${base.url}")
   private String OAuthServerUri;
   String securitySchemaOAuth2 = "oauth2schema";
   Predicate<String> SWAGGER_PATHS = PathSelectors.regex("^(?!.*error$).*");

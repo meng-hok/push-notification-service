@@ -5,6 +5,6 @@ public enum PlatformEnum {
     public final String IOS = "1";
     public final String ANDROID = "2";
     public final String WEB= "3";
-        
+    public final String IOS_DEV_MODE = "4";
     
 }

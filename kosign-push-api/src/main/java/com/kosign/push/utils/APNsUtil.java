@@ -2,6 +2,7 @@ package com.kosign.push.utils;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import org.slf4j.Logger;
@@ -45,20 +46,28 @@ public class APNsUtil {
 
     public static ApnsClient getApnsCredentials(String pFileDirectory, String teamId, String keyString , String requestType)
             throws InvalidKeyException, SSLException, NoSuchAlgorithmException, IOException {
-           
+
             ApnsClient apnsClient = null;
-            logger.info("APNS REQUEST MODE" + requestType);
+            File p8file = new File(pFileDirectory);
+
+            logger.info("################################### DEBUG ################################################# ");
+            logger.info("APNS REQUEST MODE : " + requestType);
+            logger.info("P8 file directory ");
+            logger.info("FILE PATH :" + pFileDirectory);
+            logger.info("FILE IS EXIST :" + p8file.exists());
+            logger.info("############################################################################################ ");
+
             switch (requestType) {
                 case APNS_DEV_MODE:
                         apnsClient = new ApnsClientBuilder()
                         .setApnsServer(ApnsClientBuilder.DEVELOPMENT_APNS_HOST)
-                        .setSigningKey(ApnsSigningKey.loadFromPkcs8File(new File(pFileDirectory),teamId,keyString))
+                        .setSigningKey(ApnsSigningKey.loadFromPkcs8File(p8file,teamId,keyString))
                         .build();
                     break;
                 case APNS_PROD_MODE:
                         apnsClient = new ApnsClientBuilder()
                         .setApnsServer(ApnsClientBuilder.PRODUCTION_APNS_HOST)
-                        .setSigningKey(ApnsSigningKey.loadFromPkcs8File(new File(pFileDirectory),teamId,keyString))
+                        .setSigningKey(ApnsSigningKey.loadFromPkcs8File(p8file,teamId,keyString))
                         .build();
                 break;
                 default:

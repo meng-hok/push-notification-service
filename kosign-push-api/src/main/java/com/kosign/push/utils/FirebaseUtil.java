@@ -1,7 +1,14 @@
 package com.kosign.push.utils;
 
 
+import com.google.firebase.messaging.AndroidConfig;
+import com.google.firebase.messaging.AndroidNotification;
+import com.google.firebase.messaging.Notification;
+import com.google.gson.JsonObject;
+import com.kosign.push.platformSetting.dto.FCM;
 import org.json.JSONObject;
+
+import java.util.Map;
 
 
 public class FirebaseUtil {
@@ -30,6 +37,31 @@ public class FirebaseUtil {
     //     body.put("data", getNotificationJsonForm(requestBody));
     //     return body;
     // }
+    public static JSONObject getNotificationBody( FCM fcm) throws Exception {
+        Notification notification = Notification.builder()
+                .setImage(fcm.getImage())
+                .setBody(fcm.getMessage())
+                .setTitle(fcm.getTitle())
+                .build();
+        JSONObject body = new JSONObject();
+        body.put("to", fcm.getToken());
+        body.put("priority", "high");
+        body.put("notification",new JSONObject(GsonUtils.GSON_OBJECT.toJson(notification)));
+
+        if(fcm.getBadgeCount() == null)
+            return body;
+
+        AndroidConfig androidConfig = AndroidConfig.builder()
+                .setNotification(AndroidNotification
+                        .builder()
+                        .setNotificationCount(fcm.getBadgeCount()).build())
+                .build();
+        body.put("android",new JSONObject(GsonUtils.GSON_OBJECT.toJson(androidConfig)));
+        return body;
+
+        // body.put("data", getNotificationJsonForm(requestBody));
+
+    }
 
     public static JSONObject getNotificationBody(String token, JSONObject jsonBody) throws Exception {
         JSONObject body = new JSONObject();

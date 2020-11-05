@@ -2,6 +2,7 @@ package com.kosign.push.utils.aspects;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 import javax.validation.constraints.NotEmpty;
 
@@ -9,6 +10,7 @@ import javax.validation.constraints.NotEmpty;
 @Setter
 public class ApplicationAspect 
 {
+    @JsonProperty("app_id")
     @NotEmpty
-    private String app_id;
+    private String appId;
 }

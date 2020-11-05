@@ -1,82 +1,83 @@
 spring:
-  # profiles:
-  #   active: local # 기본 환경 선택
-  # main:
-  #   web-application-type: servlet
+  profiles:
+    active: dev
+
+---    
+spring:
+  profiles: dev    
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ip-address:port/dbname
-    username: 
-    password: 
+    url: jdbc:postgresql://192.168.178.241:5432/kopushdbdev
+    username: kopushdbuser
+    password: kopushdbuser123
+
+base:
+  file:
+    client: /myfiles
+    server: D:/nas/push
+---    
+# when deploy
+spring:
+  profiles: do-server    
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/kopushdb_real
+    username: kopushuser_real
+    password: K@SigNP@SH!!#
+
+base:
+  file:
+    client: /myfiles
+    server: /home/kosignpush/push-file
+---    
+spring:
+  profiles: local-server
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/kopushdbdev
+    username: kopushdbuser
+    password: kopushdbuser1234
+
+base:
+  file:
+    client: /myfiles
+    server: /home/lms/push-file
+
+---
+spring:
   jpa:
     show-sql: true  
     hibernate:
       ddl-auto: update 
+    
+      # queue connection
   rabbitmq:
-    host: 
-    port: 
-    username: 
-    password:
+    host: 192.168.178.241
+    port: 5672
+    username: guest
+    password: guest
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false
-    property-naming-strategy: SNAKE_CASE  
-#  jpa:
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    property-naming-strategy: SNAKE_CASE
 
-# local 환경
----
-
-  
-#    hibernate:
-#      ddl-auto: create-drop
-#  h2:
-#    console:
-#      enabled: true
-
-  
+# queue configuration 
 pusher:
   rabbitmq:
       queue: 
         fcm: pusher.queue.fcm
         apns: pusher.queue.apns
         topic: pusher.queue.topic
-        history: pusher.queue.history
-
-# pusher:
-#   rabbitmq:
+        apns-dev: pusher.queue.apns-dev
       routingKey: 
         fcm: pusher.queue.fcm
         apns: pusher.queue.apns
         topic: pusher.queue.topic
-        history: pusher.queue.history
-
-# pusher:
-#   rabbitmq:
+        apns-dev: pusher.queue.apns-dev
       exchange: pusher.direct.exchange
 
 admin:
   name: admin
   password: adminhtl123!@#
-base:
-  url: http://localhost:8080
-  file:
-      client: /myfiles
-      server: /home/lms/push-file
-# 운영 환경
----
-# spring.profiles: set1
-# spring.profiles.include: real-db
 
-# server:
-#   port: 8081
-
----
-# spring.profiles: set2
-# spring.profiles.include: real-db
-
-# server:
-#   port: 8082
 

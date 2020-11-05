@@ -6,14 +6,9 @@ import java.util.List;
 import javax.transaction.Transactional;
 import javax.validation.Valid;
 
-import com.kosign.push.users.UserDetail;
-import com.kosign.push.users.UserEntity;
 import com.kosign.push.utils.FileStorageUtil;
-import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
-import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.PlatformEnum;
-import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.configs.aspectAnnotation.AspectObjectApplicationID;
 import com.kosign.push.platformSetting.dto.APNS;
 import com.kosign.push.platformSetting.dto.RequestCreateApns;
@@ -28,9 +23,7 @@ import io.swagger.annotations.ApiOperation;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 @AspectObjectApplicationID
@@ -87,11 +80,11 @@ public class PlatformSettingController {
 
                         return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
                     }
-                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getApp_id(),PlatformEnum.Platform.IOS) != null ) {
+                    if(platformSettingService.getActivePlatformConfiguredByAppIdAndPlatFormId(requestCreateApns.getAppId(),PlatformEnum.Platform.IOS) != null ) {
                         return  Response.setResponseEntity(HttpStatus.BAD_REQUEST);
                     }
                     String file = FileStorageUtil.uploadFile(p8file);
-                    PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getApp_id(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
+                    PlatformSettingEntity platformSetting= platformSettingService.saveApns(requestCreateApns.getAppId(), file, requestCreateApns.file_key, requestCreateApns.team_id, requestCreateApns.bundle_id);
                     return Response.setResponseEntity(HttpStatus.OK);
                 
                
@@ -111,7 +104,7 @@ public class PlatformSettingController {
             file= FileStorageUtil.uploadFile(p8file);
         }
 
-        Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getApp_id(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.bundle_id));
+        Boolean updateStatus = platformSettingService.updateApns(requestCreateApns.getAppId(), new APNS(file,requestCreateApns.team_id,requestCreateApns.file_key,requestCreateApns.getBundle_id()));
         return updateStatus ?
                 Response.setResponseEntity(HttpStatus.OK) :
                 Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
@@ -121,7 +114,7 @@ public class PlatformSettingController {
     @DeleteMapping("/platforms/setting/apns")
     public Object deleteApnsConfiguration (@Valid @RequestBody RequestRemoveApns requestRemoveApns) {
         try {
-            return platformSettingService.removeApnsConfiguration(requestRemoveApns.getApp_id()) ? 
+            return platformSettingService.removeApnsConfiguration(requestRemoveApns.getAppId()) ?
                     Response.setResponseEntity(HttpStatus.OK) : 
                      Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
 
@@ -163,7 +156,7 @@ public class PlatformSettingController {
     public Object saveFcm(@Valid @RequestBody RequestCreateFcm requestFcm){
         try {
             if(PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
-                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getApp_id(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
+                PlatformSettingEntity platformSetting= platformSettingService.saveFcm(requestFcm.getAppId(),requestFcm.getPlatformId(),requestFcm.getAuthorizedKey());
                 return  Response.setResponseEntity(HttpStatus.OK);
             }
 
@@ -182,7 +175,7 @@ public class PlatformSettingController {
         try {
             if( PlatformEnum.Platform.ANDROID.equals(requestFcm.getPlatformId()) | PlatformEnum.Platform.WEB.equals(requestFcm.getPlatformId()) ) {
 
-                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.getApp_id(), requestFcm.platformId ,requestFcm.authorizedKey);
+                Boolean updateStatus = platformSettingService.updateFcm(requestFcm.getAppId(), requestFcm.platformId ,requestFcm.authorizedKey);
                 return updateStatus ?
                         Response.setResponseEntity(HttpStatus.OK) :
                          Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
@@ -199,7 +192,7 @@ public class PlatformSettingController {
     @DeleteMapping("/platforms/setting/fcm")
     public Object deleteFcmConfiguration ( @Valid @RequestBody RequestRemoveFcm requestFcm) {
         try {
-            return platformSettingService.removeFcmConfiguration(requestFcm.getApp_id(),requestFcm.platformId) ? 
+            return platformSettingService.removeFcmConfiguration(requestFcm.getAppId(),requestFcm.platformId) ?
                     Response.setResponseEntity(HttpStatus.OK) :
                      Response.setResponseEntity(HttpStatus.NOT_MODIFIED);
 
