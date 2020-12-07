@@ -9,7 +9,6 @@ import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.aspects.ApplicationAspect;
 import com.kosign.push.utils.enums.ExceptionEnum;
 import com.kosign.push.utils.enums.KeyConfEnum;
-import com.kosign.push.utils.enums.ResponseEnum;
 import com.kosign.push.utils.messages.Response;
 
 import org.aspectj.lang.JoinPoint;
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
@@ -102,7 +100,7 @@ public class SpelAddition  {
 
                     ApplicationAspect aspect = (ApplicationAspect) object;
                    
-                    validateOwner(aspect.getApp_id());
+                    validateOwner(aspect.getAppId());
                   
                 }
 

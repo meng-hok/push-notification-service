@@ -10,7 +10,11 @@ spring:
     url: jdbc:postgresql://192.168.178.241:5432/kopushdbdev
     username: kopushdbuser
     password: kopushdbuser123
-
+  rabbitmq:
+    host: 192.168.178.241
+    port: 5672
+    username: guest
+    password: guest
 base:
   file:
     client: /myfiles
@@ -24,7 +28,12 @@ spring:
     url: jdbc:postgresql://localhost:5432/kopushdb_real
     username: kopushuser_real
     password: K@SigNP@SH!!#
-
+      # queue connection
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 base:
   file:
     client: /myfiles
@@ -37,25 +46,41 @@ spring:
     url: jdbc:postgresql://localhost:5432/kopushdbdev
     username: kopushdbuser
     password: kopushdbuser1234
-
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
 base:
   file:
     client: /myfiles
     server: /home/lms/push-file
-
----
+---    
 spring:
-  jpa:
-    show-sql: true  
-    hibernate:
-      ddl-auto: update 
-    
-      # queue connection
+  profiles: compose
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_SERVER}/${POSTGRES_DB}
+    username: ${POSTGRES_USER}
+    password: ${POSTGRES_PASSWORD}
+    # url: jdbc:postgresql://206.81.15.135:5432/developer
+    # username: developer
+    # password: 123!@#
   rabbitmq:
-    host: 192.168.178.241
+    host: ${SPRING_RABBITMQ_HOST:localhost}
     port: 5672
     username: guest
     password: guest
+base:
+  file:
+    client: /myfiles
+    server: /
+---
+spring:
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
   jackson:
     serialization:
       FAIL_ON_EMPTY_BEANS: false

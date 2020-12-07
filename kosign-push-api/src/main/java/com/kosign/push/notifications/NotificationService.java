@@ -195,7 +195,7 @@ public class NotificationService
             payloadBuilder.setAlertTitle(apns.getTitle());
             payloadBuilder.setLaunchImageFileName(apns.getImage());
             payloadBuilder.setBadgeNumber(apns.getBadgeCount());
-
+            payloadBuilder.setContentAvailable(true);
             final String payload = payloadBuilder.build();
 
             logger.info("[ Request Payload From APNs]");

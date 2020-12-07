@@ -48,8 +48,8 @@ public class DeviceController
     public Object findAllDevices
     (
     	@RequestParam(value = "app_id"    )  String appId,
-    	@RequestParam(value = "start_date") @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date start_date,
-    	@RequestParam(value = "end_date"  ) @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date end_date  ,
+    	@RequestParam(value = "start_date", required = false) @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date start_date,
+    	@RequestParam(value = "end_date"  , required = false) @DateTimeFormat(iso =  DateTimeFormat.ISO.DATE ) Date end_date  ,
     	@RequestParam(value = "model_name", defaultValue = "") String modelName,
     	@RequestParam(value = "os_version", defaultValue = "") String osVersion,
     	@RequestParam(value = "plat_code" , defaultValue = "") String platCode ,
@@ -58,8 +58,8 @@ public class DeviceController
     {	
 		try {
 			SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");  
-			String startDate = formatter.format(start_date);  
-			String endDate = formatter.format(end_date);  
+			String startDate = formatter.format(start_date == null ? new Date() : start_date );
+			String endDate = formatter.format(end_date == null ? new Date() : end_date );
 			RequestDeviceList request = new RequestDeviceList();
 			request.setAppId(appId);
 			request.setStartDate(startDate);
