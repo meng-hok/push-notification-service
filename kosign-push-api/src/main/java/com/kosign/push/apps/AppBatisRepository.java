@@ -19,11 +19,8 @@ import com.kosign.push.apps.dto.ResponseListAppById;
 import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.platformSetting.dto.*;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Result;
-import org.apache.ibatis.annotations.Results;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.SelectProvider;
+import org.apache.ibatis.annotations.*;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Repository;
 
 @Repository()
@@ -45,9 +42,14 @@ public interface AppBatisRepository
             @Result(property = "id"       , column = "application"),
             @Result(property = "totalPush", column = "count"      ),
             @Result(property = "createdAt", column = "created_at" ),
-            @Result(property = "createdBy", column = "username"    )
+            @Result(property = "createdBy", column = "username"   ),
+            @Result(property = "yesterdayPush", column = "application" , one = @One( select =  "findTotal") )
     })
     List<ResponseListAppById> findActiveByAppId(@Param("userId")String userId, @Param("appId") String appId);
+
+
+    @Select("SELECT count(*) AS count  FROM ps_history ph_1 WHERE ph_1.app_id = #{appId} and ph_1.created_at::date = (CURRENT_DATE - 1) LIMIT 1")
+    Integer findTotal(@Param("appId") String appId);
 
     @Select("SELECT * FROM vw_platform_detail WHERE application_id  = #{appId}")
     @Results({

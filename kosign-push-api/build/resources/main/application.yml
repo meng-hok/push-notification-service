@@ -1,42 +1,130 @@
 spring:
   profiles:
-    active: local # 기본 환경 선택
-  main:
-    web-application-type: servlet
-#  jpa:
-#    properties:
-#      hibernate:
-#        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+    active: dev
 
-# local 환경
 ---
 spring:
-  profiles: local
+  profiles: dev
   datasource:
-#    data: classpath:data-h2.sql # 시작할때 실행시킬 script
-    url: jdbc:postgresql://103.101.82.133:54311/bnkdevdb
-    username: bnkdev
-    password: bnkdev123
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/kopushdbdev
+    username: postgres
+    password: metrayim
+  rabbitmq:
+    host: 192.168.178.241
+    port: 5672
+    username: guest
+    password: guest
+base:
+  file:
+    client: /myfiles
+    server: D:/nas/push
+---
+# when deploy
+#spring:
+#  profiles: do-server
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/kopushdb_real
+#    username: kopushuser_real
+#    password: K@SigNP@SH!!#
+#    # queue connection
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#base:
+#  file:
+#    client: /myfiles
+#    server: /home/kosignpush/push-file
+---
+#spring:
+#  profiles: local-server
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://localhost:5432/kopushdbdev
+#    username: kopushdbuser
+#    password: kopushdbuser1234
+#  rabbitmq:
+#    host: localhost
+#    port: 5672
+#    username: guest
+#    password: guest
+#base:
+#  file:
+#    client: /myfiles
+#    server: /home/lms/push-file
+---
+#spring:
+#  profiles: compose
+#  datasource:
+#    driver-class-name: org.postgresql.Driver
+#    url: jdbc:postgresql://${DB_SERVER}/${POSTGRES_DB}
+#    username: ${POSTGRES_USER}
+#    password: ${POSTGRES_PASSWORD}
+#    # url: jdbc:postgresql://206.81.15.135:5432/developer
+#    # username: developer
+#    # password: 123!@#
+#  rabbitmq:
+#    host: ${SPRING_RABBITMQ_HOST:localhost}
+#    port: 5672
+#    username: guest
+#    password: guest
+#base:
+#  file:
+#    client: /myfiles
+#    server: /
+---
+spring:
   jpa:
     show-sql: true
-#    hibernate:
-#      ddl-auto: create-drop
-#  h2:
-#    console:
-#      enabled: true
+    hibernate:
+      ddl-auto: update
+  jackson:
+    serialization:
+      FAIL_ON_EMPTY_BEANS: false
+    property-naming-strategy: SNAKE_CASE
 
-# 운영 환경
----
-spring.profiles: set1
-spring.profiles.include: real-db
+# queue configuration 
+pusher:
+  rabbitmq:
+    queue:
+      fcm: pusher.queue.fcm
+      apns: pusher.queue.apns
+      topic: pusher.queue.topic
+      apns-dev: pusher.queue.apns-dev
+    routingKey:
+      fcm: pusher.queue.fcm
+      apns: pusher.queue.apns
+      topic: pusher.queue.topic
+      apns-dev: pusher.queue.apns-dev
+    exchange: pusher.direct.exchange
 
-server:
-  port: 8081
+admin:
+  name: admin
+  password: adminhtl123!@#
 
----
-spring.profiles: set2
-spring.profiles.include: real-db
+  mybatis:
+    mapper-locations: classpath:mapper/*.xml
 
-server:
-  port: 8082
+  mapper:
+    mappers:
+      - tk.mybatis.springboot.util.MyMapper
+    not-empty: false
+    identity: PostgreSQL
+
+  pagehelper:
+    helperDialect: PostgreSQL
+    auto-dialect: true
+    page-size-zero: false
+    offset-as-page-num: false
+    row-bounds-with-count: false
+    auto-runtime-dialect: false
+    default-count: false
+    close-conn: true
+    reasonable: true
+    supportMethodsArguments: PostgreSQL
+    params: count=countSql
+
 

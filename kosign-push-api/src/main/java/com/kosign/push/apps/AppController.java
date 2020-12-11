@@ -13,6 +13,7 @@
 
 package com.kosign.push.apps;
 
+import com.github.pagehelper.*;
 import com.kosign.push.apps.dto.RequestAppList;
 import com.kosign.push.apps.dto.RequestAppUpdate;
 import com.kosign.push.apps.dto.RequestCreateApp;
@@ -25,7 +26,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 import io.swagger.annotations.Api;
-import java.util.List;
+
+import java.util.*;
+
 import com.kosign.push.users.UserDetail;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.messages.Response;
@@ -49,7 +52,10 @@ public class AppController
     @GetMapping("/applications")
     public Object findAllApplications
     (
-    	@RequestParam(value = "name", defaultValue = "") String name
+    	@RequestParam(value = "name", defaultValue = "") String name,
+        @RequestParam(value = "page_num", defaultValue = "1") int pageNum,
+        @RequestParam(value = "page_size", defaultValue = "10") int pageSize
+
     ) 
     {
         UserDetail userDetail = GlobalMethod.getUserCredential();
@@ -61,8 +67,8 @@ public class AppController
         { 
         	RequestAppList reqData = new RequestAppList();
         	reqData.setName(name);
-        	
-            List<ResponseListApp> respData = appService.findAllApplications(userDetail.getId(),reqData);
+
+            HashMap<String,Object> respData = appService.findAllApplications(userDetail.getId(),reqData,pageNum,pageSize);
             return Response.setResponseEntity(HttpStatus.OK, respData);
         }
     }

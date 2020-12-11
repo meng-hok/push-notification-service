@@ -25,7 +25,10 @@ public class ResponseListApp extends RequestAppIdentifier
     
     @JsonProperty("ttl_push")
     private Integer totalPush=0;
-  
+
+    @JsonProperty("yt_push")
+    private Integer yesterdayPush=0;
+
     @JsonIgnore
     private Integer ios=0;
     
@@ -43,4 +46,5 @@ public class ResponseListApp extends RequestAppIdentifier
     
     @JsonProperty("sts")
     private Character status = KeyConfEnum.Status.ACTIVE;
+
 }

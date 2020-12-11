@@ -13,16 +13,19 @@
 
 package com.kosign.push.apps;
 
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+
+//import com.github.pagehelper.*;
+import com.github.pagehelper.*;
+import com.github.pagehelper.Page;
+import com.kosign.push.apps.dto.*;
 import com.kosign.push.platformSetting.PlatformSettingService;
 import com.kosign.push.utils.GlobalMethod;
 import com.kosign.push.utils.enums.KeyConfEnum;
-import com.kosign.push.apps.dto.ResponseListAppById;
-import com.kosign.push.apps.dto.RequestAppList;
-import com.kosign.push.apps.dto.ResponseListApp;
 import com.kosign.push.platformSetting.dto.ResponsePlatformSetting;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 
 @AllArgsConstructor
@@ -33,18 +36,35 @@ public class AppService
     private AppBatisRepository appBatisRepo;
     private PlatformSettingService platformSettingService;
 
-    public List<ResponseListApp> findAllApplications(String userId, RequestAppList request)
+    public HashMap<String,Object> findAllApplications(String userId, RequestAppList request,int pageNum,int pageSize)
     {
+//        PageHelper.startPage(pageNum,pageSize);
+        PageHelper.startPage(pageNum,pageSize,true);
         List<ResponseListApp> applicationResponses =  appBatisRepo.findAllApplications(userId, request);
 
-        applicationResponses = applicationResponses.stream().map(application -> {
-            application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
-            application.setApns( application.getIos() ); 
-            application.setFcm(application.getAndroid()  + application.getFcm());
-            return application;
+//        applicationResponses = applicationResponses.stream().map(application -> {
+//            application.setTotalPush(application.getAndroid()  + application.getIos() + application.getFcm());
+//            application.setApns( application.getIos() );
+//            application.setFcm(application.getAndroid()  + application.getFcm());
+//            return application;
+//        }).collect(Collectors.toList());
+
+        PageInfo<ResponseListApp> pageInfos= PageHelper.startPage(pageNum,pageSize).doSelectPageInfo(()->appBatisRepo.findAllApplications(userId, request));
+        applicationResponses = pageInfos.getList().stream().map(x->{
+            x.setTotalPush(x.getAndroid()  + x.getIos() + x.getFcm());
+           x.setApns( x.getIos() );
+           x.setFcm(x.getAndroid()  + x.getFcm());
+           return x;
         }).collect(Collectors.toList());
-        
-        return applicationResponses;
+        PageInfoCustome pageInfoCustome=new PageInfoCustome(pageInfos);
+//        List<Object> objects=new ArrayList<>();
+        HashMap<String,Object> response= new HashMap<>();
+        response.put("pagination",pageInfoCustome);
+        response.put("datas",applicationResponses);
+
+//        objects.add(pageInfoCustome);
+//        objects.add(applicationResponses);
+        return response;
     }
     
     public AppEntity save(AppEntity app)

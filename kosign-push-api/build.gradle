@@ -67,4 +67,21 @@ dependencies {
 	compile "org.eclipse.jetty:jetty-util:${jettyVersion}"
 	compile group: 'com.google.firebase', name: 'firebase-admin', version: '7.0.1'
 
+//// https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper
+//	compile group: 'com.github.pagehelper', name: 'pagehelper', version: '5.2.0'
+
+	// https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper-spring-boot-starter
+	compile group: 'com.github.pagehelper', name: 'pagehelper-spring-boot-starter', version: '1.2.13'
+//
+//	// https://mvnrepository.com/artifact/tk.mybatis/mapper-spring-boot-starter
+//	compile group: 'tk.mybatis', name: 'mapper-spring-boot-starter', version: '2.1.5'
+//
+
+
+//	// https://mvnrepository.com/artifact/com.github.sea-huang/spring-data-mybatis-pagination
+//	compile group: 'com.github.sea-huang', name: 'spring-data-mybatis-pagination', version: '2.1.2'
+
+//
+//	// https://mvnrepository.com/artifact/tk.mybatis/mapper-spring-boot-starter
+//	compile group: 'tk.mybatis', name: 'mapper-spring-boot-starter', version: '2.1.5'
 }
