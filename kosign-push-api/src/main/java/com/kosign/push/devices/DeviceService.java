@@ -1,8 +1,10 @@
 package com.kosign.push.devices;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.*;
 
+import com.github.pagehelper.*;
+import com.kosign.push.apps.dto.*;
 import com.kosign.push.devices.dto.Agent;
 import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
@@ -91,9 +93,26 @@ public class DeviceService {
     /* Get All data of device clients
      * Neng Channa
      */
-    public List<ResponseDevice> findAllDeviceClients(RequestDeviceList request)
+    public HashMap<String,Object> findAllDeviceClients(RequestDeviceList request,int pageNum,int pageSize)
     {
-        return deviceBatisRepo.findAllDeviceClients(request);
+        List<ResponseDevice> responseDevices;
+        PageHelper.startPage(pageNum,pageSize,true);
+        PageInfo<ResponseDevice> pageInfos= PageHelper.startPage(pageNum,pageSize).doSelectPageInfo(()->deviceBatisRepo.findAllDeviceClients(request));
+        responseDevices=pageInfos.getList().stream().map(x->{
+            x.setModel_name(x.getModel_name());
+            x.setCreated_at(x.getCreated_at());
+            x.setPush_id(x.getPush_id());
+            x.setPlat_code(x.getPlat_code());
+            x.setOs_version(x.getOs_version());
+            return x;
+
+        }).collect(Collectors.toList());
+        PageInfoCustome pageInfoCustome=new PageInfoCustome(pageInfos);
+        HashMap<String,Object> response= new HashMap<>();
+        response.put("pagination",pageInfoCustome);
+        response.put("datas",responseDevices);
+//        return deviceBatisRepo.findAllDeviceClients(request);
+        return response;
     }
 
 

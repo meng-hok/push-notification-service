@@ -15,8 +15,7 @@ package com.kosign.push.devices;
 
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 import com.kosign.push.devices.dto.RequestDeviceList;
 import com.kosign.push.devices.dto.ResponseDevice;
@@ -53,7 +52,9 @@ public class DeviceController
     	@RequestParam(value = "model_name", defaultValue = "") String modelName,
     	@RequestParam(value = "os_version", defaultValue = "") String osVersion,
     	@RequestParam(value = "plat_code" , defaultValue = "") String platCode ,
-    	@RequestParam(value = "push_id"   , defaultValue = "") String pushId
+    	@RequestParam(value = "push_id"   , defaultValue = "") String pushId,
+		@RequestParam(value = "page_num", defaultValue = "1") int pageNum,
+		@RequestParam(value = "page_size", defaultValue = "10") int pageSize
     ) 
     {	
 		try {
@@ -68,8 +69,8 @@ public class DeviceController
 			request.setOsVersion(osVersion);
 			request.setPlatCode(platCode);
 			request.setPushId(pushId);
-			
-			List<ResponseDevice> response = deviceService.findAllDeviceClients(request);
+
+			HashMap<String,Object> response = deviceService.findAllDeviceClients(request,pageNum,pageSize);
 			return Response.setResponseEntity(HttpStatus.OK, response);
 		} catch (Exception e) {
 			
