@@ -1,7 +1,8 @@
 package com.kosign.push.notificationHistory;
 
-import java.util.Date;
-import java.util.List;
+import java.time.*;
+import java.time.format.*;
+import java.util.*;
 
 import com.kosign.push.configs.annatations.DateFormat;
 import com.kosign.push.utils.messages.Response;
@@ -36,20 +37,27 @@ public class NotificationHistoryController
     public Object findAllNotificationHistories
     (
             @RequestParam(value="app_id"    )  @Valid String appId,
-            @RequestParam(value="start_date" ) @DateTimeFormat( pattern = "yyyy-mm-dd") Date startDate ,
-            @RequestParam(value="end_date" ) @DateTimeFormat( pattern = "yyyy-mm-dd") Date endDate  ,
-      @RequestParam(value="title"     , required=false) String title    
+            @RequestParam(value="start_date" )@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
+            @RequestParam(value="end_date" )@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate  ,
+            @RequestParam(value="title"     , required=false) String title ,
+            @RequestParam(value="page_num"     , defaultValue = "1") int pageNum,
+            @RequestParam(value="page_size",defaultValue = "10") int pageSize
     ) 
     {
-        String convertedStartDate = startDate.toInstant().toString().split("T")[0];
-        String convertedEndDate = endDate.toInstant().toString().split("T")[0];
+        ZoneId zoneId = ZoneId.systemDefault();
+        DateTimeFormatter formmatDate = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+//        String convertedStartDate = startDate.toInstant().toString().split("T")[0];
+//        String convertedEndDate = endDate.toInstant().toString().split("T")[0];
+
+        String convertedStartDate =startDate.atStartOfDay(zoneId).format(formmatDate);
+        String convertedEndDate = endDate.atStartOfDay(zoneId).format(formmatDate);
     	RequestHistoryList request = new RequestHistoryList();
     	request.setAppId(appId);
     	request.setStartDate(convertedStartDate);
     	request.setEndDate(convertedEndDate);
     	request.setMsgTitle(title);
-    	
-        List<ResponseHistoryList> response = historyService.findAllHistories(request);
+
+        HashMap<String,Object> response = historyService.findAllHistories(request,pageNum,pageSize);
 
         return Response.setResponseEntity(HttpStatus.OK, response);
     }
