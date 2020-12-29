@@ -192,8 +192,11 @@ public class NotificationService
             final ApnsClient apnsClient = APNsUtil.getApnsCredentials(apns.getP8file(),apns.getTeamId(),apns.getFileKey(),apns.getRequestMode());
 
             ApnsPayloadBuilder payloadBuilder = new SimpleApnsPayloadBuilder();
-
-            payloadBuilder.addCustomProperty("data",apns.getActionType());
+            if (apns.getActionType() != null) {
+                payloadBuilder.addCustomProperty("data", apns.getActionType());
+            } else {
+                payloadBuilder.addCustomProperty("data", new HashMap<>());
+            }
             payloadBuilder.setAlertBody(apns.getMessage());
             payloadBuilder.setAlertTitle(apns.getTitle());
             payloadBuilder.setLaunchImageFileName(apns.getImage());
