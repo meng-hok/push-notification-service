@@ -5,10 +5,12 @@ import com.google.firebase.messaging.AndroidConfig;
 import com.google.firebase.messaging.AndroidNotification;
 import com.google.firebase.messaging.Notification;
 import com.google.gson.JsonObject;
+import com.kosign.push.*;
 import com.kosign.push.platformSetting.dto.FCM;
 import org.json.JSONObject;
+import org.springframework.boot.builder.*;
 
-import java.util.Map;
+import java.util.*;
 
 
 public class FirebaseUtil {
@@ -44,6 +46,8 @@ public class FirebaseUtil {
                 .setTitle(fcm.getTitle())
                 .build();
         JSONObject body = new JSONObject();
+
+        body.put("data", fcm.getActionType());
         body.put("to", fcm.getToken());
         body.put("priority", "high");
         body.put("notification",new JSONObject(GsonUtils.GSON_OBJECT.toJson(notification)));
@@ -84,6 +88,19 @@ public class FirebaseUtil {
         client.setHeader("Authorization", "key=" + appAuthorizedKey);
         client.setHeader("Content-Type", "application/json;charset=UTF-8");
         return client;
+    }
+
+    public static void main(String[] args) {
+       Map data=new HashMap();
+       data.put("test","Hello work");
+       data.put("time","haha haha");
+       data.put("ti", "hello dara");
+       Iterator it=data.entrySet().iterator();
+      while (it.hasNext()){
+          Map.Entry pair=(Map.Entry)it.next();
+          System.out.println(pair.getKey() +" = "+ pair.getValue());
+          it.remove();
+      }
     }
 }
 

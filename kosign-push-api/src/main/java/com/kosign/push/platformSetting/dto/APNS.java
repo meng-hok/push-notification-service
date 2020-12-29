@@ -4,6 +4,8 @@ import lombok.Data;
 import lombok.ToString;
 import org.codehaus.jackson.annotate.JsonProperty;
 
+import java.util.*;
+
 @AllArgsConstructor
 @Data
 @ToString
@@ -17,6 +19,7 @@ public class APNS extends APNSIdentifier{
     @JsonProperty("badge_count")
     public Integer badgeCount;
     public String image;
+    public Map actionType;
     public APNS(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message) {
         this.p8file = p8file;
         this.teamId = teamId;
@@ -26,6 +29,16 @@ public class APNS extends APNSIdentifier{
         this.title = title;
         this.message = message;
     }
+    public APNS(String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message,Map actionType) {
+        this.p8file = p8file;
+        this.teamId = teamId;
+        this.fileKey = fileKey;
+        this.bundleId = bundleId;
+        this.token = token;
+        this.title = title;
+        this.message = message;
+        this.actionType=actionType;
+    }
 
     public APNS(String p8file, String teamId, String fileKey, String bundleId) {
         this.p8file = p8file;
@@ -34,7 +47,7 @@ public class APNS extends APNSIdentifier{
         this.bundleId = bundleId;
     }
    
-    public APNS(String appId,String bulkId,String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message,String image,Integer badgeCount) {
+    public APNS(String appId,String bulkId,String p8file, String teamId, String fileKey, String bundleId, String token,String title, String message,String image,Integer badgeCount,Map actionType) {
         this.setAppId(appId);
         this.bulkId = bulkId;
         this.p8file = p8file;
@@ -46,6 +59,7 @@ public class APNS extends APNSIdentifier{
         this.message = message;
         this.image = image;
         this.badgeCount = badgeCount;
+        this.actionType=actionType;
     }
 
     public APNS(){}

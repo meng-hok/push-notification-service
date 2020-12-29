@@ -143,7 +143,7 @@ public class NotificationController
                 
                 try
                 {
-                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId));
+                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId ,requestDevice.getActionType()));
 
                 }
                 catch(final Exception e)
@@ -186,7 +186,7 @@ public class NotificationController
                 {
                     if(PlatformEnum.Platform.IOS.equals(device.getPlatform_id()))
                         device.setPlatform_id(PlatformEnum.Platform.IOS_DEV_MODE);
-                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId));
+                    rabbitSender.sendNotifcationByAgent(new NotificationSendRequest(device, appId, requestDevice.getTitle(), requestDevice.getMessage(),requestDevice.getImage(),requestDevice.getBadgeCount(),bulkId,requestDevice.getActionType()));
                 }
                 catch(final Exception e)
                 {

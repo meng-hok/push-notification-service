@@ -2,10 +2,12 @@ package com.kosign.push.devices.dto;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
+import com.kosign.push.notifications.dto.*;
 import lombok.Data;
 
-import java.util.ArrayList;
+import java.util.*;
 
+import javax.servlet.http.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -26,4 +28,9 @@ public class RequestPushDevice{
     @NotNull
 //    @JsonProperty("device_id_list")
     public ArrayList<String> deviceIdList;
+
+    @JsonProperty("action")
+    private Map actionType;
+
+
 }

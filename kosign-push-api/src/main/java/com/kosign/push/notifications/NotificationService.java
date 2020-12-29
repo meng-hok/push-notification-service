@@ -3,6 +3,7 @@ package com.kosign.push.notifications;
 import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 import javax.net.ssl.SSLException;
@@ -191,6 +192,8 @@ public class NotificationService
             final ApnsClient apnsClient = APNsUtil.getApnsCredentials(apns.getP8file(),apns.getTeamId(),apns.getFileKey(),apns.getRequestMode());
 
             ApnsPayloadBuilder payloadBuilder = new SimpleApnsPayloadBuilder();
+
+            payloadBuilder.addCustomProperty("data",apns.getActionType());
             payloadBuilder.setAlertBody(apns.getMessage());
             payloadBuilder.setAlertTitle(apns.getTitle());
             payloadBuilder.setLaunchImageFileName(apns.getImage());
@@ -228,6 +231,7 @@ public class NotificationService
         }
         catch (Exception e) 
         {
+            e.printStackTrace();
             respMsg = e.getMessage();
 
         }finally {

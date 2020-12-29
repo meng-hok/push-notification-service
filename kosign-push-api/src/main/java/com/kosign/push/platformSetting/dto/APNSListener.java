@@ -17,7 +17,7 @@ public class APNSListener extends APNS {
     private String requestMode;
 
     public APNSListener( APNS apns, String requestMode) {
-        super(apns.getAppId(), apns.getBulkId() ,apns.getP8file() , apns.getTeamId(),  apns.getFileKey(), apns.getBundleId(), apns.getToken(), apns.getTitle(), apns.getMessage(), apns.getImage(), apns.getBadgeCount());
+        super(apns.getAppId(), apns.getBulkId() ,apns.getP8file() , apns.getTeamId(),  apns.getFileKey(), apns.getBundleId(), apns.getToken(), apns.getTitle(), apns.getMessage(), apns.getImage(), apns.getBadgeCount(),apns.getActionType());
         this.requestMode = requestMode;
     }
 
