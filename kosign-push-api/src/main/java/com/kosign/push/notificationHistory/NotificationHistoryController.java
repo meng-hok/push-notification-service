@@ -40,6 +40,7 @@ public class NotificationHistoryController
             @RequestParam(value="start_date" )@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate ,
             @RequestParam(value="end_date" )@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate  ,
             @RequestParam(value="title"     , required=false) String title ,
+            @RequestParam(value = "receiver_id",required = false) String receiverId,
             @RequestParam(value="page_num"     , defaultValue = "1") int pageNum,
             @RequestParam(value="page_size",defaultValue = "10") int pageSize
     ) 
@@ -56,6 +57,7 @@ public class NotificationHistoryController
     	request.setStartDate(convertedStartDate);
     	request.setEndDate(convertedEndDate);
     	request.setMsgTitle(title);
+    	request.setReceiverId(receiverId);
 
         HashMap<String,Object> response = historyService.findAllHistories(request,pageNum,pageSize);
 

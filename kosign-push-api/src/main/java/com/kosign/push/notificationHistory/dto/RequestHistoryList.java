@@ -9,4 +9,5 @@ public class RequestHistoryList
     private String startDate;
     private String endDate;
     private String msgTitle;
+    private String receiverId;
 }
