@@ -1,0 +1,2 @@
+# ./gradlew bootRun -PDB_SERVER=localhost:5432 -PPOSTGRES_DB=kopush_dev_db -PPOSTGRES_USER=postgres  -PPOSTGRES_PASSWORD=postgres -PSPRING_RABBITMQ_HOST=rabbitmq
+java -jar -DDB_SERVER=localhost:5432 -DPOSTGRES_DB=kopush_dev_db -DPOSTGRES_USER=postgres  -DPOSTGRES_PASSWORD=postgres -DSPRING_RABBITMQ_HOST=rabbitmq kosign-push-api/build/libs/*.jar
